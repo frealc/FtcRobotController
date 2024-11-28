@@ -181,7 +181,7 @@ public class ConduiteUneManette extends LinearOpMode {
                     }
                 }
             } else {
-                    tgtBras = varRY / 2;
+                    tgtBras = varRY;
                     bras0 = brasA;
                 }
 
@@ -253,12 +253,12 @@ public class ConduiteUneManette extends LinearOpMode {
             coudeD.setPosition(1 - coudeX);
 
             if (PrecisionMode) {
-                bras1.setPower(tgtBras/1000);
+                bras1.setPower(tgtBras/100);
                 bras2.setPower(-tgtBras/1000);
-                bras1.setPower(-tgtBras/1000);
+                bras1.setPower(-tgtBras/100);
                 bras2.setPower(tgtBras/1000);
             } else {
-                bras1.setPower(tgtBras);
+                bras1.setPower(tgtBras * 1.2);
                 bras2.setPower(tgtBras);
             }
 
