@@ -13,6 +13,8 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
     private DcMotorEx motorA;
     private DcMotorEx motorB;
+    private DcMotorEx motorC;
+    private DcMotorEx motorD;
     private DcMotorEx bras1;
     private DcMotorEx bras2;
     private Servo coudeA;
@@ -26,6 +28,8 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
         motorA = hardwareMap.get(DcMotorEx.class, "motorA");
         motorB = hardwareMap.get(DcMotorEx.class, "motorB");
+        motorC = hardwareMap.get(DcMotorEx.class, "motorC");
+        motorD = hardwareMap.get(DcMotorEx.class, "motorD");
         bras1 = hardwareMap.get(DcMotorEx.class, "bras1");
         bras2 = hardwareMap.get(DcMotorEx.class, "bras2");
         coudeA = hardwareMap.get(Servo.class, "coudeA");
@@ -36,12 +40,16 @@ public class conduiteunemanetteV1 extends LinearOpMode {
         double brasX = brasZero;
         double tgtPowerA = 0;
         double tgtPowerB = 0;
+        double tgtPowerC = 0;
+        double tgtPowerD = 0;
         double tgtBras = 0;
         int maPosBras = 0;
         double varY = 0;
         double varX = 0;
+        double vaRX = 0;
         double varYpos = 0;
         double varXpos = 0;
+        double vaRXpos = 0;
         double varRY = 0;
         double debugTkt = 0;
         int brasA = 0;
@@ -61,13 +69,16 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
             varY = manette1.left_stick_y;
             varX = manette1.left_stick_x;
+            vaRX = manette1.right_stick_x;
 
             // Convertion pour Moteurs
             varYpos = Math.abs(varY);
             varXpos = Math.abs(varX);
+            vaRXpos = Math.abs(vaRX);
 
             // Récupération valeur joystick gauche
             varRY = manette2.right_stick_y;
+            brasA= bras1.getCurrentPosition();
 
 
             //prise des donné des joystick pour les moteur
@@ -104,14 +115,28 @@ public class conduiteunemanetteV1 extends LinearOpMode {
                 tgtPowerA = varXpos;
                 tgtPowerB = -varXpos;
             }
+            if (vaRX < 0) {
+                tgtPowerB = tgtPowerB - varXpos;
+            } else if (vaRX > 0) {
+                tgtPowerA = tgtPowerA - varXpos;
+            }
+            if (vaRX < 0) {
+                tgtPowerA = tgtPowerA + varXpos;
+            } else if (vaRX > 0) {
+                tgtPowerB = tgtPowerB + varXpos;
+            }
 
 
             if (manette1.left_bumper) {
-                motorA.setPower(tgtPowerA);
-                motorB.setPower(-tgtPowerB);
+                motorA.setPower(-tgtPowerA);
+                motorB.setPower(tgtPowerB);
+                motorC.setPower(-tgtPowerA);
+                motorD.setPower(tgtPowerB);
             } else {
                 motorA.setPower((tgtPowerA / 2));
                 motorB.setPower(-(tgtPowerB / 2));
+                motorC.setPower(tgtPowerA / 2);
+                motorD.setPower(-tgtPowerB / 2);
             }
 
 
@@ -149,17 +174,25 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
             coudeA.setPosition(brasX);
 
-            if (pince.getPosition() > 0.10) {
+            if (pince.getPosition() > 0.30) {
                 while (manette2.a) {
-                    pince.setPosition(0);
+                    pince.setPosition(0.5);
                 }}
-            if (pince.getPosition() < 0.2){
+            if (pince.getPosition() < 0.3){
                 while (manette2.a) {
-                    pince.setPosition(1);
+                    pince.setPosition(0.7);
                 }
             }
 
+
+
             telemetry.addData("Position Actuelle Bras", coudeA.getPosition());
+            telemetry.addData("Position Actuelle pince", pince.getPosition());
+            telemetry.addData("Target Power A", tgtPowerA);
+            telemetry.addData("Target Power B", tgtPowerB);
+            telemetry.addData("Target Power B", tgtPowerC);
+            telemetry.addData("Target Power B", tgtPowerD);
+            telemetry.addData("Joystick Gauche : VarY", varRY);
             telemetry.update();
         }
     }
