@@ -42,14 +42,16 @@ public class conduiteunemanetteV1 extends LinearOpMode {
         double tgtPowerB = 0;
         double tgtPowerC = 0;
         double tgtPowerD = 0;
+        double tgtPowerA2 = 0;
+        double tgtPowerB2 = 0;
+        double tgtPowerC2 = 0;
+        double tgtPowerD2 = 0;
         double tgtBras = 0;
         int maPosBras = 0;
         double varY = 0;
         double varX = 0;
-        double vaRX = 0;
         double varYpos = 0;
         double varXpos = 0;
-        double vaRXpos = 0;
         double varRY = 0;
         double debugTkt = 0;
         int brasA = 0;
@@ -69,75 +71,114 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
             varY = manette1.left_stick_y;
             varX = manette1.left_stick_x;
-            vaRX = manette1.right_stick_x;
+
 
             // Convertion pour Moteurs
             varYpos = Math.abs(varY);
             varXpos = Math.abs(varX);
-            vaRXpos = Math.abs(vaRX);
+
 
             // Récupération valeur joystick gauche
             varRY = manette2.right_stick_y;
             brasA= bras1.getCurrentPosition();
 
 
-            //prise des donné des joystick pour les moteur
+            /// Mouvements
             if (varY > 0) {
                 tgtPowerA = varYpos;
                 tgtPowerB = varYpos;
+                tgtPowerC = varYpos;
+                tgtPowerD = varYpos;
                 if (varX < 0) {
                     tgtPowerB = tgtPowerB - varXpos;
+                    tgtPowerD = tgtPowerD - varXpos;
                 } else if (varX > 0) {
                     tgtPowerA = tgtPowerA - varXpos;
+                    tgtPowerC = tgtPowerC - varXpos;
                 }
             } else if (varY < 0) {
                 tgtPowerA = -varYpos;
                 tgtPowerB = -varYpos;
+                tgtPowerC = -varYpos;
+                tgtPowerD = -varYpos;
 
                 debugTkt = -1;
 
                 if (varX < 0) {
                     tgtPowerA = tgtPowerA + varXpos;
+                    tgtPowerC = tgtPowerC + varXpos;
                 } else if (varX > 0) {
                     tgtPowerB = tgtPowerB + varXpos;
+                    tgtPowerD = tgtPowerD + varXpos;
                 }
             } else if (varY == 0) {
                 tgtPowerA = 0;
                 tgtPowerB = 0;
+                tgtPowerC = 0;
+                tgtPowerD = 0;
             }
 
             if (varX > 0 && varY == 0) {
                 tgtPowerA = -varXpos;
                 tgtPowerB = varXpos;
+                tgtPowerC = -varXpos;
+                tgtPowerD = varXpos;
             }
 
             if (varX < 0 && varY == 0) {
                 tgtPowerA = varXpos;
                 tgtPowerB = -varXpos;
-            }
-            if (vaRX < 0) {
-                tgtPowerB = tgtPowerB - varXpos;
-            } else if (vaRX > 0) {
-                tgtPowerA = tgtPowerA - varXpos;
-            }
-            if (vaRX < 0) {
-                tgtPowerA = tgtPowerA + varXpos;
-            } else if (vaRX > 0) {
-                tgtPowerB = tgtPowerB + varXpos;
+                tgtPowerC = varXpos;
+                tgtPowerD = -varXpos;
             }
 
+            if (manette1.left_trigger > 0 && manette1.right_trigger > 0) {
+                tgtPowerA2 = 0;
+                tgtPowerB2 = 0;
+                tgtPowerC2 = 0;
+                tgtPowerD2 = 0;
+            }
+            else if (manette1.right_trigger > 0) {
+                tgtPowerA2 = 1;
+                tgtPowerB2 = -1;
+                tgtPowerC2 = -1;
+                tgtPowerD2 = 1;//strafe gauche
+            } else if (manette1.left_trigger > 0) {
+                tgtPowerA2 = -1;
+                tgtPowerB2 = 1;
+                tgtPowerC2 = 1;
+                tgtPowerD2 = -1; //strafe droit
+            }
+               //prise des valeur du joystick gauche pour faire les strafe et avancer reculé
+            else {
+                tgtPowerA2 = 0;
+                tgtPowerB2 = 0;
+                tgtPowerC2 = 0;
+                tgtPowerD2 = 0;
+            }
 
-            if (manette1.left_bumper) {
-                motorA.setPower(-tgtPowerA);
-                motorB.setPower(tgtPowerB);
-                motorC.setPower(-tgtPowerA);
-                motorD.setPower(tgtPowerB);
+            if (manette1.a) {
+                motorA.setPower(-tgtPowerA * 1.2);
+                motorB.setPower(tgtPowerB * 1.2);
+                motorC.setPower(-tgtPowerC * 1.2);
+                motorD.setPower(tgtPowerD * 1.2);
+
+                motorA.setPower(-tgtPowerA2);
+                motorB.setPower(tgtPowerB2);
+                motorC.setPower(-tgtPowerC2);
+                motorD.setPower(tgtPowerD2);
             } else {
-                motorA.setPower((tgtPowerA / 2));
-                motorB.setPower(-(tgtPowerB / 2));
-                motorC.setPower(tgtPowerA / 2);
-                motorD.setPower(-tgtPowerB / 2);
+                motorA.setPower(-(tgtPowerA / 2));
+                motorB.setPower((tgtPowerB / 2));
+                motorC.setPower(-(tgtPowerC / 2));
+                motorD.setPower((tgtPowerD / 2));
+
+                motorA.setPower(-(tgtPowerA2 / 2));
+                motorB.setPower((tgtPowerB2 / 2));
+                motorC.setPower(-(tgtPowerC2 / 2));
+                motorD.setPower((tgtPowerD2 / 2));
             }
+
 
 
             //mouvement de bras a glissiere dans l'axe y
@@ -157,10 +198,16 @@ public class conduiteunemanetteV1 extends LinearOpMode {
                     tgtBras = 0;
                 }
             }
-            bras1.setPower(tgtBras * 1.2);
-            bras2.setPower(tgtBras);
+
+            if (manette2.left_bumper){
+            bras1.setPower(tgtBras * 1.8);
+            bras2.setPower(tgtBras * 1.8);
             //temps pour monter :
             //temps pour descendre :
+            } else {
+                bras1.setPower(tgtBras * 1.2);
+                bras2.setPower(tgtBras * 1.2);
+            }
 
 
             if (manette2.left_trigger > 0) {
@@ -174,13 +221,13 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
             coudeA.setPosition(brasX);
 
-            if (pince.getPosition() > 0.30) {
+            if (pince.getPosition() > 0.1) {
                 while (manette2.a) {
-                    pince.setPosition(0.5);
+                    pince.setPosition(0);
                 }}
-            if (pince.getPosition() < 0.3){
+            if (pince.getPosition() < 0.20){
                 while (manette2.a) {
-                    pince.setPosition(0.7);
+                    pince.setPosition(1);
                 }
             }
 
@@ -190,8 +237,8 @@ public class conduiteunemanetteV1 extends LinearOpMode {
             telemetry.addData("Position Actuelle pince", pince.getPosition());
             telemetry.addData("Target Power A", tgtPowerA);
             telemetry.addData("Target Power B", tgtPowerB);
-            telemetry.addData("Target Power B", tgtPowerC);
-            telemetry.addData("Target Power B", tgtPowerD);
+            telemetry.addData("Target Power C", tgtPowerC);
+            telemetry.addData("Target Power D", tgtPowerD);
             telemetry.addData("Joystick Gauche : VarY", varRY);
             telemetry.update();
         }
