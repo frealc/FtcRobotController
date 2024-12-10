@@ -18,6 +18,7 @@ public class conduiteunemanetteV1 extends LinearOpMode {
     private DcMotorEx bras1;
     private DcMotorEx bras2;
     private Servo coudeA;
+    private Servo boite;
 
     private Servo pince;
 
@@ -34,6 +35,7 @@ public class conduiteunemanetteV1 extends LinearOpMode {
         bras2 = hardwareMap.get(DcMotorEx.class, "bras2");
         coudeA = hardwareMap.get(Servo.class, "coudeA");
         pince = hardwareMap.get(Servo.class, "pince");
+        boite = hardwareMap.get(Servo.class, "boite");
 
 
         double brasZero = 0.91;
@@ -50,8 +52,10 @@ public class conduiteunemanetteV1 extends LinearOpMode {
         int maPosBras = 0;
         double varY = 0;
         double varX = 0;
+        double vaRX = 0;
         double varYpos = 0;
         double varXpos = 0;
+        double vaRXpos = 0;
         double varRY = 0;
         double debugTkt = 0;
         int brasA = 0;
@@ -71,11 +75,13 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
             varY = manette1.left_stick_y;
             varX = manette1.left_stick_x;
+            vaRX = manette1.right_stick_x;
 
 
             // Convertion pour Moteurs
             varYpos = Math.abs(varY);
             varXpos = Math.abs(varX);
+            vaRXpos = Math.abs(vaRX);
 
 
             // Récupération valeur joystick gauche
@@ -132,22 +138,17 @@ public class conduiteunemanetteV1 extends LinearOpMode {
                 tgtPowerD = -varXpos;
             }
 
-            if (manette1.left_trigger > 0 && manette1.right_trigger > 0) {
-                tgtPowerA2 = 0;
-                tgtPowerB2 = 0;
-                tgtPowerC2 = 0;
-                tgtPowerD2 = 0;
-            }
-            else if (manette1.right_trigger > 0) {
-                tgtPowerA2 = 1;
-                tgtPowerB2 = -1;
-                tgtPowerC2 = -1;
-                tgtPowerD2 = 1;//strafe gauche
+
+            if (manette1.right_trigger > 0) {
+                tgtPowerA2 = 0.7;
+                tgtPowerB2 = -0.7;
+                tgtPowerC2 = -0.7;
+                tgtPowerD2 = 0.7;//strafe gauche
             } else if (manette1.left_trigger > 0) {
-                tgtPowerA2 = -1;
-                tgtPowerB2 = 1;
-                tgtPowerC2 = 1;
-                tgtPowerD2 = -1; //strafe droit
+                tgtPowerA2 = -0.7;
+                tgtPowerB2 = 0.7;
+                tgtPowerC2 = 0.7;
+                tgtPowerD2 = -0.7; //strafe droit
             }
                //prise des valeur du joystick gauche pour faire les strafe et avancer reculé
             else {
@@ -200,8 +201,8 @@ public class conduiteunemanetteV1 extends LinearOpMode {
             }
 
             if (manette2.left_bumper){
-            bras1.setPower(tgtBras * 1.8);
-            bras2.setPower(tgtBras * 1.8);
+            bras1.setPower(tgtBras * 3);
+            bras2.setPower(tgtBras * 3);
             //temps pour monter :
             //temps pour descendre :
             } else {
@@ -228,6 +229,16 @@ public class conduiteunemanetteV1 extends LinearOpMode {
             if (pince.getPosition() < 0.20){
                 while (manette2.a) {
                     pince.setPosition(1);
+                }
+            }
+
+            if (boite.getPosition() > 0.1) {
+                while (manette2.b) {
+                    boite.setPosition(0);
+                }}
+            if (boite.getPosition() < 0.2){
+                while (manette2.b) {
+                    boite.setPosition(1);
                 }
             }
 
