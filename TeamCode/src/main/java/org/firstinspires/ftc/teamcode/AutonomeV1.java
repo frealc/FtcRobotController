@@ -26,6 +26,7 @@ public class AutonomeV1 extends LinearOpMode {
 
     private Servo pinceP;
 
+
     public void avancer(double vitesse, long temps) {
         motorA.setPower(vitesse);
         motorB.setPower(-vitesse);
@@ -50,9 +51,9 @@ public class AutonomeV1 extends LinearOpMode {
     }
     public void droite(double vitesse, long temps) {
         motorA.setPower(-vitesse);
-        motorB.setPower(vitesse);
+        motorB.setPower(-vitesse);
         motorC.setPower(vitesse);
-        motorD.setPower(-vitesse);
+        motorD.setPower(vitesse);
         sleep(temps);
         motorA.setPower(0);
         motorB.setPower(0);
@@ -61,9 +62,9 @@ public class AutonomeV1 extends LinearOpMode {
     }
     public void gauche(double vitesse, long temps) {
         motorA.setPower(vitesse);
-        motorB.setPower(-vitesse);
+        motorB.setPower(vitesse);
         motorC.setPower(-vitesse);
-        motorD.setPower(vitesse);
+        motorD.setPower(-vitesse);
         sleep(temps);
         motorA.setPower(0);
         motorB.setPower(0);
@@ -118,6 +119,7 @@ public class AutonomeV1 extends LinearOpMode {
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
+
         // Put initialization blocks here
         motorA.setPower(0);
         motorB.setPower(0);
@@ -129,12 +131,19 @@ public class AutonomeV1 extends LinearOpMode {
         telemetry.update();
  //1.5 cm a enlever pour capteur droit
 
-        avancer(0.56, 900);
+        avancer(0.56, 950);
         bras(-0.7, 1325);
-        coude(-0.4, 350);
+        coude(-0.6, 350);
         avancer(0.2, 500);
+        boite.setPosition(1);
         bras(0.45, 550);
-        pince.setPosition(1);
+        pince.setPosition(0);
+        reculer(0.3, 450);
+        droite(0.6, 2250);
+        rotaG(0.5, 1650);
+        avancer(0.35,1600);
+
+
 
 
         while (opModeIsActive()) {

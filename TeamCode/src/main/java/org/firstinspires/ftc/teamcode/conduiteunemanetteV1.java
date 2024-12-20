@@ -23,6 +23,7 @@ public class conduiteunemanetteV1 extends LinearOpMode {
     private Servo pince;
 
     private Servo pinceP;
+    private Servo rotapinceP;
 
 
 
@@ -39,6 +40,7 @@ public class conduiteunemanetteV1 extends LinearOpMode {
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
+        rotapinceP = hardwareMap.get(Servo.class, "rotapinceP");
 
 
         double brasZero = 0.91;
@@ -65,6 +67,7 @@ public class conduiteunemanetteV1 extends LinearOpMode {
         double debugTkt = 0;
         int brasA = 0;
         int bras0 = 0;
+        double maPosCoude = 0;
 
 
         Gamepad manette1 = this.gamepad1;
@@ -93,7 +96,7 @@ public class conduiteunemanetteV1 extends LinearOpMode {
 
 
             // Récupération valeur joystick gauche
-            varRY = manette2.right_stick_y;
+            varRY = manette2.left_stick_y;
             brasA= bras1.getCurrentPosition();
             varYbras = manette2.left_stick_y;
             varYbraspos = Math.abs(varYbras);
@@ -218,27 +221,26 @@ public class conduiteunemanetteV1 extends LinearOpMode {
             if (manette2.left_bumper){
             bras1.setPower(tgtBras * 3);
             bras2.setPower(tgtBras * 3);
-            //temps pour monter :
-            //temps pour descendre :
             } else {
                 bras1.setPower(tgtBras * 1.2);
                 bras2.setPower(tgtBras * 1.2);
-            }
+            }//code glissiere
 
 
-            if (varYbras > 0) {
+            if (manette2.right_trigger > 0) {
 
-                brasX = -varYbraspos;
+                brasX = -0.5;
 
-            } else if (varYbras < 0) {
+            } else if (manette2.left_trigger > 0) {
 
-                brasX = varYbraspos;
+                brasX = 0.5;
             }
             else {
                 brasX = 0;
-            }
+            } //regler le probleme de gravité du bras
 
-            coudeA.setPower(brasX);
+
+            coudeA.setPower(brasX); //code coude
 
 
             if (pince.getPosition() > 0.1) {
@@ -253,6 +255,7 @@ public class conduiteunemanetteV1 extends LinearOpMode {
                 }
             }
 
+
             if (boite.getPosition() > 0.1) {
                 while (manette2.b) {
                     boite.setPosition(0);
@@ -264,6 +267,29 @@ public class conduiteunemanetteV1 extends LinearOpMode {
                 }
             }
 
+
+            if (rotapinceP.getPosition() > 0.5) {
+                while (manette2.x) {
+                    rotapinceP.setPosition(0);
+                }
+            }
+            if (rotapinceP.getPosition() < 0.5){
+                while (manette2.x) {
+                    rotapinceP.setPosition(1);
+                }
+            }
+
+
+            if (pinceP.getPosition() > 0.7) {
+                while (manette2.y) {
+                    pinceP.setPosition(0.5);
+                }
+            }
+            if (pinceP.getPosition() < 0.7){
+                while (manette2.y) {
+                    pinceP.setPosition(0.98);
+                }
+            }
 
 
             telemetry.addData("Position Actuelle Bras", brasX);
