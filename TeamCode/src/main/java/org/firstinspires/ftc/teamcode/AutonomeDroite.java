@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 
-@Autonomous(name="org.firstinspires.ftc.teamcode.AutonomeV1")
-public class AutonomeV1 extends LinearOpMode {
+@Autonomous(name="AutonomeGauche")
+public class AutonomeDroite extends LinearOpMode {
     private DcMotor motorA;
     private DcMotor motorB;
     private DcMotor motorC;
@@ -131,16 +131,22 @@ public class AutonomeV1 extends LinearOpMode {
         telemetry.update();
  //1.5 cm a enlever pour capteur droit
 
-        avancer(0.56, 950);
-        bras(-0.7, 1325);
-        coude(-0.6, 350);
-        avancer(0.2, 500);
+        avancer(0.5, 950);
+        coude(-0.42, 1200);
+
+        bras(-0.57, 1325);
+        avancer(0.2, 400);
+        /*motorC.setPower(0.4);
+        sleep(450);
+        motorC.setPower(0);*/
+
+
         boite.setPosition(1);
         bras(0.45, 550);
         pince.setPosition(0);
         reculer(0.3, 450);
-        droite(0.6, 2250);
-        rotaG(0.5, 1650);
+        droite(0.6, 1800);
+        rotaG(0.5, 1550);
         avancer(0.35,1600);
 
 
