@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 
 
-@Autonomous(name="AutonomeGauche")
+@Autonomous(name="AutonomeDroite(clip)")
 public class AutonomeDroite extends LinearOpMode {
     private DcMotor motorA;
     private DcMotor motorB;
@@ -30,7 +30,7 @@ public class AutonomeDroite extends LinearOpMode {
     public void avancer(double vitesse, long temps) {
         motorA.setPower(vitesse);
         motorB.setPower(-vitesse);
-        motorC.setPower(vitesse);
+        motorC.setPower(vitesse*1.06);
         motorD.setPower(-vitesse);
         sleep(temps);
         motorA.setPower(0);
@@ -129,21 +129,21 @@ public class AutonomeDroite extends LinearOpMode {
         waitForStart();
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
- //1.5 cm a enlever pour capteur droit
 
-        avancer(0.5, 950);
+        avancer(0.5, 1050);
         coude(-0.42, 1200);
 
         bras(-0.57, 1325);
-        avancer(0.2, 400);
+        avancer(0.16, 500);
         /*motorC.setPower(0.4);
         sleep(450);
         motorC.setPower(0);*/
 
 
         boite.setPosition(1);
-        bras(0.45, 550);
-        pince.setPosition(0);
+        bras(0.45, 300);
+        pince.setPosition(1);
+        bras(0.45, 225);
         reculer(0.3, 450);
         droite(0.6, 1800);
         rotaG(0.5, 1550);
