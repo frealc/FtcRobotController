@@ -72,7 +72,6 @@ public class conduite2manette extends LinearOpMode {
         int coude0 = 0;
         boolean PrecisionMode = false; //precision mis en faut quand initialisé
 
-
         Gamepad manette1 = this.gamepad1;
         Gamepad manette2 = this.gamepad2;
 
@@ -349,7 +348,7 @@ public class conduite2manette extends LinearOpMode {
                 pince.setPosition(0);
             }
 
-            //-1470 pret a posé -1065 posé
+
 
 
             telemetry.addData("Position Actuelle Bras", brasX);

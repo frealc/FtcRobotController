@@ -125,6 +125,7 @@ public class AutonomeDroite extends LinearOpMode {
         motorB.setPower(0);
         motorC.setPower(0);
         motorD.setPower(0);
+        pince.setPosition(0);
 
         waitForStart();
         telemetry.addData("z :", "Mode autonome initialisé");
