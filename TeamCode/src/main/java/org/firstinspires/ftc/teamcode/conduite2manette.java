@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 public class conduite2manette extends LinearOpMode {
-
-
     private DcMotorEx motorA;
     private DcMotorEx motorB;
     private DcMotorEx motorC;
@@ -72,13 +70,11 @@ public class conduite2manette extends LinearOpMode {
         int bras0 = 0;
         int coudeApos = 0;
         int coude0 = 0;
-
         boolean PrecisionMode = false; //precision mis en faut quand initialisé
 
 
         Gamepad manette1 = this.gamepad1;
         Gamepad manette2 = this.gamepad2;
-
 
 
         waitForStart();
@@ -113,7 +109,6 @@ public class conduite2manette extends LinearOpMode {
 
             varRYcoude = manette2.right_stick_y;
             coudeApos = coudeA.getCurrentPosition();
-
 
 
             /// Mouvements
