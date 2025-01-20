@@ -206,15 +206,15 @@ public class conduite2manette extends LinearOpMode {
                 motorC.setPower(-tgtPowerC2 * 2);
                 motorD.setPower(tgtPowerD2 * 2);
             } else if(PrecisionMode == true) {
-                motorA.setPower(-(tgtPowerA / 4));
-                motorB.setPower((tgtPowerB / 4));
-                motorC.setPower(-(tgtPowerC / 4));
-                motorD.setPower((tgtPowerD / 4));
+                motorA.setPower(-(tgtPowerA / 3.5));
+                motorB.setPower((tgtPowerB / 3.5));
+                motorC.setPower(-(tgtPowerC / 3.5));
+                motorD.setPower((tgtPowerD / 3.5));
 
-                motorA.setPower(-(tgtPowerA2 / 4));
-                motorB.setPower((tgtPowerB2 / 4));
-                motorC.setPower(-(tgtPowerC2 / 4));
-                motorD.setPower((tgtPowerD2 / 4));//en mode precision, reduit la vitesse par 4
+                motorA.setPower(-(tgtPowerA2 / 3.5));
+                motorB.setPower((tgtPowerB2 / 3.5));
+                motorC.setPower(-(tgtPowerC2 / 3.5));
+                motorD.setPower((tgtPowerD2 / 3.5));//en mode precision, reduit la vitesse par 4
             }
             else {
                 motorA.setPower(-(tgtPowerA / 1.4));
@@ -273,10 +273,10 @@ public class conduite2manette extends LinearOpMode {
             }
             else {
                 if  (coude0 < coudeA.getCurrentPosition()) {
-                    coudeA.setPower(0.5);
+                    coudeA.setPower(0.01);
 
                 } else if (coude0 > coudeA.getCurrentPosition()) {
-                    coudeA.setPower(-0.7);
+                    coudeA.setPower(-0.01);
                 } else {
                 varRYcoudepos = 0;
             }} //regler le probleme de gravité du bras
@@ -325,18 +325,18 @@ public class conduite2manette extends LinearOpMode {
 
 
             if (pinceP.getPosition() > 0.7) {
-                while (manette2.x) {
+                while (manette2.y) {
                     pinceP.setPosition(0.5);
                 }
             }
             if (pinceP.getPosition() < 0.7){
-                while (manette2.x) {
+                while (manette2.y) {
                     pinceP.setPosition(0.98);
                 }
             }
 
 
-            if (manette2.dpad_down && brasA < -1135) {
+            /*if (manette2.dpad_down && brasA < -1135) {
                 brasA = bras1.getCurrentPosition();
                 while (brasA < -1130){
                     brasA = bras1.getCurrentPosition();
@@ -346,7 +346,7 @@ public class conduite2manette extends LinearOpMode {
                     telemetry.update();
                 }
                 pince.setPosition(0);
-            }
+            }*/
 
 
 

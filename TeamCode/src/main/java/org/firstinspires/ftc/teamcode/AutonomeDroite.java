@@ -131,24 +131,30 @@ public class AutonomeDroite extends LinearOpMode {
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
-        avancer(0.5, 1050);
+        //avancer(0.5, 1050);
+
+        avancer(0.5, 800);
+
         coude(-0.42, 1200);
 
         bras(-0.57, 1325);
-        avancer(0.16, 500);
+        avancer(0.16, 1000);
         /*motorC.setPower(0.4);
         sleep(450);
         motorC.setPower(0);*/
 
 
         boite.setPosition(1);
-        bras(0.45, 300);
+        bras(0.55, 300);
         pince.setPosition(1);
         bras(0.45, 225);
         reculer(0.3, 450);
         droite(0.6, 1800);
-        rotaG(0.5, 1550);
-        avancer(0.35,1600);
+        rotaG(0.5, 1400);
+
+        //avancer(0.35,1550);
+
+        avancer(0.35, 925);
 
 
 
