@@ -17,7 +17,7 @@ public class conduite2manette extends LinearOpMode {
     private DcMotorEx bras2;
     private DcMotorEx coudeA;
     private Servo boite;
-
+    private DcMotorEx coudeB;
     private Servo pince;
 
     private Servo pinceP;
@@ -35,6 +35,7 @@ public class conduite2manette extends LinearOpMode {
         bras1 = hardwareMap.get(DcMotorEx.class, "bras1");
         bras2 = hardwareMap.get(DcMotorEx.class, "bras2");
         coudeA = hardwareMap.get(DcMotorEx.class, "coudeA");
+        coudeB = hardwareMap.get(DcMotorEx.class, "coudeB");
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
@@ -83,6 +84,8 @@ public class conduite2manette extends LinearOpMode {
         bras1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         bras2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         coudeA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        coudeB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         while (opModeIsActive()) {
 
@@ -196,10 +199,10 @@ public class conduite2manette extends LinearOpMode {
             }//active le mode precision quand B est appuyé et le desactive quand B est re appuyé
 
             if (manette1.a) {
-                motorA.setPower(-tgtPowerA * 2);
-                motorB.setPower(tgtPowerB * 2);
-                motorC.setPower(-tgtPowerC * 2);
-                motorD.setPower(tgtPowerD * 2);
+                motorA.setPower(-tgtPowerA * 5);
+                motorB.setPower(tgtPowerB * 5);
+                motorC.setPower(-tgtPowerC * 5);
+                motorD.setPower(tgtPowerD * 5);
 
                 motorA.setPower(-tgtPowerA2 * 2);
                 motorB.setPower(tgtPowerB2 * 2);
@@ -274,15 +277,20 @@ public class conduite2manette extends LinearOpMode {
             else {
                 if  (coude0 < coudeA.getCurrentPosition()) {
                     coudeA.setPower(0.01);
+                    coudeB.setPower(0.01);
+
 
                 } else if (coude0 > coudeA.getCurrentPosition()) {
                     coudeA.setPower(-0.01);
+                    coudeB.setPower(-0.01);
+
                 } else {
                 varRYcoudepos = 0;
             }} //regler le probleme de gravité du bras
 
 
-            coudeA.setPower(varRYcoudepos/3); //code coude
+            coudeA.setPower(varRYcoudepos/1.8); //code coude
+            coudeB.setPower(varRYcoudepos/1.8);
 
 
             if (pince.getPosition() > 0.1) {
