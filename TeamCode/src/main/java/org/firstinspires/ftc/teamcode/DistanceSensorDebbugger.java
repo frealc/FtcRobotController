@@ -2,41 +2,57 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 @Disabled
 
 public class DistanceSensorDebbugger extends OpMode {
     private final String sensorId = "";
     private DistanceSensor distanceSensor;
-    ColorSensor color1;
+    ColorSensor test_color;
+
+    TouchSensor test_touch;  // Touch sensor Object
 
 
     @Override
     public void init() {
         distanceSensor = hardwareMap.get(DistanceSensor.class, sensorId);
         distanceSensor.resetDeviceConfigurationForOpMode();
-        color1 = hardwareMap.get(ColorSensor.class, "color1");
+        test_color = hardwareMap.get(ColorSensor.class, "test_color");
+        test_touch = hardwareMap.get(TouchSensor.class, "test_touch");
     }
 
     @Override
     public void loop() {
+
+//-------------------------------distance sensor part (not working)------------------------------------
         telemetry.addLine("--- DEBUG INFOS ---");
         telemetry.addData("ConnectionInfo", distanceSensor.getConnectionInfo());
         telemetry.addData("DeviceName", distanceSensor.getDeviceName());
         telemetry.addData("Manufacturer", distanceSensor.getManufacturer());
         telemetry.addData("Version", distanceSensor.getVersion());
 
-        // La ligne "réellement" intéressante
-        telemetry.addData("Distance", distanceSensor.getDistance(DistanceUnit.CM));
 
-        telemetry.addData("Light Detected", ((OpticalDistanceSensor) color1).getLightDetected());
-        telemetry.addData("Red", color1.red());
-        telemetry.addData("Green", color1.green());
-        telemetry.addData("Blue", color1.blue());
+//-------------------------------color sensor part (need to test)--------------------------------------------
+        telemetry.addData("Light Detected", ((OpticalDistanceSensor) test_color).getLightDetected());
+        telemetry.addData("Red", test_color.red());
+        telemetry.addData("Green", test_color.green());
+        telemetry.addData("Blue", test_color.blue());
+        telemetry.update();
+
+
+//-------------------------------touch sensor part (need to test)-----------------------------------------
+        if (test_touch.isPressed()){
+            //Touch Sensor is pressed.
+            telemetry.addData("Touch Sensor", "Is Pressed");
+        } else {
+            //Touch Sensor is not pressed
+
+            telemetry.addData("Touch Sensor", "Is Not Pressed");
+        }
         telemetry.update();
     }
 }
