@@ -27,4 +27,8 @@ android {
     namespace = 'com.qualcomm.ftcrobotcontroller'
 }
 
+dependencies {
+    implementation fileTree(dir: 'C:\\Users\\first robotique A\\Downloads\\REV2mDistanceSensor-2025.0.0\\maven\\com\\revrobotics\\frc\\DistanceSensor-java\\2025.0.0', include: ['*.aar', '*.jar'], exclude: [])
+}
+
 apply from: '../build.dependencies.gradle'

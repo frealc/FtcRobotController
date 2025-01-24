@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -22,6 +23,8 @@ public class conduite2manette extends LinearOpMode {
 
     private Servo pinceP;
     private Servo rotapinceP;
+
+    ColorSensor test_color;
     private double brasA=0;
 
 
@@ -40,6 +43,7 @@ public class conduite2manette extends LinearOpMode {
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
         rotapinceP = hardwareMap.get(Servo.class, "rotapinceP");
+        test_color = hardwareMap.get(ColorSensor.class, "test_color");
 
 
         double brasZero = 0.91;
@@ -72,6 +76,8 @@ public class conduite2manette extends LinearOpMode {
         int coudeApos = 0;
         int coude0 = 0;
         boolean PrecisionMode = false; //precision mis en faut quand initialisé
+        double red = 0;
+        double blue=0;
 
         Gamepad manette1 = this.gamepad1;
         Gamepad manette2 = this.gamepad2;
@@ -93,8 +99,8 @@ public class conduite2manette extends LinearOpMode {
             varX = manette1.left_stick_x;
 
 
-
-
+            red = test_color.red();
+            blue = test_color.blue();
 
 
             // Convertion pour Moteurs
@@ -293,10 +299,10 @@ public class conduite2manette extends LinearOpMode {
             coudeB.setPower(varRYcoudepos/1.8);
 
 
-            if (pince.getPosition() > 0.1) {
-                while (manette2.a) {
+            if (pince.getPosition() > 0.1 && red > 500 || blue > 500) {
+                //while (manette2.a) {
                     pince.setPosition(0);
-                }
+                //}
             }
 
             if (pince.getPosition() < 0.20){
@@ -371,6 +377,8 @@ public class conduite2manette extends LinearOpMode {
             telemetry.addData("Joystick Gauche : VarY", varRY);
             telemetry.addData("ma pos coude", coude0);
             telemetry.addData("coude a pos", coudeApos);
+            telemetry.addData("Red", test_color.red());
+            telemetry.addData("Blue", test_color.blue());
             telemetry.update();
         }
     }

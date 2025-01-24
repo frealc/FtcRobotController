@@ -21,6 +21,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
 
     private Servo pinceP;
 
+    double adherence = 0.2375;
 
     public void resetMotors(){
         motorA.setPower(0);
@@ -33,7 +34,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void avancer(double distance, double power) {
-        double ROTATIONS = distance / 0.2375;
+        double ROTATIONS = distance / adherence;
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS + motorA.getCurrentPosition();
         int TargetB = (int) COUNTS - motorB.getCurrentPosition();
@@ -61,7 +62,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
     }
 
     public void reculer(double distance, double power) {
-        double ROTATIONS = distance / 0.2375;
+        double ROTATIONS = distance / adherence;
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS - motorA.getCurrentPosition();
         int TargetB = (int) COUNTS + motorB.getCurrentPosition();
@@ -89,7 +90,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
     }
 
     public void droite(double distance, double power) {
-        double ROTATIONS = distance / 0.2375;
+        double ROTATIONS = distance / adherence;
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS - motorA.getCurrentPosition();
         int TargetB = (int) COUNTS - motorB.getCurrentPosition();
@@ -117,7 +118,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
     }
 
     public void gauche(double distance, double power) {
-        double ROTATIONS = distance / 0.2375;
+        double ROTATIONS = distance / adherence;
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS + motorA.getCurrentPosition();
         int TargetB = (int) COUNTS + motorB.getCurrentPosition();
@@ -205,11 +206,26 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
-        gauche(0.3,0.1);
-        droite(0.3,0.1);
-        avancer(0.3,0.1);
-        reculer(0.3,0.1);
-
+        avancer(0.6, 0.6);
+        coude(-0.42, 1400);
+        bras(-0.6, 1500);
+        avancer(0.2, 0.4);
+        boite.setPosition(1);
+        bras(0.55, 300);
+        pince.setPosition(1);
+        /* Pose du specimen */
+        bras(0.45, 225);
+        reculer(0.3, 0.6);
+        droite(1,0.6);
+        avancer(0.8,0.6);
+        droite(0.3,0.6);
+        reculer(1,0.6);
+        avancer(1,0.6);
+        droite(0.25,0.6);
+        reculer(1,0.6);
+        avancer(1,0.6);
+        droite(0.25,0.6);
+        reculer(1,0.6);
 
         while (opModeIsActive()) {
             //pas d'action car c'est une boucle
