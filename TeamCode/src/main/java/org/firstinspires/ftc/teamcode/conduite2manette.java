@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -24,7 +23,8 @@ public class conduite2manette extends LinearOpMode {
     private Servo pinceP;
     private Servo rotapinceP;
 
-    ColorSensor test_color;
+    private Servo verin;
+
     private double brasA=0;
 
 
@@ -43,8 +43,7 @@ public class conduite2manette extends LinearOpMode {
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
         rotapinceP = hardwareMap.get(Servo.class, "rotapinceP");
-        test_color = hardwareMap.get(ColorSensor.class, "test_color");
-
+        verin = hardwareMap.get(Servo.class, "verin");
 
         double brasZero = 0.91;
         double brasX = brasZero;
@@ -98,9 +97,6 @@ public class conduite2manette extends LinearOpMode {
             varY = manette1.left_stick_y;
             varX = manette1.left_stick_x;
 
-
-            red = test_color.red();
-            blue = test_color.blue();
 
 
             // Convertion pour Moteurs
@@ -298,12 +294,12 @@ public class conduite2manette extends LinearOpMode {
             coudeA.setPower(varRYcoudepos/1.8); //code coude
             coudeB.setPower(varRYcoudepos/1.8);
 
-
-            if (pince.getPosition() > 0.1 && red > 500 || blue > 500) {
+            // Pas de capteur de couleur
+            /*if (pince.getPosition() > 0.1 && red > 275 || blue < 325) {
                 //while (manette2.a) {
                     pince.setPosition(0);
                 //}
-            }
+            }*/
 
             if (pince.getPosition() < 0.20){
                 while (manette2.a) {
@@ -349,6 +345,17 @@ public class conduite2manette extends LinearOpMode {
                 }
             }
 
+            if (verin.getPosition() > 0.5) {
+                while (manette1.x) {
+                    verin.setPosition(0.2);
+                }
+            }
+            if (verin.getPosition() < 0.5){
+                while (manette1.x) {
+                    verin.setPosition(0.7);
+                }
+            }
+
 
             /*if (manette2.dpad_down && brasA < -1135) {
                 brasA = bras1.getCurrentPosition();
@@ -377,8 +384,7 @@ public class conduite2manette extends LinearOpMode {
             telemetry.addData("Joystick Gauche : VarY", varRY);
             telemetry.addData("ma pos coude", coude0);
             telemetry.addData("coude a pos", coudeApos);
-            telemetry.addData("Red", test_color.red());
-            telemetry.addData("Blue", test_color.blue());
+            telemetry.addData("pos verin", verin.getPosition());
             telemetry.update();
         }
     }

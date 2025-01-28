@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name="AutonomeGauche (Expérimental)")
@@ -20,7 +21,7 @@ public class AutonomeGaucheV2 extends LinearOpMode {
     private Servo pince;
 
     private Servo pinceP;
-
+    private DistanceSensor distanceSensor;
 
     public void resetMotors(){
         motorA.setPower(0);
@@ -194,6 +195,8 @@ public class AutonomeGaucheV2 extends LinearOpMode {
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
+
         // Put initialization blocks here
         motorA.setPower(0);
         motorB.setPower(0);
@@ -212,6 +215,8 @@ public class AutonomeGaucheV2 extends LinearOpMode {
 
 
         while (opModeIsActive()) {
+            //telemetry.addData("distance", distanceSensor.getDistance(DistanceUnit.CM));
+            //telemetry.update();
             //pas d'action car c'est une boucle
         }
     }

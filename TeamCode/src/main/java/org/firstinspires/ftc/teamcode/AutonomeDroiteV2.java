@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous(name="AutonomeDroite (Expérimental)")
@@ -20,6 +21,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
     private Servo pince;
 
     private Servo pinceP;
+    private DistanceSensor distanceSensor;
 
     double adherence = 0.2375;
 
@@ -195,6 +197,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
         // Put initialization blocks here
         motorA.setPower(0);
         motorB.setPower(0);
@@ -215,10 +218,10 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         pince.setPosition(1);
         /* Pose du specimen */
         bras(0.45, 225);
-        reculer(0.3, 0.6);
-        droite(1,0.6);
+        reculer(0.25, 0.6);
+        droite(0.9,0.6);
         avancer(0.8,0.6);
-        droite(0.3,0.6);
+        droite(0.25,0.6);
         reculer(1,0.6);
         avancer(1,0.6);
         droite(0.25,0.6);
@@ -228,6 +231,8 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         reculer(1,0.6);
 
         while (opModeIsActive()) {
+            //telemetry.addData("distance", distanceSensor.getDistance(DistanceUnit.CM));
+            //telemetry.update();
             //pas d'action car c'est une boucle
         }
     }
