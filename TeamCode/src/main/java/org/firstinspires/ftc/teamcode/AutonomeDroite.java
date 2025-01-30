@@ -25,6 +25,7 @@ public class AutonomeDroite extends LinearOpMode {
     private Servo pince;
 
     private Servo pinceP;
+    double adherence = 0.2375;
 
 
     public void avancer(double vitesse, long temps) {
@@ -106,6 +107,74 @@ public class AutonomeDroite extends LinearOpMode {
         sleep(temps);
         coudeA.setPower(0);
     }
+    public void resetMotors(){
+        motorA.setPower(0);
+        motorB.setPower(0);
+        motorC.setPower(0);
+        motorD.setPower(0);
+        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    void rotaD(double power) {
+
+        double ROTATIONS = 0.99 / adherence; //rotation a 180 degree
+        double COUNTS = ROTATIONS * 515.46;
+        int TargetA = (int)  COUNTS - motorA.getCurrentPosition();
+        int TargetB = (int) COUNTS - motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS - motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS - motorD.getCurrentPosition();
+        motorA.setTargetPosition(-TargetA);
+        motorB.setTargetPosition(-TargetB);
+        motorC.setTargetPosition(-TargetC);
+        motorD.setTargetPosition(-TargetD);
+        motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorA.setPower(power);
+        motorB.setPower(power);
+        motorC.setPower(power);
+        motorD.setPower(power);
+        while (motorA.isBusy() || motorB.isBusy()) {
+            telemetry.addData("MA", motorA.getTargetPosition());
+            telemetry.addData("MAC", motorA.getCurrentPosition());
+            telemetry.update();
+            if (!opModeIsActive()) {break;}
+        }
+        resetMotors();
+    }
+
+    void rotaG(double power) {
+
+        double ROTATIONS = 0.99 / adherence; //rotation a 180 degree
+        double COUNTS = ROTATIONS * 515.46;
+        int TargetA = (int)  COUNTS + motorA.getCurrentPosition();
+        int TargetB = (int) COUNTS + motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS + motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS + motorD.getCurrentPosition();
+        motorA.setTargetPosition(TargetA);
+        motorB.setTargetPosition(TargetB);
+        motorC.setTargetPosition(TargetC);
+        motorD.setTargetPosition(TargetD);
+        motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorA.setPower(power);
+        motorB.setPower(power);
+        motorC.setPower(power);
+        motorD.setPower(power);
+        while (motorA.isBusy() || motorB.isBusy()) {
+            telemetry.addData("MA", motorA.getTargetPosition());
+            telemetry.addData("MAC", motorA.getCurrentPosition());
+            telemetry.update();
+            if (!opModeIsActive()) {break;}
+        }
+        resetMotors();
+    }
 
     @Override
     public void runOpMode() {
@@ -131,7 +200,7 @@ public class AutonomeDroite extends LinearOpMode {
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
-        //avancer(0.5, 1050);
+        /*avancer(0.5, 1050);
 
         avancer(0.5, 800);
 
@@ -139,9 +208,9 @@ public class AutonomeDroite extends LinearOpMode {
 
         bras(-0.57, 1325);
         avancer(0.16, 1000);
-        /*motorC.setPower(0.4);
+        motorC.setPower(0.4);
         sleep(450);
-        motorC.setPower(0);*/
+        motorC.setPower(0);
 
 
         boite.setPosition(1);
@@ -155,7 +224,11 @@ public class AutonomeDroite extends LinearOpMode {
         //avancer(0.35,1550);
 
         avancer(0.35, 925);
+        */
 
+        rotaD(0.6);
+
+        //rotaG(1);
 
 
 

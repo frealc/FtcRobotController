@@ -147,28 +147,62 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         resetMotors();
     }
 
-    public void rotaD(double vitesse, long temps) {
-        motorA.setPower(vitesse);
-        motorB.setPower(vitesse);
-        motorC.setPower(vitesse);
-        motorD.setPower(vitesse);
-        sleep(temps);
-        motorA.setPower(0);
-        motorB.setPower(0);
-        motorC.setPower(0);
-        motorD.setPower(0);
+    void rotaD(double power) {
+
+        double ROTATIONS = 0.99 / adherence; //rotation a 180 degree
+        double COUNTS = ROTATIONS * 515.46;
+        int TargetA = (int)  COUNTS - motorA.getCurrentPosition();
+        int TargetB = (int) COUNTS - motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS - motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS - motorD.getCurrentPosition();
+        motorA.setTargetPosition(-TargetA);
+        motorB.setTargetPosition(-TargetB);
+        motorC.setTargetPosition(-TargetC);
+        motorD.setTargetPosition(-TargetD);
+        motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorA.setPower(power);
+        motorB.setPower(power);
+        motorC.setPower(power);
+        motorD.setPower(power);
+        while (motorA.isBusy() || motorB.isBusy()) {
+            telemetry.addData("MA", motorA.getTargetPosition());
+            telemetry.addData("MAC", motorA.getCurrentPosition());
+            telemetry.update();
+            if (!opModeIsActive()) {break;}
+        }
+        resetMotors();
     }
 
-    public void rotaG(double vitesse, long temps) {
-        motorA.setPower(-vitesse);
-        motorB.setPower(-vitesse);
-        motorC.setPower(-vitesse);
-        motorD.setPower(-vitesse);
-        sleep(temps);
-        motorA.setPower(0);
-        motorB.setPower(0);
-        motorC.setPower(0);
-        motorD.setPower(0);
+    void rotaG(double power) {
+
+        double ROTATIONS = 0.99 / adherence; //rotation a 180 degree
+        double COUNTS = ROTATIONS * 515.46;
+        int TargetA = (int)  COUNTS + motorA.getCurrentPosition();
+        int TargetB = (int) COUNTS + motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS + motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS + motorD.getCurrentPosition();
+        motorA.setTargetPosition(TargetA);
+        motorB.setTargetPosition(TargetB);
+        motorC.setTargetPosition(TargetC);
+        motorD.setTargetPosition(TargetD);
+        motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorA.setPower(power);
+        motorB.setPower(power);
+        motorC.setPower(power);
+        motorD.setPower(power);
+        while (motorA.isBusy() || motorB.isBusy()) {
+            telemetry.addData("MA", motorA.getTargetPosition());
+            telemetry.addData("MAC", motorA.getCurrentPosition());
+            telemetry.update();
+            if (!opModeIsActive()) {break;}
+        }
+        resetMotors();
     }
 
     public void bras(double vitesse, long temps) {
@@ -209,26 +243,37 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
-        avancer(0.6, 0.6);
+        avancer(0.6, 0.7);
         coude(-0.42, 1400);
         bras(-0.6, 1500);
-        avancer(0.2, 0.4);
+        avancer(0.2, 0.6);
         boite.setPosition(1);
         bras(0.55, 300);
         pince.setPosition(1);
+
         /* Pose du specimen */
         bras(0.45, 225);
-        reculer(0.25, 0.6);
-        droite(0.9,0.6);
-        avancer(0.8,0.6);
-        droite(0.25,0.6);
-        reculer(1,0.6);
-        avancer(1,0.6);
-        droite(0.25,0.6);
-        reculer(1,0.6);
-        avancer(1,0.6);
-        droite(0.25,0.6);
-        reculer(1,0.6);
+
+        //se met a l'endroit pour pousser les sample
+        reculer(0.25, 1);
+        droite(0.9,1);
+        avancer(0.8,1);
+
+        //pousse le premier sample
+        droite(0.25,1);
+        rotaD(1);
+        avancer(1,1);
+        reculer(1,1);
+
+        //pousse le 2eme sample
+        gauche(0.25,1);
+        avancer(1,1);
+
+
+        //pousse le 3eme sample
+        /*reculer(1,1);
+        gauche(0.25,0.6);
+        avancer(1,0.6);*/
 
         while (opModeIsActive()) {
             //telemetry.addData("distance", distanceSensor.getDistance(DistanceUnit.CM));

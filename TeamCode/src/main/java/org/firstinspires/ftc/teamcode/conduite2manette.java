@@ -295,11 +295,11 @@ public class conduite2manette extends LinearOpMode {
             coudeB.setPower(varRYcoudepos/1.8);
 
             // Pas de capteur de couleur
-            /*if (pince.getPosition() > 0.1 && red > 275 || blue < 325) {
-                //while (manette2.a) {
+            if (pince.getPosition() > 0.1) {
+                while (manette2.a) {
                     pince.setPosition(0);
-                //}
-            }*/
+                }
+            }
 
             if (pince.getPosition() < 0.20){
                 while (manette2.a) {
@@ -342,17 +342,6 @@ public class conduite2manette extends LinearOpMode {
             if (pinceP.getPosition() < 0.7){
                 while (manette2.y) {
                     pinceP.setPosition(0.98);
-                }
-            }
-
-            if (verin.getPosition() > 0.5) {
-                while (manette1.x) {
-                    verin.setPosition(0.2);
-                }
-            }
-            if (verin.getPosition() < 0.5){
-                while (manette1.x) {
-                    verin.setPosition(0.7);
                 }
             }
 
