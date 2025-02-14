@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @Disabled
 
 public class DistanceSensorDebbugger extends OpMode {
@@ -33,7 +35,7 @@ public class DistanceSensorDebbugger extends OpMode {
         telemetry.addData("DeviceName", distanceSensor.getDeviceName());
         telemetry.addData("Manufacturer", distanceSensor.getManufacturer());
         telemetry.addData("Version", distanceSensor.getVersion());
-        //telemetry.addData("distance", distanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("distance", distanceSensor.getDistance(DistanceUnit.CM));
 
 //-------------------------------color sensor part (working)--------------------------------------------
         telemetry.addData("Light Detected", ((OpticalDistanceSensor) test_color).getLightDetected());

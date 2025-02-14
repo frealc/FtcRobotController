@@ -14,8 +14,8 @@ public class conduite2manette extends LinearOpMode {
     private DcMotorEx motorC;
     private DcMotorEx motorD;
     private DcMotorEx bras1;
-    private DcMotorEx bras2;
     private DcMotorEx coudeA;
+    private DcMotorEx ascent;
     private Servo boite;
     private DcMotorEx coudeB;
     private Servo pince;
@@ -36,14 +36,13 @@ public class conduite2manette extends LinearOpMode {
         motorC = hardwareMap.get(DcMotorEx.class, "motorC");
         motorD = hardwareMap.get(DcMotorEx.class, "motorD");
         bras1 = hardwareMap.get(DcMotorEx.class, "bras1");
-        bras2 = hardwareMap.get(DcMotorEx.class, "bras2");
         coudeA = hardwareMap.get(DcMotorEx.class, "coudeA");
         coudeB = hardwareMap.get(DcMotorEx.class, "coudeB");
+        ascent = hardwareMap.get(DcMotorEx.class, "ascent");
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
         rotapinceP = hardwareMap.get(Servo.class, "rotapinceP");
-        verin = hardwareMap.get(Servo.class, "verin");
 
         double brasZero = 0.91;
         double brasX = brasZero;
@@ -87,7 +86,6 @@ public class conduite2manette extends LinearOpMode {
 
 
         bras1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        bras2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         coudeA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         coudeB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -210,7 +208,7 @@ public class conduite2manette extends LinearOpMode {
                 motorB.setPower(tgtPowerB2 * 2);
                 motorC.setPower(-tgtPowerC2 * 2);
                 motorD.setPower(tgtPowerD2 * 2);
-            } else if(PrecisionMode == true) {
+            } else if(PrecisionMode) {
                 motorA.setPower(-(tgtPowerA / 3.5));
                 motorB.setPower((tgtPowerB / 3.5));
                 motorC.setPower(-(tgtPowerC / 3.5));
@@ -256,11 +254,11 @@ public class conduite2manette extends LinearOpMode {
             }
 
             if (manette2.left_trigger > 0){
-            bras1.setPower(tgtBras * 4.5);
-            bras2.setPower(tgtBras * 4.5);
+            bras1.setPower(tgtBras * 6);
+            ascent.setPower((varRY/3) * 6.4);
             } else {
                 bras1.setPower(tgtBras * 1.2);
-                bras2.setPower(tgtBras * 1.2);
+                ascent.setPower((varRY/3) * 1.4);
             }//code glissiere
 
 
@@ -276,7 +274,7 @@ public class conduite2manette extends LinearOpMode {
                 coude0 = coudeA.getCurrentPosition();
 
             }
-            else {
+            /*else {
                 if  (coude0 < coudeA.getCurrentPosition()) {
                     coudeA.setPower(0.01);
                     coudeB.setPower(0.01);
@@ -286,13 +284,24 @@ public class conduite2manette extends LinearOpMode {
                     coudeA.setPower(-0.01);
                     coudeB.setPower(-0.01);
 
-                } else {
+                }*/ else {
                 varRYcoudepos = 0;
-            }} //regler le probleme de gravité du bras
+            } //regler le probleme de gravité du bras
 
 
-            coudeA.setPower(varRYcoudepos/1.8); //code coude
-            coudeB.setPower(varRYcoudepos/1.8);
+            coudeA.setPower(varRYcoudepos); //code coude
+            coudeB.setPower(varRYcoudepos);
+
+
+            if (manette1.left_bumper) {
+                ascent.setPower(-9);
+            }
+            else if (manette1.right_bumper){
+                ascent.setPower(9);
+            }
+            else {
+                ascent.setPower(0);
+            }
 
             // Pas de capteur de couleur
             if (pince.getPosition() > 0.1) {
@@ -336,12 +345,12 @@ public class conduite2manette extends LinearOpMode {
 
             if (pinceP.getPosition() > 0.7) {
                 while (manette2.y) {
-                    pinceP.setPosition(0.5);
+                    pinceP.setPosition(0.4);
                 }
             }
             if (pinceP.getPosition() < 0.7){
                 while (manette2.y) {
-                    pinceP.setPosition(0.98);
+                    pinceP.setPosition(1);
                 }
             }
 
@@ -351,7 +360,6 @@ public class conduite2manette extends LinearOpMode {
                 while (brasA < -1130){
                     brasA = bras1.getCurrentPosition();
                     bras1.setPower(0.7 * 1.3);
-                    bras2.setPower(0.6);
                     telemetry.addData("Position Actuelle BRASA (test)", brasA);
                     telemetry.update();
                 }
@@ -366,6 +374,7 @@ public class conduite2manette extends LinearOpMode {
             telemetry.addData("Position Actuelle BRASA (test)", brasA);
             telemetry.addData("Position Actuelle pince", pince.getPosition());
             telemetry.addData("Position Actuelle boite", boite.getPosition());
+            telemetry.addData("Position fil",ascent.getCurrentPosition());
             telemetry.addData("Target Power A", tgtPowerA);
             telemetry.addData("Target Power B", tgtPowerB);
             telemetry.addData("Target Power C", tgtPowerC);
@@ -373,7 +382,6 @@ public class conduite2manette extends LinearOpMode {
             telemetry.addData("Joystick Gauche : VarY", varRY);
             telemetry.addData("ma pos coude", coude0);
             telemetry.addData("coude a pos", coudeApos);
-            telemetry.addData("pos verin", verin.getPosition());
             telemetry.update();
         }
     }

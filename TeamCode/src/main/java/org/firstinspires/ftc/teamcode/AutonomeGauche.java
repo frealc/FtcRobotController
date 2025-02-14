@@ -18,7 +18,6 @@ public class AutonomeGauche extends LinearOpMode {
     private DcMotor motorC;
     private DcMotor motorD;
     private DcMotorEx bras1;
-    private DcMotorEx bras2;
     private DcMotorEx coudeA;
     private Servo boite;
     private Servo pince;
@@ -93,15 +92,51 @@ public class AutonomeGauche extends LinearOpMode {
 
     public void bras (double vitesse, long temps){
         bras1.setPower(vitesse);
-        bras2.setPower(vitesse);
         sleep(temps);
         bras1.setPower(0);
-        bras2.setPower(0);
     }
     public void coude (double vitesse, long temps){
         coudeA.setPower(vitesse);
         sleep(temps);
         coudeA.setPower(0);
+    }
+
+    public void resetMotors(){
+        motorA.setPower(0);
+        motorB.setPower(0);
+        motorC.setPower(0);
+        motorD.setPower(0);
+        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void avancerT(double distance, double power) {
+        double ROTATIONS = distance / 0.2375;
+        double COUNTS = ROTATIONS * 515.46;
+        int TargetA = (int) COUNTS + motorA.getCurrentPosition();
+        int TargetB = (int) COUNTS - motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS + motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS - motorD.getCurrentPosition();
+        motorA.setTargetPosition(TargetA);
+        motorB.setTargetPosition(-TargetB);
+        motorC.setTargetPosition(TargetC);
+        motorD.setTargetPosition(-TargetD);
+        motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorA.setPower(power);
+        motorB.setPower(power);
+        motorC.setPower(power);
+        motorD.setPower(power);
+        while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
+            telemetry.addData("Target", motorA.getTargetPosition());
+            telemetry.addData("Current", motorA.getCurrentPosition());
+            telemetry.update();
+            if (!opModeIsActive()) {break;}
+        }
+        resetMotors();
     }
 
     @Override
@@ -111,7 +146,6 @@ public class AutonomeGauche extends LinearOpMode {
         motorC = hardwareMap.get(DcMotor.class, "motorC");
         motorD = hardwareMap.get(DcMotor.class, "motorD");
         bras1 = hardwareMap.get(DcMotorEx.class, "bras1");
-        bras2 = hardwareMap.get(DcMotorEx.class, "bras2");
         coudeA = hardwareMap.get(DcMotorEx.class, "coudeA");
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
@@ -129,10 +163,10 @@ public class AutonomeGauche extends LinearOpMode {
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
-
+ avancerT(1,0.2);
         //avancer(0.5, 1050);
 
-        avancer(0.5, 800);
+        /*avancer(0.5, 800);
         coude(-0.42, 1200);
 
         bras(-0.57, 1325);
@@ -144,7 +178,7 @@ public class AutonomeGauche extends LinearOpMode {
         bras(0.45, 225);
         reculer(0.5, 1000);
 
-        gauche(0.6, 1500);
+        gauche(0.6, 1500);*/
 
 
 

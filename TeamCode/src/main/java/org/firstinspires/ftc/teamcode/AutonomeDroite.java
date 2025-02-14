@@ -18,7 +18,6 @@ public class AutonomeDroite extends LinearOpMode {
     private DcMotor motorC;
     private DcMotor motorD;
     private DcMotorEx bras1;
-    private DcMotorEx bras2;
     private DcMotorEx coudeA;
     private Servo boite;
 
@@ -97,10 +96,8 @@ public class AutonomeDroite extends LinearOpMode {
 
     public void bras (double vitesse, long temps){
         bras1.setPower(vitesse);
-        bras2.setPower(vitesse);
         sleep(temps);
         bras1.setPower(0);
-        bras2.setPower(0);
     }
     public void coude (double vitesse, long temps){
         coudeA.setPower(vitesse);
@@ -118,9 +115,9 @@ public class AutonomeDroite extends LinearOpMode {
         motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    void rotaD(double power) {
+    void rotaD(double distance, double power) {
 
-        double ROTATIONS = 0.99 / adherence; //rotation a 180 degree
+        double ROTATIONS = distance / adherence; //rotation a 180 degree
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int)  COUNTS - motorA.getCurrentPosition();
         int TargetB = (int) COUNTS - motorB.getCurrentPosition();
@@ -183,7 +180,6 @@ public class AutonomeDroite extends LinearOpMode {
         motorC = hardwareMap.get(DcMotor.class, "motorC");
         motorD = hardwareMap.get(DcMotor.class, "motorD");
         bras1 = hardwareMap.get(DcMotorEx.class, "bras1");
-        bras2 = hardwareMap.get(DcMotorEx.class, "bras2");
         coudeA = hardwareMap.get(DcMotorEx.class, "coudeA");
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
@@ -200,9 +196,9 @@ public class AutonomeDroite extends LinearOpMode {
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
-        /*avancer(0.5, 1050);
+        avancer(0.5, 1050);
 
-        avancer(0.5, 800);
+        /*avancer(0.5, 800);
 
         coude(-0.42, 1200);
 
@@ -226,7 +222,7 @@ public class AutonomeDroite extends LinearOpMode {
         avancer(0.35, 925);
         */
 
-        rotaD(0.6);
+        rotaD(1,0.6);
 
         //rotaG(1);
 
