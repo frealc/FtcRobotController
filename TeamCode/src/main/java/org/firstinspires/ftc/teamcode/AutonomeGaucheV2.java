@@ -253,7 +253,12 @@ public class AutonomeGaucheV2 extends LinearOpMode {
         waitForStart();
 
 
-        avancer(1,0.1);
+        avancer(1,0.2);
+        reculer(1,1);
+        droite(1,0.2);
+        gauche(1,0.2);
+
+
 
 
         while (opModeIsActive()) {

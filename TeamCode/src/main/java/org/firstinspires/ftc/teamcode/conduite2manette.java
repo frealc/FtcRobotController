@@ -84,7 +84,6 @@ public class conduite2manette extends LinearOpMode {
         waitForStart();
 
 
-
         bras1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         coudeA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         coudeB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -338,7 +337,7 @@ public class conduite2manette extends LinearOpMode {
             if (rotapinceP.getPosition() < 0.5){
                 while (manette2.left_bumper) {
 
-                    rotapinceP.setPosition(0.85);
+                    rotapinceP.setPosition(0.92);
                 }
             }
 
@@ -353,7 +352,7 @@ public class conduite2manette extends LinearOpMode {
                     pinceP.setPosition(1);
                 }
             }
-
+//SET POS
 
             /*if (manette2.dpad_down && brasA < -1135) {
                 brasA = bras1.getCurrentPosition();
@@ -365,12 +364,46 @@ public class conduite2manette extends LinearOpMode {
                 }
                 pince.setPosition(0);
             }*/
+//bas -1243 /haut -30 / glissiere 380
+            if (manette2.dpad_up ) {
+                if (coudeA.getCurrentPosition()>-500 && coudeB.getCurrentPosition()>-500){
+                    coudeA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    coudeA.setTargetPosition(-550);
+                    coudeB.setTargetPosition(-550);
+                    coudeA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                }
+                coudeA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                coudeB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                if (coudeA.getCurrentPosition()<=-500 && coudeB.getCurrentPosition()<=-500) {
+                    if (bras1.getCurrentPosition()>400  ) {
+                        bras1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        bras1.setTargetPosition(380);
+                        bras1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    }
+                    bras1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    if (bras1.getCurrentPosition()<=400) {
+                        coudeA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        coudeA.setTargetPosition(-30);
+                        coudeB.setTargetPosition(-30);
+                        coudeA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        coudeB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        rotapinceP.setPosition(0);
+                        sleep(500);
+                        pinceP.setPosition(1);
+                    }
+                    coudeA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    coudeB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                }
 
-
+            }
 
 
             telemetry.addData("Position Actuelle Bras", brasX);
-            telemetry.addData("Position Actuelle Coude", coudeApos);
+            telemetry.addData("Position Actuelle Coude", coudeA.getCurrentPosition());
+            telemetry.addData("Position Actuelle Coude", coudeB.getCurrentPosition());
             telemetry.addData("Position Actuelle BRASA (test)", brasA);
             telemetry.addData("Position Actuelle pince", pince.getPosition());
             telemetry.addData("Position Actuelle boite", boite.getPosition());

@@ -37,17 +37,17 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         motorD.setPower(0);
         motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        /*Encodeurs C et D non fonctionels*/
         motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void bras(double vitesse, long temps) {
+        bras1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         bras1.setPower(vitesse);
-        ascent.setPower(vitesse);
+        //ascent.setPower(vitesse);
         sleep(temps);
         bras1.setPower(0);
-        ascent.setPower(0);
+        //ascent.setPower(0);
     }
 
     public void coude(double vitesse, long temps) {
@@ -55,7 +55,6 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         sleep(temps);
         coudeA.setPower(0);
     }
-/* Ne pas utiliser pour l'instant*/
     public void avancerBras(double distance, double power) {
         double ROTATIONS = distance / adherence;
         double COUNTS = ROTATIONS * 515.46;
@@ -75,12 +74,16 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         motorB.setPower(power);
         motorC.setPower(power);
         motorD.setPower(power);
+        telemetry.addData("étape actuelle :", "Strafe vers l'avant et développement de la glissière");
+        telemetry.update();
+
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
-            telemetry.update();
             coude(-1, 1400);
             bras(0.6, 1500);
+            telemetry.update();
+
             if (!opModeIsActive()) {break;}
         }
         resetMotors();
@@ -103,7 +106,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         motorA.setPower(power);
         motorB.setPower(power);
         motorC.setPower(power);
-        motorD.setPower(-power);
+        motorD.setPower(power);
+        telemetry.addData("étape actuelle :", "Strafe vers l'avant");
+        telemetry.update();
         while (motorA.isBusy() || motorB.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
@@ -118,15 +123,21 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS - motorA.getCurrentPosition();
         int TargetB = (int) COUNTS + motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS - motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS + motorD.getCurrentPosition();
         motorA.setTargetPosition(-TargetA);
         motorB.setTargetPosition(TargetB);
+        motorC.setTargetPosition(-TargetC);
+        motorD.setTargetPosition(TargetD);
         motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorA.setPower(power);
         motorB.setPower(power);
-        motorC.setPower(-power);
+        motorC.setPower(power);
         motorD.setPower(power);
-        while (motorA.isBusy() || motorB.isBusy()) {
+        while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
             telemetry.update();
@@ -140,15 +151,21 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS - motorA.getCurrentPosition();
         int TargetB = (int) COUNTS - motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS + motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS + motorD.getCurrentPosition();
         motorA.setTargetPosition(-TargetA);
         motorB.setTargetPosition(-TargetB);
+        motorC.setTargetPosition(TargetC);
+        motorD.setTargetPosition(TargetD);
         motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorA.setPower(power);
         motorB.setPower(power);
         motorC.setPower(power);
         motorD.setPower(power);
-        while (motorA.isBusy() || motorB.isBusy()) {
+        while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
             telemetry.update();
@@ -162,15 +179,21 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS + motorA.getCurrentPosition();
         int TargetB = (int) COUNTS + motorB.getCurrentPosition();
+        int TargetC = (int) COUNTS - motorC.getCurrentPosition();
+        int TargetD = (int) COUNTS - motorD.getCurrentPosition();
         motorA.setTargetPosition(TargetA);
         motorB.setTargetPosition(TargetB);
+        motorC.setTargetPosition(-TargetC);
+        motorD.setTargetPosition(-TargetD);
         motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorC.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorD.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorA.setPower(power);
         motorB.setPower(power);
-        motorC.setPower(-power);
-        motorD.setPower(-power);
-        while (motorA.isBusy() || motorB.isBusy()) {
+        motorC.setPower(power);
+        motorD.setPower(power);
+        while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
             telemetry.update();
@@ -199,7 +222,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         motorB.setPower(power);
         motorC.setPower(power);
         motorD.setPower(power);
-        while (motorA.isBusy() || motorB.isBusy()) {
+        telemetry.addData("étape actuelle :", "Rotation vers la droite");
+        telemetry.update();
+        while (motorA.isBusy() || motorB.isBusy()|| motorC.isBusy()|| motorD.isBusy()) {
             telemetry.addData("MA", motorA.getTargetPosition());
             telemetry.addData("MAC", motorA.getCurrentPosition());
             telemetry.update();
@@ -228,7 +253,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         motorB.setPower(power);
         motorC.setPower(power);
         motorD.setPower(power);
-        while (motorA.isBusy() || motorB.isBusy()) {
+        telemetry.addData("étape actuelle :", "Rotation vers la gauche");
+        telemetry.update();
+        while (motorA.isBusy() || motorB.isBusy()|| motorC.isBusy()|| motorD.isBusy()) {
             telemetry.addData("MA", motorA.getTargetPosition());
             telemetry.addData("MAC", motorA.getCurrentPosition());
             telemetry.update();
@@ -268,18 +295,12 @@ public class AutonomeDroiteV2 extends LinearOpMode {
 
 
         avancerBras(0.7, 0.6);
-
-
-        /*coude(-0.42, 1400);
-        bras(-0.6, 1500);*/
         avancer(0.15, 0.3);
         boite.setPosition(1);
         bras(-0.55, 300);
         pince.setPosition(1);
-
         /* Pose du specimen */
         bras(-0.45, 225);
-
         //se met a l'endroit pour pousser les sample
         reculer(0.25, 1);
         droite(0.8,1);
@@ -291,24 +312,26 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         reculer(1.2,1);
         //avancer(1,1);
 
-        /*//pousse le 2eme sample
+       /* // pousse le 2eme sample
         droite(0.36,1);
         reculer(1.2,1);*/
 
         //prent 2eme clip
-        /*avancer(0.30,1);
+        avancer(0.30,1);
         rotaG(1);
-        avancer(0.30,0.75);
-        bras(-0.3, 800);
-        droite(0.10,1);
+        avancer(0.50,0.75);
+        bras(-0.3, 1000);
+        droite(0.20,1);
         pince.setPosition(0);
 
         //pose 2eme clip
         reculer(0.40,0.50);
         rotaD(1);
         gauche(1.4,1);
-        bras(0.6,1500);
-        avancer(0.3, 0.7);*/
+        bras(0.7,1500);
+        avancer(0.3, 0.7);
+        bras(-0.7,300);
+        pince.setPosition(1);
 
         //pousse le 3eme sample
        /* avancer(1,1);

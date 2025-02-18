@@ -196,7 +196,7 @@ public class AutonomeDroite extends LinearOpMode {
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
-        avancer(0.5, 1050);
+        droite(0.5, 1050);
 
         /*avancer(0.5, 800);
 
@@ -222,7 +222,7 @@ public class AutonomeDroite extends LinearOpMode {
         avancer(0.35, 925);
         */
 
-        rotaD(1,0.6);
+       // rotaD(1,0.6);
 
         //rotaG(1);
 
