@@ -76,6 +76,7 @@ public class conduite2manette extends LinearOpMode {
         boolean PrecisionMode = false; //precision mis en faut quand initialisé
         double red = 0;
         double blue=0;
+        double dpad_up = 0;
 
         Gamepad manette1 = this.gamepad1;
         Gamepad manette2 = this.gamepad2;
@@ -167,12 +168,12 @@ public class conduite2manette extends LinearOpMode {
                 tgtPowerC2 = 0;
                 tgtPowerD2 = 0;
             }
-            else if (manette1.right_trigger > 0) {
+            else if (manette1.left_trigger > 0) {
                 tgtPowerA2 = 0.56;
                 tgtPowerB2 = -0.56;
                 tgtPowerC2 = -0.56;
                 tgtPowerD2 = 0.56;//strafe gauche
-            } else if (manette1.left_trigger > 0) {
+            } else if (manette1.right_trigger > 0) {
                 tgtPowerA2 = -0.56;
                 tgtPowerB2 = 0.56;
                 tgtPowerC2 = 0.56;
@@ -235,11 +236,11 @@ public class conduite2manette extends LinearOpMode {
 
 
             //mouvement de bras a glissiere dans l'axe y
-            if (varRY < 0) {
+            if (varRY > 0) {
                 tgtBras = varRY/3;
                 bras0 = brasA;
 
-            } else if (varRY > 0) {
+            } else if (varRY < 0) {
                 tgtBras = varRY/3;
                 bras0 = brasA;
             } else {
@@ -302,6 +303,18 @@ public class conduite2manette extends LinearOpMode {
                 ascent.setPower(0);
             }
 
+            /*if (manette2.x) {
+                sleep(1000);
+                while (!manette2.x) {
+                    coudeA.setPower(0.6);
+                    coudeB.setPower(0.6);
+                }
+
+            } else {
+                coudeA.setPower(0);
+                coudeB.setPower(0);
+            }*/
+
             // Pas de capteur de couleur
             if (pince.getPosition() > 0.1) {
                 while (manette2.a) {
@@ -352,6 +365,8 @@ public class conduite2manette extends LinearOpMode {
                     pinceP.setPosition(1);
                 }
             }
+
+
 //SET POS
 
             /*if (manette2.dpad_down && brasA < -1135) {
@@ -365,45 +380,50 @@ public class conduite2manette extends LinearOpMode {
                 pince.setPosition(0);
             }*/
 //bas -1243 /haut -30 / glissiere 380
-            if (manette2.dpad_up ) {
-                if (coudeA.getCurrentPosition()>-500 && coudeB.getCurrentPosition()>-500){
+           /* if (manette2.dpad_up ) {
+                dpad_up = 1;
+                if (coudeA.getCurrentPosition()<-300){
+                    dpad_up=0;
                     coudeA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    coudeA.setTargetPosition(-550);
-                    coudeB.setTargetPosition(-550);
-                    coudeA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    //coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    coudeA.setTargetPosition(-350);
+                    //coudeB.setTargetPosition(-350);
+                    coudeA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    //coudeB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 }
                 coudeA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                coudeB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                if (coudeA.getCurrentPosition()<=-500 && coudeB.getCurrentPosition()<=-500) {
-                    if (bras1.getCurrentPosition()>400  ) {
+                //coudeB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                if (coudeA.getCurrentPosition()>=-300) {
+                    dpad_up=0;
+                    if (bras1.getCurrentPosition()>100  ) {
                         bras1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        bras1.setTargetPosition(380);
+                        bras1.setTargetPosition(50);
                         bras1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     }
                     bras1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    if (bras1.getCurrentPosition()<=400) {
+                    if (bras1.getCurrentPosition()<=100) {
                         coudeA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                        coudeA.setTargetPosition(-30);
-                        coudeB.setTargetPosition(-30);
+                        //coudeB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        coudeA.setTargetPosition(0);
+                        //coudeB.setTargetPosition(0);
                         coudeA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        coudeB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        //coudeB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         rotapinceP.setPosition(0);
                         sleep(500);
                         pinceP.setPosition(1);
                     }
                     coudeA.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    coudeB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    //coudeB.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
                 }
 
-            }
+            }*/
 
 
             telemetry.addData("Position Actuelle Bras", brasX);
             telemetry.addData("Position Actuelle Coude", coudeA.getCurrentPosition());
             telemetry.addData("Position Actuelle Coude", coudeB.getCurrentPosition());
+            telemetry.addData("Puissance Actuelle Coude", varRYcoudepos );
             telemetry.addData("Position Actuelle BRASA (test)", brasA);
             telemetry.addData("Position Actuelle pince", pince.getPosition());
             telemetry.addData("Position Actuelle boite", boite.getPosition());
@@ -415,6 +435,7 @@ public class conduite2manette extends LinearOpMode {
             telemetry.addData("Joystick Gauche : VarY", varRY);
             telemetry.addData("ma pos coude", coude0);
             telemetry.addData("coude a pos", coudeApos);
+            telemetry.addData("dpad_up", dpad_up) ;
             telemetry.update();
         }
     }

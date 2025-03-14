@@ -4,7 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @Autonomous(name="AutonomeGauche (Expérimental)")
 public class AutonomeGaucheV2 extends LinearOpMode {
@@ -20,6 +23,12 @@ public class AutonomeGaucheV2 extends LinearOpMode {
     private Servo pince;
 
     private Servo pinceP;
+    private Servo rotapinceP;
+    private DistanceSensor distance0;
+    private DistanceSensor distance1;
+    private DistanceSensor distance2;
+    double adherence = 0.2375;
+    double brascheck = 0;
 
 
     public void resetMotors(){
@@ -34,7 +43,7 @@ public class AutonomeGaucheV2 extends LinearOpMode {
         motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void avancer(double distance, double power) {
-        double ROTATIONS = distance / 0.2375;
+        double ROTATIONS = distance / adherence;
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int) COUNTS + motorA.getCurrentPosition();
         int TargetB = (int) COUNTS - motorB.getCurrentPosition();
@@ -53,49 +62,6 @@ public class AutonomeGaucheV2 extends LinearOpMode {
             if (!opModeIsActive()) {break;}
         }
         resetMotors();
-    }
-
-    public void avancertemps(double distance, double power) {
-        double ROTATIONS = distance / 0.2375;  // Convert distance to rotations
-        double COUNTS = ROTATIONS * 515.46;  // Convert rotations to encoder counts
-
-        int TargetA = (int) COUNTS + motorA.getCurrentPosition();
-        int TargetB = (int) COUNTS - motorB.getCurrentPosition();
-
-        // Target for motors A and B using encoder control
-        motorA.setTargetPosition(TargetA);
-        motorB.setTargetPosition(-TargetB);
-
-        motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorB.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        motorA.setPower(power);
-        motorB.setPower(power);
-
-        // Calculate the time for motors C and D (assuming constant speed)
-        double speedOfMotorsCD = 3.16;
-        double timeToMoveForMotorsCD = distance / speedOfMotorsCD * 1000;  // Convert to milliseconds
-
-        // Move motors C and D for the calculated time
-        motorC.setPower(power);
-        motorD.setPower(-power);
-        sleep((long) timeToMoveForMotorsCD);  // Sleep for the calculated time to move motors C/D
-
-        // Keep motors A and B moving with encoder control
-        while (motorA.isBusy() || motorB.isBusy()) {
-            telemetry.addData("Target", motorA.getTargetPosition());
-            telemetry.addData("Current", motorA.getCurrentPosition());
-            telemetry.update();
-            if (!opModeIsActive()) {break;}
-        }
-
-        // Stop all motors after movement
-        motorA.setPower(0);
-        motorB.setPower(0);
-        motorC.setPower(0);
-        motorD.setPower(0);
-
-        resetMotors();  // Reset motor modes
     }
 
     public void reculer(double distance, double power) {
@@ -207,6 +173,8 @@ public class AutonomeGaucheV2 extends LinearOpMode {
     }
 
     public void bras(double vitesse, long temps) {
+        bras1.getCurrentPosition();
+
         bras1.setPower(vitesse);
 
         sleep(temps);
@@ -214,10 +182,58 @@ public class AutonomeGaucheV2 extends LinearOpMode {
 
     }
 
+    public void high_basket() {
+
+        // il reste à intégrer les déplacements pour se raprocher du high basket
+        bras1.setPower(-1);
+        sleep(1100);
+        bras1.setPower(-0.4);
+        avancer(0.1,0.1);
+        boite.setPosition(0);
+        sleep(800);
+        boite.setPosition(1);
+        sleep(400);
+        reculer(0.3, 0.5);
+        bras1.setPower(0.7);
+        sleep(500);
+    }
+
     public void coude(double vitesse, long temps) {
         coudeA.setPower(vitesse);
         sleep(temps);
         coudeA.setPower(0);
+    }
+    public void alignement(long seuil, double vitesse) {
+        // Probleme avec capteur distance
+        while (Math.abs(distance0.getDistance(DistanceUnit.CM)-distance1.getDistance(DistanceUnit.CM))>=seuil) {
+            if (distance0.getDistance(DistanceUnit.CM)>=distance1.getDistance(DistanceUnit.CM)) {
+                motorA.setPower(vitesse);
+                motorB.setPower(vitesse);
+                motorC.setPower(vitesse);
+                motorD.setPower(vitesse);
+            }
+            else {
+                motorA.setPower(-vitesse);
+                motorB.setPower(-vitesse);
+                motorC.setPower(-vitesse);
+                motorD.setPower(-vitesse);
+            }
+        }
+        motorA.setPower(0);
+        motorB.setPower(0);
+        motorC.setPower(0);
+        motorD.setPower(0);
+    }
+    public void take_sample() {
+        coude(-0.3, 650);
+        pinceP.setPosition(1);
+        sleep(500);
+        coude(1, 1400);
+        rotapinceP.setPosition(0);
+        sleep(500);
+        pinceP.setPosition(0.4);
+        sleep(1000);
+        coude(-1, 1205);
     }
 
     @Override
@@ -232,6 +248,10 @@ public class AutonomeGaucheV2 extends LinearOpMode {
         pince = hardwareMap.get(Servo.class, "pince");
         pinceP = hardwareMap.get(Servo.class, "pinceP");
         boite = hardwareMap.get(Servo.class, "boite");
+        rotapinceP = hardwareMap.get(Servo.class, "rotapinceP");
+        distance0 = hardwareMap.get(DistanceSensor.class, "distance0");
+        distance1 = hardwareMap.get(DistanceSensor.class, "distance1");
+        distance2 = hardwareMap.get(DistanceSensor.class, "distance1");
 
 
         // Put initialization blocks here
@@ -242,28 +262,27 @@ public class AutonomeGaucheV2 extends LinearOpMode {
 
         pince.setPosition(0);
 
-        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
         waitForStart();
 
+        droite(0.40, 0.3);
+        coude(-1,1100);
+        pinceP.setPosition(0.4);
+        rotapinceP.setPosition(0.9);
+        high_basket();
 
-        avancer(1,0.2);
-        reculer(1,1);
-        droite(1,0.2);
-        gauche(1,0.2);
 
 
-
+        sleep(100);
+        //alignement(1, 0.5);
+        rotaG(0.4,700);
+        reculer(0.15,0.3);
+        take_sample();
 
         while (opModeIsActive()) {
 
-            //19.5 tours en 4.61s
             //pas d'action car c'est une boucle
         }
     }

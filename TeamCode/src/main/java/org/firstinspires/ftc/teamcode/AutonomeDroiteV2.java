@@ -80,6 +80,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
+            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             coude(-1, 1400);
             bras(0.6, 1500);
             telemetry.update();
@@ -112,6 +115,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
+            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -140,6 +146,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
+            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -168,6 +177,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
+            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -196,6 +208,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
+            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -204,7 +219,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
 
     void rotaD(double power) {
 
-        double ROTATIONS = 0.99 / adherence; //rotation a 180 degree
+        double ROTATIONS = 1 / adherence; //rotation a 180 degree
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int)  COUNTS - motorA.getCurrentPosition();
         int TargetB = (int) COUNTS - motorB.getCurrentPosition();
@@ -227,6 +242,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy()|| motorC.isBusy()|| motorD.isBusy()) {
             telemetry.addData("MA", motorA.getTargetPosition());
             telemetry.addData("MAC", motorA.getCurrentPosition());
+            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -235,7 +253,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
 
     void rotaG(double power) {
 
-        double ROTATIONS = 0.99 / adherence; //rotation a 180 degree
+        double ROTATIONS = 1 / adherence; //rotation a 180 degree
         double COUNTS = ROTATIONS * 515.46;
         int TargetA = (int)  COUNTS + motorA.getCurrentPosition();
         int TargetB = (int) COUNTS + motorB.getCurrentPosition();
@@ -258,6 +276,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy()|| motorC.isBusy()|| motorD.isBusy()) {
             telemetry.addData("MA", motorA.getTargetPosition());
             telemetry.addData("MAC", motorA.getCurrentPosition());
+            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -291,6 +312,9 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         waitForStart();
 
         telemetry.addData("z :", "Mode autonome initialisé");
+        telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
+        telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
+        telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
         telemetry.update();
 
 
@@ -319,10 +343,12 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         //prent 2eme clip
         avancer(0.30,1);
         rotaG(1);
+        //rotaG(0.1616);
         avancer(0.50,0.75);
         bras(-0.3, 1000);
-        droite(0.20,1);
+
         pince.setPosition(0);
+        sleep(500);
 
         //pose 2eme clip
         reculer(0.40,0.50);
@@ -343,10 +369,7 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (opModeIsActive()) {
 
             //pas d'action car c'est une boucle mais telemetry autorisé
-            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
-            telemetry.update();
+
         }
     }
 }
