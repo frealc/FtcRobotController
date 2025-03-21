@@ -303,17 +303,7 @@ public class conduite2manette extends LinearOpMode {
                 ascent.setPower(0);
             }
 
-            /*if (manette2.x) {
-                sleep(1000);
-                while (!manette2.x) {
-                    coudeA.setPower(0.6);
-                    coudeB.setPower(0.6);
-                }
 
-            } else {
-                coudeA.setPower(0);
-                coudeB.setPower(0);
-            }*/
 
             // Pas de capteur de couleur
             if (pince.getPosition() > 0.1) {
@@ -324,7 +314,7 @@ public class conduite2manette extends LinearOpMode {
 
             if (pince.getPosition() < 0.20){
                 while (manette2.a) {
-                    pince.setPosition(1);
+                    pince.setPosition(0.5);
                 }
             }
 
@@ -357,7 +347,7 @@ public class conduite2manette extends LinearOpMode {
 
             if (pinceP.getPosition() > 0.7) {
                 while (manette2.y) {
-                    pinceP.setPosition(0.4);
+                    pinceP.setPosition(0.45);
                 }
             }
             if (pinceP.getPosition() < 0.7){
@@ -368,6 +358,20 @@ public class conduite2manette extends LinearOpMode {
 
 
 //SET POS
+
+
+             /*if (manette2.x && brasA < 0) {
+                sleep(1000);
+                brasA = bras1.getCurrentPosition
+                while (varRYcoude == 0 || varRYcoude < 0) {
+                    coudeA.setPower(-0.6);
+                    coudeB.setPower(-0.6);
+                }
+
+            } else {
+                coudeA.setPower(0);
+                coudeB.setPower(0);
+            }*/
 
             /*if (manette2.dpad_down && brasA < -1135) {
                 brasA = bras1.getCurrentPosition();

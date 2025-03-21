@@ -138,6 +138,23 @@ public class AutonomeGauche extends LinearOpMode {
         }
         resetMotors();
     }
+    public void bras_to_pos(long position, double vitesse, long marge){
+        telemetry.addData("test",bras1.getCurrentPosition());
+        while (Math.abs(position-bras1.getCurrentPosition())>marge){
+            if (bras1.getCurrentPosition()>position) {
+                bras1.setPower(vitesse);
+            }
+            else {
+                bras1.setPower(-vitesse);
+            }
+            bras1.getCurrentPosition();
+            telemetry.addData("bras :", bras1.getCurrentPosition());
+            telemetry.addData("target :", position);
+            telemetry.update();
+        }
+        bras1.setPower(0);
+        telemetry.update();
+    }
 
     @Override
     public void runOpMode() {
@@ -159,11 +176,18 @@ public class AutonomeGauche extends LinearOpMode {
 
         pince.setPosition(0);
 
+        bras1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bras1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        long bas = bras1.getCurrentPosition();
+        long haut = bas + 2000;
         waitForStart();
         telemetry.addData("z :", "Mode autonome initialisé");
         telemetry.update();
 
- avancerT(1,0.2);
+        bras_to_pos(haut,0.2,50);
+        sleep(5000);
+        bras_to_pos(bas,2,100);
         //avancer(0.5, 1050);
 
         /*avancer(0.5, 800);

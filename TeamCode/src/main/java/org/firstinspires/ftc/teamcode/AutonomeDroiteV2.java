@@ -31,14 +31,10 @@ public class AutonomeDroiteV2 extends LinearOpMode {
 
 
     public void resetMotors(){
-        motorA.setPower(0);
-        motorB.setPower(0);
-        motorC.setPower(0);
-        motorD.setPower(0);
-        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorD.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorD.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public void bras(double vitesse, long temps) {
@@ -146,9 +142,6 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
-            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -177,9 +170,6 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
-            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
@@ -208,15 +198,11 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         while (motorA.isBusy() || motorB.isBusy() || motorC.isBusy() || motorD.isBusy()) {
             telemetry.addData("Target", motorA.getTargetPosition());
             telemetry.addData("Current", motorA.getCurrentPosition());
-            telemetry.addData("distancea droite du robot", distance0.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance a droite du robot", distance1.getDistance(DistanceUnit.CM));
-            telemetry.addData("distance derrier le robot", distance2.getDistance(DistanceUnit.CM));
             telemetry.update();
             if (!opModeIsActive()) {break;}
         }
         resetMotors();
     }
-
     void rotaD(double power) {
 
         double ROTATIONS = 1 / adherence; //rotation a 180 degree
@@ -285,6 +271,53 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         resetMotors();
     }
 
+    public void pose1() {
+        avancerBras(0.7, 0.6);
+        boite.setPosition(1);
+        bras(-0.55, 800);
+        avancer(0.15, 0.3);
+
+
+
+
+        /* Pose du specimen */
+        bras(0.45, 225);
+        pince.setPosition(1);
+    }
+
+    public void ramasage1() {
+        reculer(0.25, 1);
+        droite(0.8,1);
+        avancer(0.7,1);
+
+        //pousse le premier sample
+        droite(0.30,1);
+        //rotaD(1);
+        coude(1, 300);
+        reculer(1.2,1);
+        //avancer(1,1);
+    }
+
+    public void prise1() {
+        avancer(0.30,1);
+        rotaG(1);
+        //rotaG(0.1616);
+        avancer(0.50,0.45);
+        bras(0.3, 1000);
+
+        pince.setPosition(0);
+        sleep(500);
+    }
+
+    public void pose2() {
+        reculer(0.40,0.50);
+        rotaD(1);
+        gauche(1.4,1);
+        bras(0.7,1500);
+        avancer(0.3, 0.7);
+        bras(-0.7,300);
+        pince.setPosition(1);
+    }
 
 
     @Override
@@ -318,46 +351,55 @@ public class AutonomeDroiteV2 extends LinearOpMode {
         telemetry.update();
 
 
-        avancerBras(0.7, 0.6);
-        avancer(0.15, 0.3);
+        /*avancerBras(0.7, 0.6);
         boite.setPosition(1);
-        bras(-0.55, 300);
-        pince.setPosition(1);
-        /* Pose du specimen */
-        bras(-0.45, 225);
+        bras(-0.55, 800);
+        avancer(0.15, 0.3);
+
+
+
+
+        // Pose du specimen
+        bras(0.45, 225);
+        pince.setPosition(1); */
+        pose1();
+        ramasage1();
+        prise1();
+        pose2();
         //se met a l'endroit pour pousser les sample
-        reculer(0.25, 1);
+        /*reculer(0.25, 1);
         droite(0.8,1);
-        avancer(0.8,1);
+        avancer(0.7,1);
 
         //pousse le premier sample
         droite(0.30,1);
         //rotaD(1);
+        coude(1, 300);
         reculer(1.2,1);
-        //avancer(1,1);
+        //avancer(1,1); */
 
        /* // pousse le 2eme sample
         droite(0.36,1);
         reculer(1.2,1);*/
 
         //prent 2eme clip
-        avancer(0.30,1);
+       /* avancer(0.30,1);
         rotaG(1);
         //rotaG(0.1616);
-        avancer(0.50,0.75);
-        bras(-0.3, 1000);
+        avancer(0.55,0.45);
+        bras(0.3, 1000);
 
         pince.setPosition(0);
-        sleep(500);
+        sleep(500);*/
 
         //pose 2eme clip
-        reculer(0.40,0.50);
+       /* reculer(0.40,0.50);
         rotaD(1);
         gauche(1.4,1);
         bras(0.7,1500);
         avancer(0.3, 0.7);
         bras(-0.7,300);
-        pince.setPosition(1);
+        pince.setPosition(1);*/
 
         //pousse le 3eme sample
        /* avancer(1,1);
