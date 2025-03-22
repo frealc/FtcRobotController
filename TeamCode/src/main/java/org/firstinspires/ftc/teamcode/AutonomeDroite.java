@@ -274,6 +274,17 @@ public class AutonomeDroite extends LinearOpMode {
         }
         resetMotors();
     }
+    public void rotaGP(double vitesse, long temps) {
+        motorA.setPower(-vitesse);
+        motorB.setPower(-vitesse);
+        motorC.setPower(-vitesse);
+        motorD.setPower(-vitesse);
+        sleep(temps);
+        motorA.setPower(0);
+        motorB.setPower(0);
+        motorC.setPower(0);
+        motorD.setPower(0);
+    }
     public void bras_to_pos(long position, double vitesse, long marge){
         telemetry.addData("test",bras1.getCurrentPosition());
         while (Math.abs(position-bras1.getCurrentPosition())>marge){
@@ -293,10 +304,10 @@ public class AutonomeDroite extends LinearOpMode {
     }
     public void pose1() {
         coude(-1, 500);
-        avancer(0.7, 0.6);
+        avancer(0.6, 0.6);
         bras_to_pos(cliphaut,0.5,50);
         boite.setPosition(1);
-        avancer(0.11, 0.3);
+        avancer(0.14, 0.3);
         bras_to_pos(clipbas,0.6,50);
         pince.setPosition(1);
     }
@@ -305,8 +316,10 @@ public class AutonomeDroite extends LinearOpMode {
         reculer(0.25, 1);
         droite(1.3,1);
         rotaG(1);
+    // A MODIFIER EN FONCTION DU DECALAGE
+        rotaGP(0.5  ,200);
         //rotaG(0.1616);
-        avancer(0.50,0.45);
+        avancer(0.60,0.45);
         bras(0.3, 300);
         pince.setPosition(0);
         sleep(375);
@@ -364,7 +377,7 @@ public class AutonomeDroite extends LinearOpMode {
         //bras_to_pos(bas,0.2,50);
         //bras_to_pos(cliphaut,0.2,50);
         pose1();
-        prise1();
+       /* prise1();
 
         reculer(0.45,0.8);
         droite(1.45,1);
@@ -376,23 +389,22 @@ public class AutonomeDroite extends LinearOpMode {
         pince.setPosition(0);
         sleep(500);
         pose2();
-        reculer(0.5,0.8);
+        reculer(0.5,0.8); */
 
         //se met a l'endroit pour pousser les sample
-        /*reculer(0.25, 1);
-        droite(0.8,1);
+        reculer(0.25, 1);
+        droite(0.9,1);
         avancer(0.7,1);
 
         //pousse le premier sample
         droite(0.30,1);
         //rotaD(1);
-        coude(1, 300);
-        reculer(1.2,1);
-        //avancer(1,1); */
+        reculer(1,1);
+        avancer(1,1);
 
-       /* // pousse le 2eme sample
-        droite(0.36,1);
-        reculer(1.2,1);*/
+        // pousse le 2eme sample
+        droite(0.37,1);
+        reculer(1.2,1);
 
         //prent 2eme clip
        /* avancer(0.30,1);
@@ -416,7 +428,7 @@ public class AutonomeDroite extends LinearOpMode {
         //pousse le 3eme sample
        /* avancer(1,1);
         droite(0.20,0.6);
-        reculer(1,1);*/
+        reculer(1,1); */
 
 
 

@@ -263,15 +263,15 @@ public class AutonomeGaucheV2 extends LinearOpMode {
         motorD.setPower(0);*/
     }
     public void take_sample() {
-        coude(-0.3, 580);
+        coude(-0.3, 720);
         pinceP.setPosition(0.45);
         sleep(400);
-        coude(1, 1250);
-        rotapinceP.setPosition(0.2);
+        coude(1, 1100);
+        rotapinceP.setPosition(0);
         sleep(1100);
         pinceP.setPosition(1);
         sleep(1000);
-        coude(-1, 1105);
+        coude(-1, 1005);
     }
 
     @Override
@@ -310,7 +310,7 @@ public class AutonomeGaucheV2 extends LinearOpMode {
 
         //bras_to_pos(test,-1,(50));
         droite(0.40, 0.3);
-        coude(-1,1100);
+        coude(-1,880);
         pinceP.setPosition(1);
         rotapinceP.setPosition(0.9);
         high_basket();
@@ -320,11 +320,11 @@ public class AutonomeGaucheV2 extends LinearOpMode {
         sleep(100);
         //alignement(1, 0.5);
         rotaG(0.4,800);
-        reculer(0.13,0.3);
+        reculer(0.05,0.3);
         take_sample();
         rotaD(0.4,800);
         avancer(0.3,0.3);
-        gauche(0.2, 0.2);
+        gauche(0.1, 0.2);
         high_basket();
 
         while (opModeIsActive()) {

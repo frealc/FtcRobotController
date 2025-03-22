@@ -120,11 +120,11 @@ public class conduite2manette extends LinearOpMode {
                 tgtPowerC = varYpos;
                 tgtPowerD = varYpos;
                 if (varX < 0) {
-                    tgtPowerB = tgtPowerB - varXpos;
-                    tgtPowerD = tgtPowerD - varXpos;
+                    tgtPowerB = tgtPowerB * 2 - varXpos;
+                    tgtPowerD = tgtPowerD * 2 - varXpos;
                 } else if (varX > 0) {
-                    tgtPowerA = tgtPowerA - varXpos;
-                    tgtPowerC = tgtPowerC - varXpos;
+                    tgtPowerA = tgtPowerA * 2 - varXpos;
+                    tgtPowerC = tgtPowerC * 2 - varXpos;
                 }
             } else if (varY < 0) {
                 tgtPowerA = -varYpos;
@@ -135,11 +135,11 @@ public class conduite2manette extends LinearOpMode {
                 debugTkt = -1;
 
                 if (varX < 0) {
-                    tgtPowerA = tgtPowerA + varXpos;
-                    tgtPowerC = tgtPowerC + varXpos;
+                    tgtPowerA = tgtPowerA * 2 + varXpos;
+                    tgtPowerC = tgtPowerC * 2 + varXpos;
                 } else if (varX > 0) {
-                    tgtPowerB = tgtPowerB + varXpos;
-                    tgtPowerD = tgtPowerD + varXpos;
+                    tgtPowerB = tgtPowerB * 2 + varXpos;
+                    tgtPowerD = tgtPowerD * 2 + varXpos;
                 }
             } else if (varY == 0) {
                 tgtPowerA = 0;
@@ -149,17 +149,17 @@ public class conduite2manette extends LinearOpMode {
             }
 
             if (varX > 0 && varY == 0) {
-                tgtPowerA = -varXpos;
-                tgtPowerB = varXpos;
-                tgtPowerC = -varXpos;
-                tgtPowerD = varXpos;
+                tgtPowerA = -varXpos*2;
+                tgtPowerB = varXpos*2;
+                tgtPowerC = -varXpos*2;
+                tgtPowerD = varXpos*2;
             }
 
             if (varX < 0 && varY == 0) {
-                tgtPowerA = varXpos;
-                tgtPowerB = -varXpos;
-                tgtPowerC = varXpos;
-                tgtPowerD = -varXpos;
+                tgtPowerA = varXpos*2;
+                tgtPowerB = -varXpos*2;
+                tgtPowerC = varXpos*2;
+                tgtPowerD = -varXpos*2;
             }
 
             if (manette1.left_trigger > 0 && manette1.right_trigger > 0) {
@@ -220,10 +220,10 @@ public class conduite2manette extends LinearOpMode {
                 motorD.setPower((tgtPowerD2 / 3.5));//en mode precision, reduit la vitesse par 4
             }
             else {
-                motorA.setPower(-(tgtPowerA / 1.4));
-                motorB.setPower((tgtPowerB / 1.4));
-                motorC.setPower(-(tgtPowerC / 1.4));
-                motorD.setPower((tgtPowerD / 1.4));
+                motorA.setPower(-(tgtPowerA ));
+                motorB.setPower((tgtPowerB ));
+                motorC.setPower(-(tgtPowerC ));
+                motorD.setPower((tgtPowerD ));
 
                 motorA.setPower(-(tgtPowerA2 / 2));
                 motorB.setPower((tgtPowerB2 / 2));
@@ -360,18 +360,15 @@ public class conduite2manette extends LinearOpMode {
 //SET POS
 
 
-             /*if (manette2.x && brasA < 0) {
+             if (manette2.dpad_up) {
                 sleep(1000);
-                brasA = bras1.getCurrentPosition
-                while (varRYcoude == 0 || varRYcoude < 0) {
-                    coudeA.setPower(-0.6);
-                    coudeB.setPower(-0.6);
+                brasA = bras1.getCurrentPosition();
+                while (!manette2.dpad_up) {
+                    coudeA.setPower(0.6);
+                    coudeB.setPower(0.6);
                 }
 
-            } else {
-                coudeA.setPower(0);
-                coudeB.setPower(0);
-            }*/
+            }
 
             /*if (manette2.dpad_down && brasA < -1135) {
                 brasA = bras1.getCurrentPosition();
