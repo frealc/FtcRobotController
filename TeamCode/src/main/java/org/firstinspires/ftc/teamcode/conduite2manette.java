@@ -352,7 +352,7 @@ public class conduite2manette extends LinearOpMode {
             }
             if (pinceP.getPosition() < 0.7){
                 while (manette2.y) {
-                    pinceP.setPosition(1);
+                    pinceP.setPosition(0.9);
                 }
             }
 
