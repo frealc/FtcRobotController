@@ -14,9 +14,9 @@ dependencies {
     implementation 'org.firstinspires.ftc:Hardware:11.0.0'
     implementation 'org.firstinspires.ftc:FtcCommon:11.0.0'
     implementation 'org.firstinspires.ftc:Vision:11.0.0'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation fileTree(dir: 'C:\\Users\\first robotique A\\Downloads\\REV2mDistanceSensor-2025.0.0\\maven\\com\\revrobotics\\frc\\DistanceSensor-java\\2025.0.0', include: ['*.aar', '*.jar'], exclude: [])
-    implementation 'com.pedropathing:pedro:1.0.8'
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.16'
+
+    implementation 'com.acmerobotics.dashboard:dashboard:0.5.0'
 }
 
