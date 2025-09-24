@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 public class DECODEmanette extends LinearOpMode {
@@ -11,9 +12,11 @@ public class DECODEmanette extends LinearOpMode {
     private DcMotorEx LeftBack;
     private DcMotorEx RightFront;
     private DcMotorEx RightBack;
-    private DcMotorEx roueTest;
+    private DcMotorEx roueLanceur1;
 
+    private DcMotorEx roueLanceur2;
 
+    private Servo pousseballe;
 
     @Override
     public void runOpMode() {
@@ -22,7 +25,9 @@ public class DECODEmanette extends LinearOpMode {
         LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
         RightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
         RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
-        roueTest = hardwareMap.get(DcMotorEx.class, "roueTest");
+        roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
+        roueLanceur2 = hardwareMap.get(DcMotorEx.class, "rouelanceur2");
+        pousseballe = hardwareMap.get(Servo.class, "pousseballe");
 
 
         double brasZero = 0.91;
@@ -199,13 +204,19 @@ public class DECODEmanette extends LinearOpMode {
 
 
             if (manette2.b){
-                roueTest.setPower(10);
+                pousseballe.setPosition(150);
+                roueLanceur1.setPower(10);
+                roueLanceur2.setPower(10);
             }
             else if (manette2.a){
-                roueTest.setPower(-10);
+                roueLanceur1.setPower(-10);
+                roueLanceur2.setPower(-10);
+
             }
             else{
-                roueTest.setPower(0);
+                roueLanceur1.setPower(0);
+                roueLanceur2.setPower(0);
+                pousseballe.setPosition(0);
             }
         }
     }
