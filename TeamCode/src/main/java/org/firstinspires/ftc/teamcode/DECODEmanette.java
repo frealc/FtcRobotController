@@ -217,6 +217,7 @@ public class DECODEmanette extends LinearOpMode {
                 roueLanceur1.setPower(0);
                 roueLanceur2.setPower(0);
                 pousseballe.setPosition(0);
+
             }
         }
     }
