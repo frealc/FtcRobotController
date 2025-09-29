@@ -1,0 +1,25 @@
+package org.firstinspires.ftc.teamcode
+
+apply from: '../build.common.gradle'
+apply from: '../build.dependencies.gradle'
+
+android {
+    namespace = 'org.firstinspires.ftc.teamcode'
+
+    packagingOptions {
+        jniLibs.useLegacyPackaging true
+    }
+}
+
+repositories {
+    maven {url = 'https://maven.brott.dev/'}
+}
+
+dependencies {
+    implementation project(':FtcRobotController')
+
+
+
+
+
+}
