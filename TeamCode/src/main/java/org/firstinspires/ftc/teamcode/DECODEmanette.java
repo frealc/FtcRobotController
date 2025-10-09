@@ -12,9 +12,7 @@ public class DECODEmanette extends LinearOpMode {
     private DcMotorEx LeftBack;
     private DcMotorEx RightFront;
     private DcMotorEx RightBack;
-    private DcMotorEx roueLanceur1;
-
-    private DcMotorEx roueLanceur2;
+    private DcMotorEx roueLanceur;
 
     private Servo pousseballe;
 
@@ -25,13 +23,12 @@ public class DECODEmanette extends LinearOpMode {
         LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
         RightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
         RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
-        roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
-        roueLanceur2 = hardwareMap.get(DcMotorEx.class, "rouelanceur2");
+        roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
+
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
 
 
-        double brasZero = 0.91;
-        double brasX = brasZero;
+
         double tgtPowerA = 0;
         double tgtPowerB = 0;
         double tgtPowerC = 0;
@@ -40,16 +37,15 @@ public class DECODEmanette extends LinearOpMode {
         double tgtPowerB2 = 0;
         double tgtPowerC2 = 0;
         double tgtPowerD2 = 0;
-
+        double tgtpowerRota = 0;
 
         double varY = 0;
         double varX = 0;
-        double varRX = 0;
-        double varRXpos = 0;
-        double varYbras = 0;
+
+
         double varYpos = 0;
         double varXpos = 0;
-        double varRY = 0;
+
         double debugTkt = 0;
 
         boolean PrecisionMode = false; //precision mis en faut quand initialisé
@@ -74,87 +70,34 @@ public class DECODEmanette extends LinearOpMode {
 
 
             // Convertion pour Moteurs
-            varYpos = Math.abs(varY);
-            varXpos = Math.abs(varX);
-            varRXpos = Math.abs(varRX);
-
-
-
-
+            varYpos = varY;
+            varXpos = varX;
 
 
             /// Mouvements
-            if (varY > 0) {
-                tgtPowerA = varYpos;
-                tgtPowerB = -varYpos;
-                tgtPowerC = varYpos;
-                tgtPowerD = -varYpos;
-                if (varX < 0) {
-                    tgtPowerA = tgtPowerC * 2 + varXpos;
-                    tgtPowerC = tgtPowerD * 2 + varXpos;
-                } else if (varX > 0) {
-                    tgtPowerB = tgtPowerA * 2 - varXpos;
-                    tgtPowerD = tgtPowerB * 2 - varXpos;
-                }
-            } else if (varY < 0) {
-                tgtPowerA = -varYpos;
-                tgtPowerB = varYpos;
-                tgtPowerC = -varYpos;
-                tgtPowerD = varYpos;
+            double Power = 0.5*varYpos;
+            double strafe = 0.5*varXpos;
+            double Rotate = 0.8*tgtpowerRota;
 
-                debugTkt = -1;
 
-                if (varX < 0) {
-                    tgtPowerA = tgtPowerD * 2 - varXpos;
-                    tgtPowerC = tgtPowerC * 2 - varXpos;
-                } else if (varX > 0) {
-                    tgtPowerB = tgtPowerA * 2 + varXpos;
-                    tgtPowerD = tgtPowerB * 2 + varXpos;
-                }
-            } else {
-                tgtPowerA = 0;
-                tgtPowerB = 0;
-                tgtPowerC = 0;
-                tgtPowerD = 0;
-            }
 
-            if (varX > 0 && varY == 0) {
-                tgtPowerA = -varXpos*2;
-                tgtPowerB = -varXpos*2;
-                tgtPowerC = varXpos*2;
-                tgtPowerD = varXpos*2;
-            }
-
-            if (varX < 0 && varY == 0) {
-                tgtPowerA = varXpos*2;
-                tgtPowerB = varXpos*2;
-                tgtPowerC = -varXpos*2;
-                tgtPowerD = -varXpos*2;
-            }
 
             if (manette1.left_trigger > 0 && manette1.right_trigger > 0) {
-                tgtPowerA2 = 0;
-                tgtPowerB2 = 0;
-                tgtPowerC2 = 0;
-                tgtPowerD2 = 0;
+
+                tgtpowerRota=0;
+
             }
             else if (manette1.left_trigger > 0) {
-                tgtPowerA = -1;
-                tgtPowerB = 1;
-                tgtPowerC = 1;
-                tgtPowerD = -1;
+
+                tgtpowerRota=0.8;
+
             } else if (manette1.right_trigger > 0) {
-                tgtPowerA = 1;
-                tgtPowerB = -1;
-                tgtPowerC = -1;
-                tgtPowerD = 1;
+
+                tgtpowerRota=-0.8;
+
             }
-            //prise des valeur du joystick gauche pour faire les strafe et avancer reculé
             else {
-                tgtPowerA2 = 0;
-                tgtPowerB2 = 0;
-                tgtPowerC2 = 0;
-                tgtPowerD2 = 0;
+                tgtpowerRota=0;
             }
 
 
@@ -169,53 +112,42 @@ public class DECODEmanette extends LinearOpMode {
             }//active le mode precision quand B est appuyé et le desactive quand B est re appuyé
 
             if (manette1.a) {
-                LeftFront.setPower(-tgtPowerA * 5);
-                LeftBack.setPower(tgtPowerB * 5);
-                RightFront.setPower(-tgtPowerC * 5);
-                RightBack.setPower(tgtPowerD * 5);
+                RightFront.setPower(-(Power + strafe - Rotate) * 2);
+                LeftFront.setPower(-(Power - strafe + Rotate)*2);
+                RightBack.setPower(-(Power - strafe - Rotate)*2);
+                LeftBack.setPower(-(Power + strafe + Rotate)*2);
 
-                LeftFront.setPower(-tgtPowerA2 * 2);
-                LeftBack.setPower(tgtPowerB2 * 2);
-                RightFront.setPower(-tgtPowerC2 * 2);
-                RightBack.setPower(tgtPowerD2 * 2);
+
             } else if(PrecisionMode) {
-                LeftFront.setPower(-(tgtPowerA / 3.5));
-                LeftBack.setPower((tgtPowerB / 3.5));
-                RightFront.setPower(-(tgtPowerC / 3.5));
-                RightBack.setPower((tgtPowerD / 3.5));
-
-                LeftFront.setPower(-(tgtPowerA2 / 3.5));
-                LeftBack.setPower((tgtPowerB2 / 3.5));
-                RightFront.setPower(-(tgtPowerC2 / 3.5));
-                RightBack.setPower((tgtPowerD2 / 3.5));//en mode precision, reduit la vitesse par 4
+                RightFront.setPower(-(Power + strafe - Rotate)/3.5);
+                LeftFront.setPower(-(Power - strafe + Rotate)/3.5);
+                RightBack.setPower(-(Power - strafe - Rotate)/3.5);
+                LeftBack.setPower(-(Power + strafe + Rotate)/3.5);
+                //en mode precision, reduit la vitesse par 3.5
             }
             else {
-                LeftFront.setPower(-(tgtPowerA ));
-                LeftBack.setPower((tgtPowerB ));
-                RightFront.setPower(-(tgtPowerC ));
-                RightBack.setPower((tgtPowerD ));
+                RightFront.setPower(-(Power + strafe - Rotate));
+                LeftFront.setPower(-(Power - strafe + Rotate));
+                RightBack.setPower(-(Power - strafe - Rotate));
+                LeftBack.setPower(-(Power + strafe + Rotate));
 
-                LeftFront.setPower(-(tgtPowerA2 / 2));
-                LeftBack.setPower((tgtPowerB2 / 2));
-                RightFront.setPower(-(tgtPowerC2 / 2));
-                RightBack.setPower((tgtPowerD2 / 2));
             }
 
 
 
             if (manette2.b){
                 pousseballe.setPosition(150);
-                roueLanceur1.setPower(10);
-                roueLanceur2.setPower(10);
+                roueLanceur.setPower(10);
+
             }
             else if (manette2.a){
-                roueLanceur1.setPower(-10);
-                roueLanceur2.setPower(-10);
+                roueLanceur.setPower(-10);
+
 
             }
             else{
-                roueLanceur1.setPower(0);
-                roueLanceur2.setPower(0);
+                roueLanceur.setPower(0);
+
                 pousseballe.setPosition(0);
 
             }
