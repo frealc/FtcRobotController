@@ -14,6 +14,7 @@ public class DECODEmanette extends LinearOpMode {
     private DcMotorEx RightBack;
     private DcMotorEx roueLanceur;
 
+    private DcMotorEx roueLanceur1;
     private Servo pousseballe;
 
     @Override
@@ -24,7 +25,7 @@ public class DECODEmanette extends LinearOpMode {
         RightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
         RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
-
+        roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
 
 
@@ -75,9 +76,9 @@ public class DECODEmanette extends LinearOpMode {
 
 
             /// Mouvements
-            double Power = 0.5*varYpos;
-            double strafe = 0.5*varXpos;
-            double Rotate = 0.8*tgtpowerRota;
+            double Power = varYpos;
+            double strafe = varXpos;
+            double Rotate = tgtpowerRota;
 
 
 
@@ -89,11 +90,11 @@ public class DECODEmanette extends LinearOpMode {
             }
             else if (manette1.left_trigger > 0) {
 
-                tgtpowerRota=0.8;
+                tgtpowerRota=1;
 
             } else if (manette1.right_trigger > 0) {
 
-                tgtpowerRota=-0.8;
+                tgtpowerRota=-1;
 
             }
             else {
@@ -111,14 +112,8 @@ public class DECODEmanette extends LinearOpMode {
                 }
             }//active le mode precision quand B est appuyé et le desactive quand B est re appuyé
 
-            if (manette1.a) {
-                RightFront.setPower(-(Power + strafe - Rotate) * 2);
-                LeftFront.setPower(-(Power - strafe + Rotate)*2);
-                RightBack.setPower(-(Power - strafe - Rotate)*2);
-                LeftBack.setPower(-(Power + strafe + Rotate)*2);
 
-
-            } else if(PrecisionMode) {
+            if(PrecisionMode) {
                 RightFront.setPower(-(Power + strafe - Rotate)/3.5);
                 LeftFront.setPower(-(Power - strafe + Rotate)/3.5);
                 RightBack.setPower(-(Power - strafe - Rotate)/3.5);
@@ -138,19 +133,26 @@ public class DECODEmanette extends LinearOpMode {
             if (manette2.b){
                 pousseballe.setPosition(150);
                 roueLanceur.setPower(10);
-
+                roueLanceur1.setPower(10);
             }
             else if (manette2.a){
                 roueLanceur.setPower(-10);
-
+                roueLanceur1.setPower(-10);
 
             }
             else{
                 roueLanceur.setPower(0);
-
+                roueLanceur1.setPower(0);
                 pousseballe.setPosition(0);
-
             }
+
+            telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
+            telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
+            telemetry.addData("vitesse roue avant droite", RightFront.getVelocity());
+            telemetry.addData("vitesse roue avant gauche", LeftFront.getVelocity());
+            telemetry.addData("vitesse roue arriere droite", RightBack.getVelocity());
+            telemetry.addData("vitesse roue arriere gauche", LeftBack.getVelocity());
+            telemetry.update();
         }
     }
 }
