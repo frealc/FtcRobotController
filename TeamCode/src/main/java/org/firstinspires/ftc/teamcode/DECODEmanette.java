@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import com.qualcomm.robotcore.hardware.CRServo;
 @TeleOp
 public class DECODEmanette extends LinearOpMode {
     private DcMotorEx LeftFront;
@@ -17,6 +17,10 @@ public class DECODEmanette extends LinearOpMode {
     private DcMotorEx roueLanceur1;
     private Servo pousseballe;
 
+    private CRServo attrapeballe;
+
+    private CRServo roue_a_balle;
+
     @Override
     public void runOpMode() {
 
@@ -27,8 +31,8 @@ public class DECODEmanette extends LinearOpMode {
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
-
-
+        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
+        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
 
         double tgtPowerA = 0;
         double tgtPowerB = 0;
@@ -115,15 +119,15 @@ public class DECODEmanette extends LinearOpMode {
 
             if(PrecisionMode) {
                 RightFront.setPower(-(Power + strafe - Rotate)/3.5);
-                LeftFront.setPower(-(Power - strafe + Rotate)/3.5);
-                RightBack.setPower(-(Power - strafe - Rotate)/3.5);
+                LeftFront.setPower((Power - strafe + Rotate)/3.5);
+                RightBack.setPower((Power - strafe - Rotate)/3.5);
                 LeftBack.setPower(-(Power + strafe + Rotate)/3.5);
                 //en mode precision, reduit la vitesse par 3.5
             }
             else {
                 RightFront.setPower(-(Power + strafe - Rotate));
-                LeftFront.setPower(-(Power - strafe + Rotate));
-                RightBack.setPower(-(Power - strafe - Rotate));
+                LeftFront.setPower((Power - strafe + Rotate));
+                RightBack.setPower((Power - strafe - Rotate));
                 LeftBack.setPower(-(Power + strafe + Rotate));
 
             }
@@ -132,12 +136,12 @@ public class DECODEmanette extends LinearOpMode {
 
             if (manette2.b){
                 pousseballe.setPosition(150);
-                roueLanceur.setPower(10);
-                roueLanceur1.setPower(10);
+                roueLanceur.setPower(0.87);
+                roueLanceur1.setPower(0.87);
             }
             else if (manette2.a){
-                roueLanceur.setPower(-10);
-                roueLanceur1.setPower(-10);
+                roueLanceur.setPower(0.65);
+                roueLanceur1.setPower(0.65);
 
             }
             else{
@@ -145,6 +149,20 @@ public class DECODEmanette extends LinearOpMode {
                 roueLanceur1.setPower(0);
                 pousseballe.setPosition(0);
             }
+
+            if (manette2.x){
+                attrapeballe.setPower(1);
+                roue_a_balle.setPower(1);
+            }
+            else if (manette2.y) {
+                attrapeballe.setPower(-1);
+                roue_a_balle.setPower(-1);
+            }
+            else{
+                attrapeballe.setPower(0);
+                roue_a_balle.setPower(0);
+            }
+
 
             telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
             telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());

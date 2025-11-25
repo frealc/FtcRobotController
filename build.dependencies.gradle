@@ -21,9 +21,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation fileTree(dir: 'C:\\Users\\first robotique A\\Downloads\\REV2mDistanceSensor-2025.0.0\\maven\\com\\revrobotics\\frc\\DistanceSensor-java\\2025.0.0', include: ['*.aar', '*.jar'], exclude: [])
 
-    implementation 'com.pedropathing:ftc:2.0.2'
+    implementation 'com.pedropathing:ftc:2.0.4'
     implementation 'com.pedropathing:telemetry:1.0.0'
 
-    implementation 'com.bylazar:fullpanels:1.0.6'
+    implementation 'com.bylazar:fullpanels:1.0.10'
 }
 
