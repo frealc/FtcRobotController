@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+
+
+import com.bylazar.configurables.annotations.IgnoreConfigurable;
+import com.bylazar.configurables.PanelsConfigurables;
+
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -23,18 +29,26 @@ public class encodertest extends OpMode {
     private Supplier<PathChain> pathChain;
     private TelemetryManager telemetryM;
     private boolean slowMode = false;
+    private final Pose startPose = new Pose(54.19, -19.10, 2.5);
+
+    private final Pose test1 = new Pose(0, 0, 0);
+
+
+
+
     private double slowModeMultiplier = 0.5;
+
 
     @Override
     public void init() {
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startingPose == null ? new Pose() : startingPose);
+        follower.setStartingPose(startPose);
         follower.update();
         telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
 
         pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(follower::getPose, new Pose(45, 98, Math.toRadians(0)))))
-                .setHeadingInterpolation(HeadingInterpolator.linearFromPoint(follower::getHeading, Math.toRadians(45), 0.8))
+                .addPath(new Path(new BezierLine(startPose, test1)))
+                .setLinearHeadingInterpolation(startPose.getHeading(), test1.getHeading())
                 .build();
     }
 
@@ -73,6 +87,13 @@ public class encodertest extends OpMode {
             );
         }
 
+
+        if (gamepad1.xWasPressed()){
+            final Pose startPose = new Pose( follower.getPose().getX(),  follower.getPose().getY(),  follower.getPose().getHeading());
+            follower.setStartingPose(startPose);
+            follower.update();
+        }
+
         //Automated PathFollowing
         if (gamepad1.aWasPressed()) {
             follower.followPath(pathChain.get());
@@ -90,18 +111,15 @@ public class encodertest extends OpMode {
             slowMode = !slowMode;
         }
 
-        //Optional way to change slow mode strength
-        if (gamepad1.xWasPressed()) {
-            slowModeMultiplier += 0.25;
-        }
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+        telemetry.addData("start pos", startPose);
+        telemetry.update();
 
-        //Optional way to change slow mode strength
-        if (gamepad2.yWasPressed()) {
-            slowModeMultiplier -= 0.25;
-        }
-
-        telemetryM.debug("position", follower.getPose());
-        telemetryM.debug("velocity", follower.getVelocity());
-        telemetryM.debug("automatedDrive", automatedDrive);
     }
+
 }
+
+
+

@@ -135,7 +135,6 @@ public class DECODEmanette extends LinearOpMode {
 
 
             if (manette2.b){
-                pousseballe.setPosition(150);
                 roueLanceur.setPower(0.87);
                 roueLanceur1.setPower(0.87);
             }
@@ -147,7 +146,14 @@ public class DECODEmanette extends LinearOpMode {
             else{
                 roueLanceur.setPower(0);
                 roueLanceur1.setPower(0);
+            }
+
+            if (manette2.right_bumper){
                 pousseballe.setPosition(0);
+
+            }
+            else{
+                pousseballe.setPosition(0.43);
             }
 
             if (manette2.x){
