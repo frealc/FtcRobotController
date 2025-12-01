@@ -34,14 +34,7 @@ public class DECODEmanette extends LinearOpMode {
         attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
         roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
 
-        double tgtPowerA = 0;
-        double tgtPowerB = 0;
-        double tgtPowerC = 0;
-        double tgtPowerD = 0;
-        double tgtPowerA2 = 0;
-        double tgtPowerB2 = 0;
-        double tgtPowerC2 = 0;
-        double tgtPowerD2 = 0;
+
         double tgtpowerRota = 0;
 
         double varY = 0;
@@ -51,11 +44,10 @@ public class DECODEmanette extends LinearOpMode {
         double varYpos = 0;
         double varXpos = 0;
 
-        double debugTkt = 0;
+
 
         boolean PrecisionMode = false; //precision mis en faut quand initialisé
-        double red = 0;
-        double blue = 0;
+
         double dpad_up = 0;
 
         Gamepad manette1 = this.gamepad1;
@@ -149,11 +141,11 @@ public class DECODEmanette extends LinearOpMode {
             }
 
             if (manette2.right_bumper){
-                pousseballe.setPosition(0);
+                pousseballe.setPosition(0.28);
 
             }
             else{
-                pousseballe.setPosition(0.43);
+                pousseballe.setPosition(0.40);
             }
 
             if (manette2.x){
