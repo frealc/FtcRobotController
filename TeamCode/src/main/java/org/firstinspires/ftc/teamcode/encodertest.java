@@ -1,12 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-
-
-import com.bylazar.configurables.annotations.IgnoreConfigurable;
-import com.bylazar.configurables.PanelsConfigurables;
-
-
-import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
@@ -15,235 +8,217 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
-import java.util.function.Supplier;
+import org.firstinspires.ftc.robotcore.external.Supplier;
 
-@Configurable
-@TeleOp (name = "test teleop pedro ")
-public class encodertest extends OpMode {
+@TeleOp
+public class encodertest extends LinearOpMode {
 
-    private DcMotorEx roueLanceur;
 
-    private DcMotorEx roueLanceur1;
-    private CRServo attrapeballe;
-
+    private DcMotorEx LeftFront, LeftBack, RightFront, RightBack;
+    private DcMotorEx roueLanceur, roueLanceur1;
     private Servo pousseballe;
-    private CRServo roue_a_balle;
-    private DcMotorEx LeftFront;
-    private DcMotorEx LeftBack;
-    private DcMotorEx RightFront;
-    private DcMotorEx RightBack;
+    private CRServo attrapeballe, roue_a_balle;
+
 
     private Follower follower;
-    public static Pose startingPose; //See ExampleAuto to understand how to use this
-    private boolean automatedDrive;
-    private Supplier<PathChain> pathChain;
-    private TelemetryManager telemetryM;
-    private boolean slowMode = false;
-    private final Pose startPose = new Pose(55.38, 8.35, 2.73);
-
-    private final Pose test1 = new Pose(0, 0, 0);
-
-
-    private double slowModeMultiplier = 0.5;
-    double tgtpowerRota = 0;
-
-    double varY = 0;
-    double varX = 0;
-
-
-    double varYpos = 0;
-    double varXpos = 0;
-
-
-    boolean PrecisionMode = false; //precision mis en faut quand initialisé
-
-    double dpad_up = 0;
-
-    Gamepad manette1;
-    Gamepad manette2;
-
+    private boolean automatedDrive = false;
+    private Supplier<PathChain> poseFrontR;
+    private Supplier<PathChain> poseFrontB;
+    private Supplier<PathChain> poseBackR;
+    private Supplier<PathChain> poseBackB;
 
     @Override
-    public void init() {
-        follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(SharedPose.finalPose);
-        follower.update();
-        telemetryM = PanelsTelemetry.INSTANCE.getTelemetry();
+    public void runOpMode() {
 
-        pathChain = () -> follower.pathBuilder() //Lazy Curve Generation
-                .addPath(new Path(new BezierLine(startPose, test1)))
-                .setLinearHeadingInterpolation(startPose.getHeading(), test1.getHeading())
-                .build();
 
-        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
-        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
-        roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
-        roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
-        pousseballe = hardwareMap.get(Servo.class, "pousseballe");
         LeftFront = hardwareMap.get(DcMotorEx.class, "LeftFront");
         LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
         RightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
         RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
 
-        pousseballe.setPosition(0.43);
+        roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
+        roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
 
-        manette1 = this.gamepad1;
-        manette2 = this.gamepad2;
+        pousseballe = hardwareMap.get(Servo.class, "pousseballe");
+        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
+        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
 
-    }
 
-    @Override
-    public void start() {
-        //The parameter controls whether the Follower should use break mode on the motors (using it is recommended).
-        //In order to use float mode, add .useBrakeModeInTeleOp(true); to your Drivetrain Constants in Constant.java (for Mecanum)
-        //If you don't pass anything in, it uses the default (false)
-        follower.startTeleopDrive();
-    }
-
-    @Override
-    public void loop() {
-        //Call this once per loop
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(SharedPose.finalPose);   // position de fin de votre auto
         follower.update();
-        telemetryM.update();
 
 
-        if (manette2.a) {
-            while (roueLanceur.getVelocity() < 1500) {
-                roueLanceur.setPower(0.80);
-                roueLanceur1.setPower(0.80);
+        final Pose tirePoseFR = new Pose(-11.84, 6.16, 2.40);
+        final Pose tirePoseFB = new Pose(-11.84, -6.16, 2.40);
+        final Pose tirePoseBR = new Pose(55.38, 8.35, 2.73);
+        final Pose tirePoseBB = new Pose(55.38, -8.35, -2.73);
+
+        poseFrontR = () -> follower.pathBuilder()
+                .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseFR)))
+                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseFR.getHeading())
+                .build();
+        poseFrontB = () -> follower.pathBuilder()
+                .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseFB)))
+                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseFB.getHeading())
+                .build();
+        poseBackR = () -> follower.pathBuilder()
+                .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseBR)))
+                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseBR.getHeading())
+                .build();
+        poseBackB = () -> follower.pathBuilder()
+                .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseBB)))
+                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseBB.getHeading())
+                .build();
+
+        boolean PrecisionMode = false;
+        double tgtpowerRota = 0;
+
+        waitForStart();
+        follower.startTeleopDrive(); //a peu ettre changer
+
+        while (opModeIsActive()) {
+
+            follower.update();
+
+            // /////////////////////////////////////////////////////
+            //              CONTROLE AUTOMATIQUE : DPAD UP / DOWN
+            // /////////////////////////////////////////////////////
+
+
+
+            if (!automatedDrive && gamepad1.y) {
+                telemetry.addLine("choix de path tire avant : ");
+                telemetry.addLine("X = pose de tire Bleu ");
+                telemetry.addLine("B = pose de tire Rouge ");
+                telemetry.update();
+                if (!automatedDrive && gamepad1.b){
+                    follower.followPath(poseFrontR.get());
+                    automatedDrive = true;
+                }
+                else if (!automatedDrive && gamepad1.x){
+                    follower.followPath(poseFrontB.get());
+                    automatedDrive = true;
+                }
             }
-            attrapeballe.setPower(1);
-            roue_a_balle.setPower(1);
-            pousseballe.setPosition(0);
-        }
 
-        //Automated PathFollowing
-        if (manette1.aWasPressed()) {
-            follower.followPath(pathChain.get());
-            automatedDrive = true;
-        } else {
-            follower.startTeleopDrive();
-            automatedDrive = false;
-        }
-
-        //Stop automated following if the follower is done
-        if (automatedDrive && (manette1.bWasPressed() || !follower.isBusy())) {
-            follower.startTeleopDrive();
-            automatedDrive = false;
-        }
+            else if (!automatedDrive && gamepad1.a) {
+                telemetry.addLine("choix de path tire arriere : ");
+                telemetry.addLine("X = pose de tire Bleu ");
+                telemetry.addLine("B = pose de tire Rouge ");
+                telemetry.update();
+                if (!automatedDrive && gamepad1.b){
+                    follower.followPath(poseBackR.get());
+                    automatedDrive = true;
+                }
+                else if (!automatedDrive && gamepad1.x){
+                    follower.followPath(poseBackB.get());
+                    automatedDrive = true;
+                }
+            }
 
 
-        if (!automatedDrive) {
-            varY = manette1.left_stick_y;
-            varX = manette1.left_stick_x;
+            if (automatedDrive) {
+                if (!follower.isBusy() || gamepad1.dpad_down) {
+                    follower.startTeleopDrive();
+                    automatedDrive = false;
+                }
+            }
 
 
-            // Convertion pour Moteurs
-            varYpos = varY;
-            varXpos = varX;
+            if (automatedDrive) {
+                telemetry.addLine("FOLLOW PATH EN COURS");
+                telemetry.addData("vas vers : ", follower.getCurrentPath());
+                telemetry.addData("position actuelle : ", follower.getPose());
+                telemetry.update();
+                continue;
+            }
 
 
-            /// Mouvements
-            double Power = varYpos;
-            double strafe = varXpos;
-            double Rotate = tgtpowerRota;
+            double varY = gamepad1.left_stick_y;
+            double varX = gamepad1.left_stick_x;
 
+            double Power = varY;
+            double strafe = varX;
 
-            if (manette1.left_trigger > 0 && manette1.right_trigger > 0) {
-
+            // Rotation avec triggers
+            if (gamepad1.left_trigger > 0 && gamepad1.right_trigger > 0) {
                 tgtpowerRota = 0;
-
-            } else if (manette1.left_trigger > 0) {
-
+            } else if (gamepad1.left_trigger > 0) {
                 tgtpowerRota = 1;
-
-            } else if (manette1.right_trigger > 0) {
-
+            } else if (gamepad1.right_trigger > 0) {
                 tgtpowerRota = -1;
-
             } else {
                 tgtpowerRota = 0;
             }
 
 
-            if (PrecisionMode) {
-                while (manette1.b) {
-                    PrecisionMode = false;
+            if (gamepad1.right_bumper) {
+                PrecisionMode = !PrecisionMode;
+                sleep(250);
+            }
+
+            double divisor = PrecisionMode ? 3.5 : 1.0;
+
+            RightFront.setPower(-(Power + strafe - tgtpowerRota) / divisor);
+            LeftFront.setPower(-(Power - strafe + tgtpowerRota) / divisor);
+            RightBack.setPower(-(Power - strafe - tgtpowerRota) / divisor);
+            LeftBack.setPower(-(Power + strafe + tgtpowerRota) / divisor);
+
+            // /////////////////////////////////////////////////////
+            //                  CONTROLES MANETTE 2
+            // /////////////////////////////////////////////////////
+
+            if (gamepad2.b) {
+                roueLanceur.setVelocity(1675);
+                roueLanceur1.setVelocity(1675);
+                if (roueLanceur.getVelocity() > 1500) {
+                    attrapeballe.setPower(1);
+                    roue_a_balle.setPower(1);
                 }
-            } else {
-                while (manette1.b) {
-                    PrecisionMode = true;
+
+            } else if (gamepad2.a) {
+                roueLanceur.setVelocity(1440);
+                roueLanceur1.setVelocity(1440);
+                if (roueLanceur.getVelocity() > 1400) {
+                    attrapeballe.setPower(1);
+                    roue_a_balle.setPower(1);
                 }
-            }//active le mode precision quand B est appuyé et le desactive quand B est re appuyé
 
-
-            if (PrecisionMode) {
-                RightFront.setPower(-(Power + strafe - Rotate) / 3.5);
-                LeftFront.setPower((Power - strafe + Rotate) / 3.5);
-                RightBack.setPower((Power - strafe - Rotate) / 3.5);
-                LeftBack.setPower(-(Power + strafe + Rotate) / 3.5);
-                //en mode precision, reduit la vitesse par 3.5
-            } else {
-                RightFront.setPower(-(Power + strafe - Rotate));
-                LeftFront.setPower((Power - strafe + Rotate));
-                RightBack.setPower((Power - strafe - Rotate));
-                LeftBack.setPower(-(Power + strafe + Rotate));
-
-            }
-
-
-            if (manette2.b) {
-                roueLanceur.setPower(0.87);
-                roueLanceur1.setPower(0.87);
-            }
-            /*else if (manette2.a){
-                roueLanceur.setPower(0.65);
-                roueLanceur1.setPower(0.65);
-
-            }*/
-            else {
-                roueLanceur.setPower(0);
-                roueLanceur1.setPower(0);
-            }
-
-            if (manette2.right_bumper) {
-                pousseballe.setPosition(0.28);
-
-            } else {
-                pousseballe.setPosition(0.40);
-            }
-
-            if (manette2.x) {
+            } else if (gamepad2.x) {
                 attrapeballe.setPower(1);
                 roue_a_balle.setPower(1);
-            } else if (manette2.y) {
+
+            } else if (gamepad2.y) {
                 attrapeballe.setPower(-1);
                 roue_a_balle.setPower(-1);
+
             } else {
+                roueLanceur.setPower(0);
+                roueLanceur1.setPower(0);
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
             }
 
+            // Servo pousse balle
+            pousseballe.setPosition(gamepad2.right_bumper ? 0.28 : 0.40);
 
-            telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
-            telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
-            telemetry.addData("x", follower.getPose().getX());
-            telemetry.addData("y", follower.getPose().getY());
-            telemetry.addData("heading", follower.getPose().getHeading());
+            // /////////////////////////////////////////////////////
+            // TELEMETRY
+            // /////////////////////////////////////////////////////
+
+            telemetry.addData("AutoDrive", automatedDrive);
+            telemetry.addData("Follower Pose", follower.getPose());
+            telemetry.addData("Lanceur1", roueLanceur.getVelocity());
+            telemetry.addData("Lanceur2", roueLanceur1.getVelocity());
             telemetry.update();
-
         }
-
     }
 }
-
-
-
-

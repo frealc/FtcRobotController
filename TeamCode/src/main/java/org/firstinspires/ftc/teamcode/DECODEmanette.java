@@ -20,6 +20,7 @@ public class DECODEmanette extends LinearOpMode {
     private CRServo attrapeballe;
 
     private CRServo roue_a_balle;
+    private CRServo chargement_manuel;
 
     @Override
     public void runOpMode() {
@@ -33,10 +34,11 @@ public class DECODEmanette extends LinearOpMode {
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
         attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
         roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
 
         double tgtpowerRota = 0;
-
+        double servoPosition = 0;
         double varY = 0;
         double varX = 0;
 
@@ -126,39 +128,48 @@ public class DECODEmanette extends LinearOpMode {
 
 
 
-            if (manette2.b){
-                roueLanceur.setPower(0.87);
-                roueLanceur1.setPower(0.87);
-            }
-            else if (manette2.a){
-                roueLanceur.setPower(0.65);
-                roueLanceur1.setPower(0.65);
-
-            }
-            else{
+            if (manette2.right_trigger > 0) {
+                roueLanceur.setVelocity(1675);
+                roueLanceur1.setVelocity(1675);
+            } else if (manette2.left_trigger > 0) {
+                roueLanceur.setVelocity(1440);
+                roueLanceur1.setVelocity(1440);
+            } else if (manette2.dpad_left) {
+                roueLanceur.setVelocity(-1275);
+                roueLanceur1.setVelocity(-1275);
+            } else {
                 roueLanceur.setPower(0);
                 roueLanceur1.setPower(0);
             }
 
-            if (manette2.right_bumper){
-                pousseballe.setPosition(0.28);
 
+            if (manette2.y) {
+                attrapeballe.setPower(1);
+                roue_a_balle.setPower(1);
+            } else if (manette2.dpad_down) {
+                attrapeballe.setPower(-1);
+                roue_a_balle.setPower(-1);
+            } else if (manette2.a) {
+                attrapeballe.setPower(-1);
+                roue_a_balle.setPower(-1);
+            } else if (manette2.b) {
+                attrapeballe.setPower(1);
+                roue_a_balle.setPower(1);
+            } else {
+                attrapeballe.setPower(0);
+                roue_a_balle.setPower(0);
             }
-            else{
+
+            if (manette2.a || manette2.b) {
+                pousseballe.setPosition(0.29);
+            } else {
                 pousseballe.setPosition(0.40);
             }
 
-            if (manette2.x){
-                attrapeballe.setPower(1);
-                roue_a_balle.setPower(1);
-            }
-            else if (manette2.y) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(-1);
-            }
-            else{
-                attrapeballe.setPower(0);
-                roue_a_balle.setPower(0);
+            if (manette2.dpad_right) {
+               chargement_manuel.setPower(1);
+            }else {
+                chargement_manuel.setPower(0);
             }
 
 
@@ -168,6 +179,7 @@ public class DECODEmanette extends LinearOpMode {
             telemetry.addData("vitesse roue avant gauche", LeftFront.getVelocity());
             telemetry.addData("vitesse roue arriere droite", RightBack.getVelocity());
             telemetry.addData("vitesse roue arriere gauche", LeftBack.getVelocity());
+            telemetry.addData("vitesse chargement manuelle", chargement_manuel.getPower());
             telemetry.update();
         }
     }
