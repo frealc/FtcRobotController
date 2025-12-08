@@ -132,8 +132,8 @@ public class DECODEmanette extends LinearOpMode {
                 roueLanceur.setVelocity(1675);
                 roueLanceur1.setVelocity(1675);
             } else if (manette2.left_trigger > 0) {
-                roueLanceur.setVelocity(1440);
-                roueLanceur1.setVelocity(1440);
+                roueLanceur.setVelocity(1360);
+                roueLanceur1.setVelocity(1360);
             } else if (manette2.dpad_left) {
                 roueLanceur.setVelocity(-1275);
                 roueLanceur1.setVelocity(-1275);
@@ -143,7 +143,7 @@ public class DECODEmanette extends LinearOpMode {
             }
 
 
-            if (manette2.y) {
+            if (manette2.x) {
                 attrapeballe.setPower(1);
                 roue_a_balle.setPower(1);
             } else if (manette2.dpad_down) {
@@ -160,7 +160,8 @@ public class DECODEmanette extends LinearOpMode {
                 roue_a_balle.setPower(0);
             }
 
-            if (manette2.a || manette2.b) {
+            if (manette2.a || manette2.b || manette2.right_bumper
+            ) {
                 pousseballe.setPosition(0.29);
             } else {
                 pousseballe.setPosition(0.40);

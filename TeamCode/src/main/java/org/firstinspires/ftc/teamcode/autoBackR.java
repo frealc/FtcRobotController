@@ -25,13 +25,15 @@ public class autoBackR extends OpMode {
     private CRServo attrapeballe;
 
     private Servo pousseballe;
+
+    private CRServo chargement_manuel;
     private CRServo roue_a_balle;
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
 
     private int pathState;
-    private final Pose tirePose = new Pose(55.38, 8.35, 2.73);
+    private final Pose tirePose = new Pose(55.38, 12, 2.73);
 
     private final Pose startPose = new Pose(58.91, 15.28, 3.17);
     // Start Pose of our robot.
@@ -106,6 +108,8 @@ public class autoBackR extends OpMode {
 
             case 0:
                 if(!follower.isBusy()) {
+                    roueLanceur.setVelocity(1675);
+                    roueLanceur1.setVelocity(1675);
                     follower.followPath(tire, true);
                     setPathState(1);
                 }
@@ -116,20 +120,13 @@ public class autoBackR extends OpMode {
             case 1:
                 // On attend que le robot ait fini le path précédent
                 if (!follower.isBusy()) {
-                    // Activer les roues du lanceur
-                    roueLanceur.setVelocity(1675);
-                    roueLanceur1.setVelocity(1675);
-                    // Démarrer le timer
-                    if (roueLanceur.getVelocity() > 1700) {
-                        while (roueLanceur.getVelocity() < 1575) {
-                            while (roueLanceur.getVelocity() > 1725) {
-                                pousseballe.setPosition(0.40);
-                            }
-                        }
+                    while (roueLanceur.getVelocity() < 1725){
                     }
-
-                        attrapeballe.setPower(1);
-                        roue_a_balle.setPower(1);
+                    while (roueLanceur.getVelocity() > 1725){
+                    }
+                        chargement_manuel.setPower(0.5);
+                        attrapeballe.setPower(-0.1);
+                        roue_a_balle.setPower(-0.1);
                         pousseballe.setPosition(0.28);
 
                         startTime = System.currentTimeMillis();
@@ -147,6 +144,7 @@ public class autoBackR extends OpMode {
                             roueLanceur1.setPower(0);
                             attrapeballe.setPower(0);
                             roue_a_balle.setPower(0);
+                            chargement_manuel.setPower(0);
                             pousseballe.setPosition(0.40);
                             // Lancer le path suivant
                             follower.followPath(gotopose1, true);
@@ -301,6 +299,7 @@ public class autoBackR extends OpMode {
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
+        chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
         pousseballe.setPosition(0.40);
 
