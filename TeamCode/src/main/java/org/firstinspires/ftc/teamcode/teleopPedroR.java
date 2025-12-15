@@ -1,30 +1,26 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.HeadingInterpolator;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.Supplier;
 
-@TeleOp
-public class encodertest extends LinearOpMode {
+@TeleOp(name = "DECODEpedro rouge", group = "pedro")
+public class teleopPedroR extends LinearOpMode {
 
 
     private DcMotorEx LeftFront, LeftBack, RightFront, RightBack;
     private DcMotorEx roueLanceur, roueLanceur1;
     private Servo pousseballe;
-    private CRServo attrapeballe, roue_a_balle;
+    private CRServo attrapeballe, roue_a_balle, chargement_manuel;
 
 
     private Follower follower;
@@ -49,33 +45,30 @@ public class encodertest extends LinearOpMode {
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
         attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
         roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(SharedPose.finalPose);   // position de fin de votre auto
         follower.update();
 
+        boolean aPressed = false;
+        boolean yPressed = false;
 
-        final Pose tirePoseFR = new Pose(-11.84, 6.16, 2.40);
-        final Pose tirePoseFB = new Pose(-11.84, -6.16, 2.40);
-        final Pose tirePoseBR = new Pose(55.38, 8.35, 2.73);
-        final Pose tirePoseBB = new Pose(55.38, -8.35, -2.73);
+
+        final Pose tirePoseFR = new Pose(-9.84, 3.16, 2.40);
+
+        final Pose tirePoseBR = new Pose(55.38, 12, 2.73);
+
 
         poseFrontR = () -> follower.pathBuilder()
                 .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseFR)))
                 .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseFR.getHeading())
                 .build();
-        poseFrontB = () -> follower.pathBuilder()
-                .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseFB)))
-                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseFB.getHeading())
-                .build();
+
         poseBackR = () -> follower.pathBuilder()
                 .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseBR)))
                 .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseBR.getHeading())
-                .build();
-        poseBackB = () -> follower.pathBuilder()
-                .addPath(new Path(new BezierLine(SharedPose.finalPose, tirePoseBB)))
-                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseBB.getHeading())
                 .build();
 
         boolean PrecisionMode = false;
@@ -89,39 +82,19 @@ public class encodertest extends LinearOpMode {
             follower.update();
 
             // /////////////////////////////////////////////////////
-            //              CONTROLE AUTOMATIQUE : DPAD UP / DOWN
+            //              CONTROLE AUTOMATIQUE
             // /////////////////////////////////////////////////////
 
 
 
-            if (!automatedDrive && gamepad1.y) {
-                telemetry.addLine("choix de path tire avant : ");
-                telemetry.addLine("X = pose de tire Bleu ");
-                telemetry.addLine("B = pose de tire Rouge ");
-                telemetry.update();
-                if (!automatedDrive && gamepad1.b){
-                    follower.followPath(poseFrontR.get());
-                    automatedDrive = true;
-                }
-                else if (!automatedDrive && gamepad1.x){
-                    follower.followPath(poseFrontB.get());
-                    automatedDrive = true;
-                }
-            }
 
-            else if (!automatedDrive && gamepad1.a) {
-                telemetry.addLine("choix de path tire arriere : ");
-                telemetry.addLine("X = pose de tire Bleu ");
-                telemetry.addLine("B = pose de tire Rouge ");
-                telemetry.update();
-                if (!automatedDrive && gamepad1.b){
-                    follower.followPath(poseBackR.get());
-                    automatedDrive = true;
-                }
-                else if (!automatedDrive && gamepad1.x){
-                    follower.followPath(poseBackB.get());
-                    automatedDrive = true;
-                }
+            if (!automatedDrive && gamepad1.a){
+                follower.followPath(poseBackR.get());
+                automatedDrive = true;
+            }
+            else if (!automatedDrive && gamepad1.y){
+                follower.followPath(poseFrontR.get());
+                automatedDrive = true;
             }
 
 
@@ -176,39 +149,45 @@ public class encodertest extends LinearOpMode {
             //                  CONTROLES MANETTE 2
             // /////////////////////////////////////////////////////
 
-            if (gamepad2.b) {
+            if (gamepad2.right_trigger > 0) {
                 roueLanceur.setVelocity(1675);
                 roueLanceur1.setVelocity(1675);
-                if (roueLanceur.getVelocity() > 1500) {
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
-                }
-
-            } else if (gamepad2.a) {
-                roueLanceur.setVelocity(1440);
-                roueLanceur1.setVelocity(1440);
-                if (roueLanceur.getVelocity() > 1400) {
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
-                }
-
-            } else if (gamepad2.x) {
-                attrapeballe.setPower(1);
-                roue_a_balle.setPower(1);
-
-            } else if (gamepad2.y) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(-1);
-
+            } else if (gamepad2.left_trigger > 0) {
+                roueLanceur.setVelocity(1360);
+                roueLanceur1.setVelocity(1360);
+            } else if (gamepad2.dpad_left) {
+                roueLanceur.setVelocity(-1275);
+                roueLanceur1.setVelocity(-1275);
             } else {
                 roueLanceur.setPower(0);
                 roueLanceur1.setPower(0);
+            }
+
+
+            if (gamepad2.x) {
+                attrapeballe.setPower(1);
+                roue_a_balle.setPower(1);
+            } else if (gamepad2.dpad_down) {
+                attrapeballe.setPower(-1);
+                roue_a_balle.setPower(-1);
+            } else if (gamepad2.a) {
+                attrapeballe.setPower(-1);
+                roue_a_balle.setPower(-1);
+            } else if (gamepad2.b) {
+                attrapeballe.setPower(1);
+                roue_a_balle.setPower(1);
+            } else {
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
             }
 
-            // Servo pousse balle
-            pousseballe.setPosition(gamepad2.right_bumper ? 0.28 : 0.40);
+            if (gamepad2.a || gamepad2.b || gamepad2.y) {
+                pousseballe.setPosition(0.29);
+            } else {
+                pousseballe.setPosition(0.41);
+            }
+
+            chargement_manuel.setPower(-gamepad2.left_stick_x);
 
             // /////////////////////////////////////////////////////
             // TELEMETRY
@@ -218,6 +197,9 @@ public class encodertest extends LinearOpMode {
             telemetry.addData("Follower Pose", follower.getPose());
             telemetry.addData("Lanceur1", roueLanceur.getVelocity());
             telemetry.addData("Lanceur2", roueLanceur1.getVelocity());
+            telemetry.addData("vitesse chargement manuelle", chargement_manuel.getPower());
+            telemetry.addData("Y pour pos de lancé avant", 0);
+            telemetry.addData("A pour pos de lancé arriere", 0);
             telemetry.update();
         }
     }

@@ -112,17 +112,17 @@ public class DECODEmanette extends LinearOpMode {
 
 
             if(PrecisionMode) {
-                RightFront.setPower(-(Power + strafe - Rotate)/3.5);
-                LeftFront.setPower((Power - strafe + Rotate)/3.5);
-                RightBack.setPower((Power - strafe - Rotate)/3.5);
-                LeftBack.setPower(-(Power + strafe + Rotate)/3.5);
-                //en mode precision, reduit la vitesse par 3.5
+                RightFront.setPower(-(Power + strafe - Rotate)/4);
+                LeftFront.setPower((Power - strafe + Rotate)/4);
+                RightBack.setPower((Power - strafe - Rotate)/4);
+                LeftBack.setPower(-(Power + strafe + Rotate)/4);
+                //en mode precision, reduit la vitesse par 4
             }
             else {
-                RightFront.setPower(-(Power + strafe - Rotate));
-                LeftFront.setPower((Power - strafe + Rotate));
-                RightBack.setPower((Power - strafe - Rotate));
-                LeftBack.setPower(-(Power + strafe + Rotate));
+                RightFront.setPower(-(Power + strafe - (Rotate/1.5)));
+                LeftFront.setPower((Power - strafe + (Rotate/1.5)));
+                RightBack.setPower((Power - strafe - (Rotate/1.5)));
+                LeftBack.setPower(-(Power + strafe + (Rotate/1.5)));
 
             }
 
@@ -160,18 +160,14 @@ public class DECODEmanette extends LinearOpMode {
                 roue_a_balle.setPower(0);
             }
 
-            if (manette2.a || manette2.b || manette2.right_bumper
-            ) {
+            if (manette2.a || manette2.b || manette2.y) {
                 pousseballe.setPosition(0.29);
             } else {
-                pousseballe.setPosition(0.40);
+                pousseballe.setPosition(0.41);
             }
 
-            if (manette2.dpad_right) {
-               chargement_manuel.setPower(1);
-            }else {
-                chargement_manuel.setPower(0);
-            }
+            chargement_manuel.setPower(-manette2.left_stick_x);
+
 
 
             telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());

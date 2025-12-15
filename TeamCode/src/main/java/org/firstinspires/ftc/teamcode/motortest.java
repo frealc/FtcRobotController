@@ -14,6 +14,9 @@ public class motortest extends LinearOpMode{
     private DcMotorEx LeftBack;
     private DcMotorEx RightFront;
     private DcMotorEx RightBack;
+    private DcMotorEx roueLanceur;
+
+    private DcMotorEx roueLanceur1;
 
 
     @Override
@@ -23,6 +26,8 @@ public class motortest extends LinearOpMode{
         LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
         RightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
         RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
+        roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
+        roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
 
         Gamepad manette1 = this.gamepad1;
         Gamepad manette2 = this.gamepad2;
@@ -34,13 +39,13 @@ public class motortest extends LinearOpMode{
 
         while(opModeIsActive()) {
 
-            if(manette1.x){
+            if (manette1.x) {
                 LeftFront.setPower(1);
-            } else if(manette1.y){
+            } else if (manette1.y) {
                 RightFront.setPower(-1);
-            } else if (manette1.a){
+            } else if (manette1.a) {
                 LeftBack.setPower(-1);
-            } else if (manette1.b){
+            } else if (manette1.b) {
                 RightBack.setPower(1);
             } else {
                 LeftFront.setPower(0);
@@ -48,9 +53,19 @@ public class motortest extends LinearOpMode{
                 LeftBack.setPower(0);
                 RightBack.setPower(0);
             }
-
+            if (manette1.right_bumper) {
+                roueLanceur.setVelocity(1675);
+                roueLanceur1.setVelocity(1675);
+            } else if (manette1.left_bumper) {
+                roueLanceur.setVelocity(1000);
+                roueLanceur1.setVelocity(1000);
+            } else {
+                roueLanceur.setVelocity(0);
+                roueLanceur1.setVelocity(0);
+            }
+            telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
+            telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
+            telemetry.update();
         }
-
-
     }
 }
