@@ -26,6 +26,7 @@ public class teleopPedroB extends LinearOpMode {
     private Servo pousseballe;
     private CRServo attrapeballe, roue_a_balle, chargement_manuel;
 
+    private ShooterManager shooter;
 
     private Follower follower;
     private boolean automatedDrive = false;
@@ -51,13 +52,17 @@ public class teleopPedroB extends LinearOpMode {
         roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
+        shooter = new ShooterManager(
+                roueLanceur,
+                roueLanceur1,
+                pousseballe,
+                attrapeballe,
+                roue_a_balle
+        );
 
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(SharedPose.finalPose);   // position de fin de votre auto
         follower.update();
-
-        boolean aPressed = false;
-        boolean yPressed = false;
 
 
 
@@ -83,7 +88,7 @@ public class teleopPedroB extends LinearOpMode {
         follower.startTeleopDrive(); //a peu ettre changer
 
         while (opModeIsActive()) {
-
+            shooter.update();
             follower.update();
 
             // /////////////////////////////////////////////////////
@@ -154,26 +159,23 @@ public class teleopPedroB extends LinearOpMode {
             // /////////////////////////////////////////////////////
 
             if (gamepad2.right_trigger > 0) {
-                roueLanceur.setVelocity(1675);
-                roueLanceur1.setVelocity(1675);
+                shooter.startShooter(1615);
+                shooter.update();
             } else if (gamepad2.left_trigger > 0) {
-                roueLanceur.setVelocity(1360);
-                roueLanceur1.setVelocity(1360);
+                shooter.startShooter(1360);
+                shooter.update();
             } else if (gamepad2.dpad_left) {
-                roueLanceur.setVelocity(-1275);
-                roueLanceur1.setVelocity(-1275);
+                shooter.startShooter(-1275);
+                shooter.update();
             } else {
-                roueLanceur.setPower(0);
-                roueLanceur1.setPower(0);
+                shooter.stopShooter();
+                shooter.update();
             }
 
 
             if (gamepad2.x) {
                 attrapeballe.setPower(1);
                 roue_a_balle.setPower(1);
-            } else if (gamepad2.dpad_down) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(-1);
             } else if (gamepad2.a) {
                 attrapeballe.setPower(-1);
                 roue_a_balle.setPower(-1);
@@ -185,7 +187,7 @@ public class teleopPedroB extends LinearOpMode {
                 roue_a_balle.setPower(0);
             }
 
-            if (gamepad2.a || gamepad2.b || gamepad2.y) {
+            if (gamepad2.b || gamepad2.y) {
                 pousseballe.setPosition(0.29);
             } else {
                 pousseballe.setPosition(0.41);

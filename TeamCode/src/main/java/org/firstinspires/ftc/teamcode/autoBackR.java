@@ -43,26 +43,22 @@ public class autoBackR extends OpMode {
     private final Pose tirePose = new Pose(55.38, 12, 2.78);
 
     private final Pose startPose = new Pose(58.91, 15.28, 3.17);
-    // Start Pose of our robot.
+
 
     private final Pose rotatest = new Pose(-1.7, 13.73, -1.84);
     private final Pose correct = new Pose(17.37, 25.09, -1.19);
 
-    private final Pose priseballe1 = new Pose(1.37, 42, -2.11); // Scoring Pose of our robot. It is facing the goal at a 135 degree angle.
+    private final Pose priseballe1 = new Pose(1.37, 42, -2.11);
     private final Pose replace = new Pose(4, 30, -2.17);
 
-    //private final Pose pose2 = new Pose(22.21, 29.51,-2.17);
     private final Pose replace2 = new Pose(19, 19,-2.17);
 
     private final Pose priseballe2 = new Pose(30.91, 42,-2.11);
     private final Pose poseFinal = new Pose(55.38, 30, 2.78);
 
-
-    public final Pose finalPose = new Pose(0, 0, 0);
-    private Path scorePreload;
     private PathChain tire, gotopose1, takepose1, lance2, gotopose2, takepose2, lance3, replacepose, fin;
 
-    private int vitesse_lanceur = 0;
+
     boolean shotLocked = false;
 
     @Override
@@ -75,7 +71,7 @@ public class autoBackR extends OpMode {
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
 
-        // ---- SHOOTER MANAGER ----
+
         shooter = new ShooterManager(
                 roueLanceur,
                 roueLanceur1,
@@ -226,8 +222,6 @@ public class autoBackR extends OpMode {
 
 
             case 2:
-
-
                 shooter.stopShooter();
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
@@ -342,8 +336,11 @@ public class autoBackR extends OpMode {
                 if (!follower.isBusy()) {
                     follower.followPath(fin, true);
                     setPathState(11);
-
                 }
+                break;
+            case 11:
+                shooter.stopShooter();
+                setPathState(12);
                 break;
         }
     }
