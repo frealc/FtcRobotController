@@ -44,8 +44,8 @@ public class autoFrontR extends OpMode {
 
     private final Pose correct1 = new Pose(-13.15, 23.25, -1.54);
     private final Pose priseballe1 = new Pose(-15.42, 45.22, -1.57);
-    private final Pose faceOuverture = new Pose(-4.25,30.13, 3.13);
-    private final Pose Ouverture = new Pose(-4.25, 56.58, -3.13);
+    private final Pose faceOuverture = new Pose(-4.25,40.13, -3.13);
+    //private final Pose Ouverture = new Pose(-4.25, 56.58, -3.13);
     private final Pose replace = new Pose(-3.25, 52.58, 2.61);
 
     //private final Pose pose2 = new Pose(22.21, 29.51,-2.17);
@@ -100,10 +100,10 @@ public class autoFrontR extends OpMode {
                 .setLinearHeadingInterpolation(replace2.getHeading(), priseballe2.getHeading())
                 .build();
 
-        ouvreBalle = follower.pathBuilder()
+        /*ouvreBalle = follower.pathBuilder()
                 .addPath(new BezierCurve(priseballe2, faceOuverture, Ouverture))
                 .setLinearHeadingInterpolation(faceOuverture.getHeading(), Ouverture.getHeading())
-                .build();
+                .build();*/
 
         /*gotopose2 = follower.pathBuilder()
                 .addPath(new BezierLine(tirePose, pose2))
@@ -171,7 +171,7 @@ public class autoFrontR extends OpMode {
                 }
 
 
-                if (shotCount >= 4) {
+                if (shotCount >= 4 || System.currentTimeMillis() - startTime >= 10000) {
                     chargement_manuel.setPower(0);
                     shotCount = 0;
                     shotLocked = false;
@@ -211,7 +211,7 @@ public class autoFrontR extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.9);
                     shooter.startShooter(1260);
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     //follower.followPath(replacepose, true);
@@ -254,7 +254,7 @@ public class autoFrontR extends OpMode {
                 shooter.update();
                 // This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.8);
+                    follower.setMaxPower(0.7);
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
@@ -280,7 +280,7 @@ public class autoFrontR extends OpMode {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
                     shooter.startShooter(1260);
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.9);
                     /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     follower.followPath(lance3, true);
                     startTime = 0;
@@ -297,6 +297,7 @@ public class autoFrontR extends OpMode {
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
                     pousseballe.setPosition(0.28);
+                    follower.setMaxPower(1);
                     setPathState(11);
 
                 }
@@ -342,7 +343,8 @@ public class autoFrontR extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
         vitesse_lanceur = (int) roueLanceur.getVelocity();
-        telemetry.addData("vitesse moteur 2 du lanceur : ", vitesse_lanceur);
+        telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
+        telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
         telemetry.update();
 
     }
@@ -386,10 +388,7 @@ public class autoFrontR extends OpMode {
     public void init_loop() {
     }
 
-    /**
-     * This method is called once at the start of the OpMode.
-     * It runs all the setup actions, including building paths and starting the path system
-     **/
+
     @Override
     public void start() {
         pathState = 0;
@@ -397,9 +396,7 @@ public class autoFrontR extends OpMode {
         pathTimer.resetTimer();
     }
 
-    /**
-     * We do not use this because everything should automatically disable
-     **/
+
     @Override
     public void stop() {
         final Pose finalPose = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());

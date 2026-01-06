@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.pedropathing.geometry.BezierCurve;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,7 +16,8 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@Autonomous(name = "TEST AUTO proche ", group = "none")
+@Disabled
+@Autonomous(name = "TEST AUTO proche ")
 public class testautomoteur extends OpMode {
 
     private long startTime = 0;

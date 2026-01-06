@@ -62,10 +62,6 @@ public class ShooterManager {
 
         // Tir auto
         if (pretATirer && System.currentTimeMillis() - dernierTir >= cadenceTir) {
-
-
-
-
             dernierTir = System.currentTimeMillis();
         }
     }

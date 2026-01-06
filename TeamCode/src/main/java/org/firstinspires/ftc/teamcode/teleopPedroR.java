@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.Supplier;
 
-@TeleOp(name = "DECODEpedro rouge", group = "pedro")
+@TeleOp(name = "DECODEpedro rouge", group = "DecodePedro")
 public class teleopPedroR extends LinearOpMode {
 
 
@@ -28,9 +28,11 @@ public class teleopPedroR extends LinearOpMode {
     private Follower follower;
     private boolean automatedDrive = false;
     private Supplier<PathChain> poseFrontR;
-    private Supplier<PathChain> poseFrontB;
+
     private Supplier<PathChain> poseBackR;
-    private Supplier<PathChain> poseBackB;
+    private Supplier<PathChain> ChargementRouge;
+
+    private Supplier<PathChain> Ouverture;
 
     @Override
     public void runOpMode() {
@@ -65,9 +67,13 @@ public class teleopPedroR extends LinearOpMode {
 
 
 
-        final Pose tirePoseFR = new Pose(-9.84, 3.16, 2.40);
+        final Pose tirePoseFR = new Pose(-22.12, 13.29, 2.30);
 
-        final Pose tirePoseBR = new Pose(55.38, 12, 2.73);
+        final Pose tirePoseBR = new Pose(52.38, 12, 2.73);
+
+        final Pose ChargementR = new Pose(49.61, -54.23, -3.14);
+
+        final Pose FaceOuverture = new Pose(-4.25,40.13, -3.13);
 
 
         poseFrontR = () -> follower.pathBuilder()
@@ -80,11 +86,23 @@ public class teleopPedroR extends LinearOpMode {
                 .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), tirePoseBR.getHeading())
                 .build();
 
+        ChargementRouge = () -> follower.pathBuilder()
+                .addPath(new Path(new BezierLine(SharedPose.finalPose, ChargementR)))
+                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), ChargementR.getHeading())
+                .build();
+
+        Ouverture = () -> follower.pathBuilder()
+                .addPath(new Path(new BezierLine(SharedPose.finalPose, FaceOuverture)))
+                .setLinearHeadingInterpolation(SharedPose.finalPose.getHeading(), FaceOuverture.getHeading())
+                .build();
+
+
+
         boolean PrecisionMode = false;
         double tgtpowerRota = 0;
 
         waitForStart();
-        follower.startTeleopDrive(); //a peu ettre changer
+        follower.startTeleopDrive(); //a peu etre changer
 
         while (opModeIsActive()) {
             shooter.update();
@@ -94,9 +112,6 @@ public class teleopPedroR extends LinearOpMode {
             //              CONTROLE AUTOMATIQUE
             // /////////////////////////////////////////////////////
 
-
-
-
             if (!automatedDrive && gamepad1.a){
                 follower.followPath(poseBackR.get());
                 automatedDrive = true;
@@ -105,7 +120,14 @@ public class teleopPedroR extends LinearOpMode {
                 follower.followPath(poseFrontR.get());
                 automatedDrive = true;
             }
-
+            else if (!automatedDrive && gamepad1.x){
+                follower.followPath(ChargementRouge.get());
+                automatedDrive = true;
+            }
+            else if (!automatedDrive && gamepad1.b){
+                follower.followPath(Ouverture.get());
+                automatedDrive = true;
+            }
 
             if (automatedDrive) {
                 if (!follower.isBusy() || gamepad1.dpad_down) {
