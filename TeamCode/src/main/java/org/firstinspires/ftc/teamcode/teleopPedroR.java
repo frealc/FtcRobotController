@@ -13,6 +13,10 @@ import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.Supplier;
 
+
+/*
+ * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
+ */
 @TeleOp(name = "DECODEpedro rouge", group = "DecodePedro")
 public class teleopPedroR extends LinearOpMode {
 
@@ -61,19 +65,25 @@ public class teleopPedroR extends LinearOpMode {
 
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(SharedPose.finalPose);   // position de fin de votre auto
+        follower.setStartingPose(SharedPose.finalPose);   // position de fin de l'auto
         follower.update();
 
 
+        /*
+        * creation des position
+        */
 
-
-        final Pose tirePoseFR = new Pose(-22.12, 13.29, 2.30);
+        final Pose tirePoseFR = new Pose(-4.54, 2.68, 2.28);
 
         final Pose tirePoseBR = new Pose(52.38, 12, 2.73);
 
         final Pose ChargementR = new Pose(49.61, -54.23, -3.14);
 
         final Pose FaceOuverture = new Pose(-4.25,40.13, -3.13);
+
+        /*
+         *creation des chemins du robot
+         */
 
 
         poseFrontR = () -> follower.pathBuilder()
@@ -102,7 +112,7 @@ public class teleopPedroR extends LinearOpMode {
         double tgtpowerRota = 0;
 
         waitForStart();
-        follower.startTeleopDrive(); //a peu etre changer
+        follower.startTeleopDrive();
 
         while (opModeIsActive()) {
             shooter.update();
@@ -112,23 +122,24 @@ public class teleopPedroR extends LinearOpMode {
             //              CONTROLE AUTOMATIQUE
             // /////////////////////////////////////////////////////
 
-            if (!automatedDrive && gamepad1.a){
+            if (!automatedDrive && gamepad1.aWasPressed()){
                 follower.followPath(poseBackR.get());
                 automatedDrive = true;
-            }
-            else if (!automatedDrive && gamepad1.y){
+            } //quand a appuyer, vas a pos de tire arriere
+            else if (!automatedDrive && gamepad1.yWasPressed()){
                 follower.followPath(poseFrontR.get());
                 automatedDrive = true;
-            }
-            else if (!automatedDrive && gamepad1.x){
+            }//quand y appuyer, vas a pos de tire avant
+            else if (!automatedDrive && gamepad1.xWasPressed()){
                 follower.followPath(ChargementRouge.get());
                 automatedDrive = true;
-            }
-            else if (!automatedDrive && gamepad1.b){
+            }//quand b appuyer, vas devant la gate
+            else if (!automatedDrive && gamepad1.bWasPressed()){
                 follower.followPath(Ouverture.get());
                 automatedDrive = true;
-            }
+            }//quand x appuyer, vas a pos de joueur humain
 
+            //arret manuelle quand le pad est appuyer
             if (automatedDrive) {
                 if (!follower.isBusy() || gamepad1.dpad_down) {
                     follower.startTeleopDrive();
@@ -136,7 +147,7 @@ public class teleopPedroR extends LinearOpMode {
                 }
             }
 
-
+            //telemetry pendant le chemin auto
             if (automatedDrive) {
                 telemetry.addLine("FOLLOW PATH EN COURS");
                 telemetry.addData("vas vers : ", follower.getCurrentPath());
@@ -145,6 +156,12 @@ public class teleopPedroR extends LinearOpMode {
                 continue;
             }
 
+
+            /* *******************************************
+             **********************************************
+             * MANETTE 1 : PILOTE DEPLACEMENT
+             **********************************************
+             ********************************************** */
 
             double varY = gamepad1.left_stick_y;
             double varX = gamepad1.left_stick_x;
@@ -163,37 +180,42 @@ public class teleopPedroR extends LinearOpMode {
                 tgtpowerRota = 0;
             }
 
-
+            //active le mode precision quand bumper droite est appuyé et le desactive quand bumper droite est re appuyé
             if (gamepad1.right_bumper) {
                 PrecisionMode = !PrecisionMode;
                 sleep(250);
             }
 
-            double divisor = PrecisionMode ? 3.5 : 1.0;
+            double divisor = PrecisionMode ? 3.5 : 1.0; //quand precision activé, change le chiffre a 3, puis le repasse a 1 quand desactivé
 
+
+            //gestion des moteur pour deplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / divisor);
             LeftFront.setPower(-(Power - strafe + tgtpowerRota) / divisor);
             RightBack.setPower(-(Power - strafe - tgtpowerRota) / divisor);
             LeftBack.setPower(-(Power + strafe + tgtpowerRota) / divisor);
 
-            // /////////////////////////////////////////////////////
-            //                  CONTROLES MANETTE 2
-            // /////////////////////////////////////////////////////
+            /* ************************************
+             ***************************************
+             * MANETTE 2 : PILOTE TIRE
+             ***************************************
+             * **************************************/
 
             if (gamepad2.right_trigger > 0) {
                 roueLanceur.setVelocity(1615);
-                roueLanceur1.setVelocity(1615);
+                roueLanceur1.setVelocity(1615);//fait tourné les roues de tire a un certains tick/s
 
             } else if (gamepad2.left_trigger > 0) {
                 roueLanceur.setVelocity(1360);
                 roueLanceur1.setVelocity(1360);
             } else if (gamepad2.dpad_left) {
-                shooter.startShooter(-1275);
+                roueLanceur.setVelocity(-1275);
+                roueLanceur1.setVelocity(-1275);// au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
             } else {
                 shooter.stopShooter();
             }
 
-
+            //faire tourné les elastique pour recup les balles
             if (gamepad2.x) {
                 attrapeballe.setPower(1);
                 roue_a_balle.setPower(1);
@@ -208,13 +230,14 @@ public class teleopPedroR extends LinearOpMode {
                 roue_a_balle.setPower(0);
             }
 
+            //laisse passé les balles en montant la barre
             if (gamepad2.b || gamepad2.y) {
                 pousseballe.setPosition(0.29);
             } else {
                 pousseballe.setPosition(0.41);
             }
 
-            chargement_manuel.setPower(-gamepad2.left_stick_x);
+            chargement_manuel.setPower(-gamepad2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
 
             // /////////////////////////////////////////////////////
             // TELEMETRY

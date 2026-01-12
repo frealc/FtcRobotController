@@ -15,9 +15,14 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+/*
+ * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
+ */
+
 @Autonomous(name = "auto front Rouge ", group = "rouge")
 public class autoFrontR extends OpMode {
 
+    //gestion du shooter (utilise le code "shooter manager")
     private long startTime = 0;
     private ShooterManager shooter;
 
@@ -35,10 +40,20 @@ public class autoFrontR extends OpMode {
     private CRServo roue_a_balle;
     private CRServo chargement_manuel;
 
+    /*
+     *PEDRO PATHING
+     */
+
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
 
     private int pathState;
+
+    /*
+     *creation des positions utilisé sur le terrain
+     *utilisé le code tuning (init puis right bumper 2 fois pour allé a Localization Test)
+     * --> Localization --> Localization Test puis lancé le code
+     */
     private final Pose startPose = new Pose(-63.77, 44.81, 2.21);// Start Pose of our robot.
     private final Pose tirePose = new Pose(-22.12, 13.29, 2.30);
 
@@ -52,11 +67,11 @@ public class autoFrontR extends OpMode {
     private final Pose replace2 = new Pose(11.19, 4.19,-1.57);
 
     private final Pose priseballe2 = new Pose(10.21, 47.26,-2.19);
-    private final Pose poseFinal = new Pose(-9.50, 24.92, -2.19);
-
-
-
+    
     private Path scorePreload;
+    /*
+     *creation des nom pour les chemins du robot
+     */
     private PathChain tire, gotopose1, takepose1, lance2, ouvreBalle, gotopose2, takepose2, lance3, replacepose, fin;
 
     private int vitesse_lanceur = 0;
@@ -122,19 +137,21 @@ public class autoFrontR extends OpMode {
                 .build();
     }
 
+    /*
+     * Debut des chemin
+     */
     public void autonomousPathUpdate() {
         switch (pathState) {
 
             case 0:
                 if(!follower.isBusy()) {
-                    shooter.startShooter(1220);
-                    follower.followPath(tire, true);
-                    startTime = System.currentTimeMillis();
-                    setPathState(1);
+                    shooter.startShooter(1220);// lance les roues de tire a un Tick/s ciblé
+                    follower.followPath(tire, true);//vas a la position de tire
+                    startTime = System.currentTimeMillis();//lance un timer
+                    setPathState(1);//passe a la prochaine étape
                 }
                 break;
 
-            /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
 
             case 1:
                 shooter.update();
@@ -151,9 +168,13 @@ public class autoFrontR extends OpMode {
                 roue_a_balle.setPower(-0.1);
                 pousseballe.setPosition(0.28);
 
+                /*
+                 * gestion de la plaque tournante avec vitesse moteur
+                 */
+
 
                 if (velocity >= SHOOTER_READY && !shotLocked) {
-                    chargement_manuel.setPower(0.35);
+                    chargement_manuel.setPower(0.35);//si les moteur sont pareil que shooter ready, fait tourné la plaque
                 } else {
                     chargement_manuel.setPower(0);
                 }
@@ -163,6 +184,10 @@ public class autoFrontR extends OpMode {
                 if (velocity <= SHOOTER_LOW && !shotLocked) {
                     shotCount++;
                     shotLocked = true;
+                    /*
+                     *quand la premiere balle est tiré, moteur baisse en vitesse
+                     * ajout 1 au compte de balle tiré
+                     */
                 }
 
 
@@ -172,10 +197,10 @@ public class autoFrontR extends OpMode {
 
 
                 if (shotCount >= 4 || System.currentTimeMillis() - startTime >= 10000) {
-                    chargement_manuel.setPower(0);
+                    chargement_manuel.setPower(0);// quant toute les balles sont tiré ou 10s sont passé, arrete tout
                     shotCount = 0;
                     shotLocked = false;
-                    setPathState(2);
+                    setPathState(2);//passe a la prochaine étape
                 }
 
                 break;
@@ -195,25 +220,25 @@ public class autoFrontR extends OpMode {
 
             case 3:
                 shooter.update();
-                // This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
+                
                 if (!follower.isBusy()) {
 
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
-                    follower.setMaxPower(0.6);
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(takepose1, true);
+                    follower.setMaxPower(0.6);//fait touné les elastique
+                    
+                    follower.followPath(takepose1, true);//rammasse les balle
                     setPathState(4);
                 }
                 break;
             case 4:
-                // This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
+                
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
                     follower.setMaxPower(0.9);
-                    shooter.startShooter(1260);
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    shooter.startShooter(1260);//prepare le tire
+                    
                     //follower.followPath(replacepose, true);
                     setPathState(5);
                 }
@@ -223,8 +248,8 @@ public class autoFrontR extends OpMode {
                 shooter.update();
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if (!follower.isBusy()) {
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(lance2, true);
+                    
+                    follower.followPath(lance2, true);//vas a la pos de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();
                     setPathState(6);
@@ -233,10 +258,11 @@ public class autoFrontR extends OpMode {
             case 6:
                 if (!follower.isBusy()) {
                     while (roueLanceur.getVelocity() < 1200) {
-                    }
+                    }// attente
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
                     pousseballe.setPosition(0.28);
+
                     if (System.currentTimeMillis() - startTime >= 5000) {
                         shooter.stopShooter();
                         roueLanceur.setPower(0);
@@ -245,21 +271,21 @@ public class autoFrontR extends OpMode {
                         pousseballe.setPosition(0.40);
                         // Lancer le path suivant
                         //follower.followPath(gotopose2, true);
-                        setPathState(7);
+                        setPathState(7);//apres 5s passé au total, passe a la prochaine etape
                     }
                 }
                 break;
 
             case 7:
                 shooter.update();
-                // This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
+                
                 if (!follower.isBusy()) {
                     follower.setMaxPower(0.7);
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    
                     follower.setMaxPower(0.8);
-                    follower.followPath(takepose2, true);
+                    follower.followPath(takepose2, true);// rammasse les balles
                     setPathState(8);
                 }
                 break;
@@ -268,7 +294,7 @@ public class autoFrontR extends OpMode {
             case 8:
                 if (!follower.isBusy()){
                     follower.setMaxPower(1);
-                    //follower.followPath(ouvreBalle, true);
+                    //follower.followPath(ouvreBalle, true); // devait ouvrir la gate
                     setPathState(9);
                 }
                 break;
@@ -279,10 +305,10 @@ public class autoFrontR extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    shooter.startShooter(1260);
+                    shooter.startShooter(1260);//prepare le tire
                     follower.setMaxPower(0.9);
-                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
-                    follower.followPath(lance3, true);
+                    
+                    follower.followPath(lance3, true);//vas a la position de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();
                     setPathState(10);
@@ -296,7 +322,7 @@ public class autoFrontR extends OpMode {
                     }
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
-                    pousseballe.setPosition(0.28);
+                    pousseballe.setPosition(0.28);// tire les balles
                     follower.setMaxPower(1);
                     setPathState(11);
 
@@ -310,7 +336,7 @@ public class autoFrontR extends OpMode {
                         attrapeballe.setPower(0);
                         roue_a_balle.setPower(0);
                         pousseballe.setPosition(0.40);
-                        setPathState(12);
+                        setPathState(12);// apres 5s au total, arrete le tire et vas deavant la gate
                     }
                 }
                 break;
@@ -330,6 +356,7 @@ public class autoFrontR extends OpMode {
     /**
      * This is the main loop of the OpMode, it will run repeatedly after clicking "Play".
      **/
+    //met des debug et update les etapes en boucle
     @Override
     public void loop() {
         shooter.update();
@@ -388,7 +415,7 @@ public class autoFrontR extends OpMode {
     public void init_loop() {
     }
 
-
+    //initialise les timer
     @Override
     public void start() {
         pathState = 0;
@@ -396,10 +423,12 @@ public class autoFrontR extends OpMode {
         pathTimer.resetTimer();
     }
 
-
+    /*
+     * a l'arret du code, enregistre la derniere position pour le teleop
+     */
     @Override
     public void stop() {
-        final Pose finalPose = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+        
         SharedPose.finalPose = new Pose(
                 follower.getPose().getX(),
                 follower.getPose().getY(),
