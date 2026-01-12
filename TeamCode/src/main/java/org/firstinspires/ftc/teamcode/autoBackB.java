@@ -186,6 +186,8 @@ public class autoBackB extends OpMode {
         telemetry.addData("State", pathState);
         telemetry.addData("Shooter RPM", roueLanceur.getVelocity());
         telemetry.update();
+
+        Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour acceder au panel)
     }
 
     /*

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -30,6 +31,9 @@ public class DECODEmanette extends LinearOpMode {
 
     private CRServo roue_a_balle;
     private CRServo chargement_manuel;
+
+
+    private Follower follower;
 
     @Override
     public void runOpMode() {
@@ -70,12 +74,15 @@ public class DECODEmanette extends LinearOpMode {
         Gamepad manette2 = this.gamepad2;
 
 
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(SharedPose.finalPose);   // position de fin de l'auto
+        follower.update();
+
         waitForStart();
 
 
-
-
         while (opModeIsActive()) {
+            follower.update();
 
             /* *******************************************
             **********************************************
@@ -111,31 +118,21 @@ public class DECODEmanette extends LinearOpMode {
             else {
                 tgtpowerRota=0;
             }
-            //active le mode precision quand B est appuyé et le desactive quand B est re appuyé
-            if (PrecisionMode){
-                while (manette1.b){
-                    PrecisionMode = false;
-                }
-            } else {
-                while (manette1.b){
-                    PrecisionMode = true;
-                }
+
+            //active le mode precision quand b est appuyé et le desactive quand b est re appuyé
+            if (gamepad1.b) {
+                PrecisionMode = !PrecisionMode;
+                sleep(250);
             }
 
-            //gestion des moteurs pour le déplacement
-            if(PrecisionMode) {
-                //en mode precision, reduit la vitesse par 4
-                RightFront.setPower(-(Power + strafe - Rotate)/4);
-                LeftFront.setPower((Power - strafe + Rotate)/4);
-                RightBack.setPower((Power - strafe - Rotate)/4);
-                LeftBack.setPower(-(Power + strafe + Rotate)/4);
-            }
-            else {
-                RightFront.setPower(-(Power + strafe - (Rotate/1.5)));
-                LeftFront.setPower((Power - strafe + (Rotate/1.5)));
-                RightBack.setPower((Power - strafe - (Rotate/1.5)));
-                LeftBack.setPower(-(Power + strafe + (Rotate/1.5)));
-            }
+            double divisor = PrecisionMode ? 3.5 : 1.0; //quand precision activé, change le chiffre a 3, puis le repasse a 1 quand desactivé
+
+
+            //gestion des moteur pour deplacement
+            RightFront.setPower(-(Power + strafe - tgtpowerRota) / divisor);
+            LeftFront.setPower(-(Power - strafe + tgtpowerRota) / divisor);
+            RightBack.setPower(-(Power - strafe - tgtpowerRota) / divisor);
+            LeftBack.setPower(-(Power + strafe + tgtpowerRota) / divisor);
 
 
             /* ************************************
@@ -179,7 +176,7 @@ public class DECODEmanette extends LinearOpMode {
                 roue_a_balle.setPower(0);
             }
 
-            if (manette2.a || manette2.b || manette2.y) { //laisse passé les balles en montant la barre
+            if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
                 pousseballe.setPosition(0.29);
             } else {
                 pousseballe.setPosition(0.41);
@@ -187,6 +184,8 @@ public class DECODEmanette extends LinearOpMode {
 
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
 
+
+            Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour acceder au panel)
 
             /*
             * TELEMETRY (affichage de données sur la tablette pour débug)

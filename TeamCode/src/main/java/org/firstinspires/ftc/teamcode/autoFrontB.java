@@ -374,6 +374,7 @@ public class autoFrontB extends OpMode {
         telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
         telemetry.update();
 
+        Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour acceder au panel)
     }
 
     /**

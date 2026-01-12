@@ -236,6 +236,8 @@ public class teleopPedroB extends LinearOpMode {
 
             chargement_manuel.setPower(-gamepad2.left_stick_x);//control la plaque ronde en bois pour faire tombé les balles
 
+            Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour acceder au panel)
+
             // /////////////////////////////////////////////////////
             // TELEMETRY
             // /////////////////////////////////////////////////////
