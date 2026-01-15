@@ -129,10 +129,10 @@ public class DECODEmanette extends LinearOpMode {
 
 
             //gestion des moteur pour deplacement
-            RightFront.setPower(-(Power + strafe - tgtpowerRota) / divisor);
-            LeftFront.setPower(-(Power - strafe + tgtpowerRota) / divisor);
-            RightBack.setPower(-(Power - strafe - tgtpowerRota) / divisor);
-            LeftBack.setPower(-(Power + strafe + tgtpowerRota) / divisor);
+            RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
+            LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
+            RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
+            LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor));
 
 
             /* ************************************

@@ -145,7 +145,9 @@ public class autoFrontR extends OpMode {
 
             case 0:
                 if(!follower.isBusy()) {
-                    shooter.startShooter(1220);// lance les roues de tire a un Tick/s ciblé
+                    //shooter.startShooter(1220);
+                    roueLanceur.setVelocity(1220);
+                    roueLanceur1.setVelocity(1220);// lance les roues de tire a un Tick/s ciblé
                     follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape
@@ -237,7 +239,9 @@ public class autoFrontR extends OpMode {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
                     follower.setMaxPower(0.9);
-                    shooter.startShooter(1260);//prepare le tire
+                    //shooter.startShooter(1260);//prepare le tire
+                    roueLanceur.setVelocity(1220);
+                    roueLanceur1.setVelocity(1220);
                     
                     //follower.followPath(replacepose, true);
                     setPathState(5);
@@ -264,6 +268,8 @@ public class autoFrontR extends OpMode {
                     pousseballe.setPosition(0.28);
 
                     if (System.currentTimeMillis() - startTime >= 5000) {
+                        roueLanceur.setVelocity(900);
+                        roueLanceur1.setVelocity(900);
                         shooter.stopShooter();
                         roueLanceur.setPower(0);
                         roueLanceur1.setPower(0);
@@ -305,7 +311,9 @@ public class autoFrontR extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    shooter.startShooter(1260);//prepare le tire
+                    //shooter.startShooter(1260);//prepare le tire
+                    roueLanceur.setVelocity(1220);
+                    roueLanceur1.setVelocity(1220);
                     follower.setMaxPower(0.9);
                     
                     follower.followPath(lance3, true);//vas a la position de tire
