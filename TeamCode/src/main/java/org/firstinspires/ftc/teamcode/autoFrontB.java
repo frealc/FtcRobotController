@@ -145,13 +145,14 @@ public class autoFrontB extends OpMode {
 
             case 0:
                 if(!follower.isBusy()) {
-                    shooter.startShooter(1220);// lance les roues de tire a un Tick/s ciblé
+                    //shooter.startShooter(1220);
+                    roueLanceur.setVelocity(1220);
+                    roueLanceur1.setVelocity(1220);// lance les roues de tire a un Tick/s ciblé
                     follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape
                 }
                 break;
-
 
 
             case 1:
@@ -172,6 +173,7 @@ public class autoFrontB extends OpMode {
                 /*
                  * gestion de la plaque tournante avec vitesse moteur
                  */
+
 
                 if (velocity >= SHOOTER_READY && !shotLocked) {
                     chargement_manuel.setPower(0.35);//si les moteur sont pareil que shooter ready, fait tourné la plaque
@@ -220,7 +222,7 @@ public class autoFrontB extends OpMode {
 
             case 3:
                 shooter.update();
-                
+
                 if (!follower.isBusy()) {
 
                     attrapeballe.setPower(1);
@@ -232,13 +234,15 @@ public class autoFrontB extends OpMode {
                 }
                 break;
             case 4:
-                
+
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
                     follower.setMaxPower(0.9);
-                    shooter.startShooter(1260);//prepare le tire
-                    
+                    //shooter.startShooter(1260);//prepare le tire
+                    roueLanceur.setVelocity(1220);
+                    roueLanceur1.setVelocity(1220);
+
                     //follower.followPath(replacepose, true);
                     setPathState(5);
                 }
@@ -248,7 +252,7 @@ public class autoFrontB extends OpMode {
                 shooter.update();
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if (!follower.isBusy()) {
-                    
+
                     follower.followPath(lance2, true);//vas a la pos de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();
@@ -264,6 +268,8 @@ public class autoFrontB extends OpMode {
                     pousseballe.setPosition(0.28);
 
                     if (System.currentTimeMillis() - startTime >= 5000) {
+                        roueLanceur.setVelocity(900);
+                        roueLanceur1.setVelocity(900);
                         shooter.stopShooter();
                         roueLanceur.setPower(0);
                         roueLanceur1.setPower(0);
@@ -278,12 +284,12 @@ public class autoFrontB extends OpMode {
 
             case 7:
                 shooter.update();
-                
+
                 if (!follower.isBusy()) {
                     follower.setMaxPower(0.7);
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
-                    
+
                     follower.setMaxPower(0.8);
                     follower.followPath(takepose2, true);// rammasse les balles
                     setPathState(8);
@@ -305,9 +311,11 @@ public class autoFrontB extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    shooter.startShooter(1260);//prepare le tire
+                    //shooter.startShooter(1260);//prepare le tire
+                    roueLanceur.setVelocity(1220);
+                    roueLanceur1.setVelocity(1220);
                     follower.setMaxPower(0.9);
-                    
+
                     follower.followPath(lance3, true);//vas a la position de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();

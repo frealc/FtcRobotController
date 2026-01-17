@@ -1,26 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.follower.Follower;
-import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-
-/*
- * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
- */
-
-@Autonomous(name = "auto back Bleu ", group = "Bleu")
-public class autoBackB extends OpMode {
+@Disabled
+@Autonomous
+public class AutoEdit extends OpMode {
 
     //gestion du shooter (utilise le code "shooter manager")
     private ShooterManager shooter;
@@ -58,21 +53,21 @@ public class autoBackB extends OpMode {
      *utilisé le code tuning (init puis right bumper 2 fois pour allé a Localization Test)
      * --> Localization --> Localization Test puis lancé le code
      */
-    private final Pose tirePose = new Pose(55.38, -12, -2.78);
+    private final Pose tirePose = new Pose(55.38, 12, 2.78);
 
-    private final Pose startPose = new Pose(58.91, -15.28, -3.17);
+    private final Pose startPose = new Pose(58.91, 15.28, 3.17);
 
 
-    private final Pose rotatest = new Pose(-1.7, -13.73, 1.84);
-    private final Pose correct = new Pose(17.37, -25.09, 1.19);
+    private final Pose rotatest = new Pose(-1.7, 13.73, -1.84);
+    private final Pose correct = new Pose(17.37, 25.09, -1.19);
 
-    private final Pose priseballe1 = new Pose(1.37, -42, 2.11);
-    private final Pose replace = new Pose(4, -30, 2.17);
+    private final Pose priseballe1 = new Pose(1.37, 42, -2.11);
+    private final Pose replace = new Pose(4, 30, -2.17);
 
-    private final Pose replace2 = new Pose(19, -19,2.17);
+    private final Pose replace2 = new Pose(19, 19,-2.17);
 
-    private final Pose priseballe2 = new Pose(30.91, -42,2.11);
-    private final Pose poseFinal = new Pose(55.38, -30, -2.78);
+    private final Pose priseballe2 = new Pose(30.91, 42,-2.11);
+    private final Pose poseFinal = new Pose(55.38, 30, 2.78);
 
     boolean shotLocked = false;
 
@@ -306,8 +301,8 @@ public class autoBackB extends OpMode {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
                     follower.setMaxPower(1);
-                    roueLanceur.setVelocity(1620);
-                    roueLanceur1.setVelocity(1620);//prepare le tire (a changé pour utilisé le start shooter)
+                    roueLanceur.setVelocity(1610);
+                    roueLanceur1.setVelocity(1610);//prepare le tire (a changé pour utilisé le start shooter)
 
                     //follower.followPath(replacepose, true);
                     setPathState(6);
@@ -361,8 +356,8 @@ public class autoBackB extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    roueLanceur.setVelocity(1620);
-                    roueLanceur1.setVelocity(1620); //prepare le tire (a changé pour utilisé le start shooter)
+                    roueLanceur.setVelocity(1610);
+                    roueLanceur1.setVelocity(1610); //prepare le tire (a changé pour utilisé le start shooter)
                     follower.setMaxPower(1);
 
                     follower.followPath(lance3, true);//vas a la position de tire

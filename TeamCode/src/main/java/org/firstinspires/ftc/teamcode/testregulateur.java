@@ -8,6 +8,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -21,6 +22,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
  */
 
+@Disabled
 @Configurable
 @Autonomous(name = "regulateur ", group = "test")
 public class testregulateur extends OpMode {
@@ -42,7 +44,7 @@ public class testregulateur extends OpMode {
     public static double kP = 0.0004;
     public static double kI = 0;
     public static double kD = 0.00005;
-    public static double kF = 1.0 / 2000.0;
+    public static double kF = 0.00048;
 
     // PID state
 
@@ -299,7 +301,7 @@ public class testregulateur extends OpMode {
 
 
             case 2:
-                stopMotorPID(roueLanceur, roueLanceur1);
+                setLauncherVelocityPID(roueLanceur, roueLanceur1, 1000);
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
                 chargement_manuel.setPower(0);
@@ -312,6 +314,7 @@ public class testregulateur extends OpMode {
             case 3:
 
                 if (!follower.isBusy()) {
+                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1000);
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);//fait touné les elastique
                     follower.setMaxPower(0.6);
@@ -326,7 +329,7 @@ public class testregulateur extends OpMode {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
                     follower.setMaxPower(1);
-                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1580);
+                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1550);
 
                     //follower.followPath(replacepose, true);
                     setPathState(5);
@@ -336,7 +339,7 @@ public class testregulateur extends OpMode {
             case 5:
 
                 if (!follower.isBusy()) {
-                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1580);
+                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1550);
                     follower.followPath(lance2, true);//vas a la pos de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();
@@ -347,13 +350,15 @@ public class testregulateur extends OpMode {
                 break;
             case 6:
                 if (!follower.isBusy()) {
-                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1580);
+                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1530);
                     while (roueLanceur.getVelocity() < 1500) {
                     } // attente
 
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(1);
                     pousseballe.setPosition(0.28); //commence a tiré
+                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1580);
+
                     if (System.currentTimeMillis() - startTime >= 5000) {
                         setLauncherVelocityPID(roueLanceur, roueLanceur1, 1000);
                         attrapeballe.setPower(0);
@@ -380,7 +385,7 @@ public class testregulateur extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1580);
+                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1550);
                     follower.setMaxPower(1);
 
                     follower.followPath(lance3, true);//vas a la position de tire
@@ -393,7 +398,7 @@ public class testregulateur extends OpMode {
             case 9:
                 // Attendre 2 secondes sans bloquer
                 if (!follower.isBusy()) {
-                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1580);
+                    setLauncherVelocityPID(roueLanceur, roueLanceur1, 1550);
                     while (roueLanceur.getVelocity() < 1500) {
                     } // attente
                     attrapeballe.setPower(1);
