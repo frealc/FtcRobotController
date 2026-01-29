@@ -16,13 +16,14 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 
 public class VisionTest {
-    private AprilTagProcessor aprilTagProcessor;
+    public AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     private static List<AprilTagDetection> detectedTags = new ArrayList<>();
 
@@ -31,24 +32,20 @@ public class VisionTest {
     public void init(HardwareMap hwMap,Telemetry telemetry){
         this.telemetry = telemetry;
 
-        aprilTagProcessor = new AprilTagProcessor.Builder()
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
+        aprilTag = new AprilTagProcessor.Builder()
                 .setOutputUnits(DistanceUnit.CM, AngleUnit.DEGREES)
                 .build();
 
         VisionPortal.Builder builder = new VisionPortal.Builder();
         builder.setCamera(hwMap.get(WebcamName.class, "Webcam 1"));
         builder.setCameraResolution(new Size(640, 480));
-        builder.addProcessor(aprilTagProcessor);
+        builder.addProcessor(aprilTag);
 
         visionPortal = builder.build();
     }
 
     public void update(){
-        detectedTags = aprilTagProcessor.getDetections();
+        detectedTags = aprilTag.getDetections();
     }
 
     public List<AprilTagDetection> getDetectedTags(){
@@ -56,25 +53,20 @@ public class VisionTest {
     }
 
 
-    public void DisplayDetectionTelemetry(AprilTagDetection detectedId){
+    public void updateTelemetry() {
+        List<AprilTagDetection> detections = aprilTag.getDetections();
 
-        if (detectedId==null){return;}
+        telemetry.addData("Nb Tags", detections.size());
 
-        if (detectedId.metadata != null) {
-
-            telemetry.addLine(String.format(Locale.US,"\n==== (ID %d) %s", detectedId.id, detectedId.metadata.name));
-
-            telemetry.addLine(String.format(Locale.US,"XYZ %.1f %.1f %.1f (inch)", detectedId.ftcPose.x, detectedId.ftcPose.y, detectedId.ftcPose.z));
-
-            telemetry.addLine(String.format(Locale.US,"PRY %.1f %.1f %.1f (deg)", detectedId.ftcPose.pitch, detectedId.ftcPose.roll, detectedId.ftcPose.yaw));
-
-            telemetry.addLine(String.format(Locale.US,"RBE %.1f %.1f %.1f (inch, deg)", detectedId.ftcPose.range, detectedId.ftcPose.bearing, detectedId.ftcPose.elevation));
-
-        } else {
-            telemetry.addLine(String.format(Locale.US,"\n==== (ID %d) Unknown", detectedId.id));
-
-            telemetry.addLine(String.format(Locale.US,"Center %.0f %.0f (pixels)", detectedId.center.x, detectedId.center.y));
+        for (AprilTagDetection tag : detections) {
+            telemetry.addLine("----------------");
+            telemetry.addData("ID", tag.id);
+            telemetry.addData("Distance (cm)", tag.ftcPose.range);
+            telemetry.addData("Bearing (deg)", tag.ftcPose.bearing);
+            telemetry.addData("Yaw (deg)", tag.ftcPose.yaw);
         }
+
+        telemetry.update();
     }
 
     public static AprilTagDetection getTagBySpecificId(int id){
@@ -93,3 +85,40 @@ public class VisionTest {
     }
 
 }
+
+
+
+
+
+/*
+VisionTest vision = new VisionTest();
+
+
+            vision.update();
+            AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
+*if (tag != null) {
+                vision.update();
+
+                yaw = tag.ftcPose.yaw;
+                range = tag.ftcPose.range;
+
+                telemetry.addData("Yaw", yaw);
+
+                if (range <= 100){
+                    Power = -0.5;
+                }else if (range >= 200){
+                    Power = 0.5;
+                }else {
+                    Power = 0;
+                }
+
+                if (yaw >= 6.5){
+                    tgtpowerRota = -0.5;
+                } else if (yaw <= -6.5){
+                    tgtpowerRota = 0.5;
+                } else {
+                    tgtpowerRota = 0;
+                }
+
+            }
+*/

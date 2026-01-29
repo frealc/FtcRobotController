@@ -305,9 +305,9 @@ public class autoBackB extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    follower.setMaxPower(1);
-                    roueLanceur.setVelocity(1620);
-                    roueLanceur1.setVelocity(1620);//prepare le tire (a changé pour utilisé le start shooter)
+                    follower.setMaxPower(0.85);
+                    roueLanceur.setVelocity(1630);
+                    roueLanceur1.setVelocity(1630);//prepare le tire (a changé pour utilisé le start shooter)
 
                     //follower.followPath(replacepose, true);
                     setPathState(6);
@@ -361,9 +361,9 @@ public class autoBackB extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    roueLanceur.setVelocity(1620);
-                    roueLanceur1.setVelocity(1620); //prepare le tire (a changé pour utilisé le start shooter)
-                    follower.setMaxPower(1);
+                    roueLanceur.setVelocity(1630);
+                    roueLanceur1.setVelocity(1630); //prepare le tire (a changé pour utilisé le start shooter)
+                    follower.setMaxPower(0.85);
 
                     follower.followPath(lance3, true);//vas a la position de tire
                     startTime = 0;

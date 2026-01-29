@@ -1,417 +1,272 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.BezierCurve;
-import com.pedropathing.geometry.BezierLine;
-import com.pedropathing.geometry.Pose;
-import com.pedropathing.paths.PathChain;
-import com.pedropathing.util.Timer;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
-@Disabled
-@Autonomous
-public class AutoEdit extends OpMode {
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-    //gestion du shooter (utilise le code "shooter manager")
-    private ShooterManager shooter;
-    private long startTime = 0;
 
-    int shotCount = 0;
-    boolean wasShooterReady = false;
-    static final double SHOOTER_HIGH = 1680;
-    static final double SHOOTER_READY = 1640;
-    static final double SHOOTER_LOW   = 1550;
+/*
+ *
+ * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
+ *
+ */
+@TeleOp
+public class AutoEdit extends LinearOpMode {
 
-    // Hardware
+    /**/
+    private DcMotorEx LeftFront;
+    private DcMotorEx LeftBack;
+    private DcMotorEx RightFront;
+    private DcMotorEx RightBack;
     private DcMotorEx roueLanceur;
 
     private DcMotorEx roueLanceur1;
-    private CRServo attrapeballe;
-
     private Servo pousseballe;
 
-    private CRServo chargement_manuel;
+    private CRServo attrapeballe;
+
     private CRServo roue_a_balle;
-    boolean timerStarted = false;
+    private CRServo chargement_manuel;
+
+
     private Follower follower;
-
-
-    /*
-     *PEDRO PATHING
-     */
-    private Timer pathTimer, actionTimer, opmodeTimer;
-
-    private int pathState;
-
-    /*
-     *creation des positions utilisé sur le terrain
-     *utilisé le code tuning (init puis right bumper 2 fois pour allé a Localization Test)
-     * --> Localization --> Localization Test puis lancé le code
-     */
-    private final Pose tirePose = new Pose(55.38, 12, 2.78);
-
-    private final Pose startPose = new Pose(58.91, 15.28, 3.17);
-
-
-    private final Pose rotatest = new Pose(-1.7, 13.73, -1.84);
-    private final Pose correct = new Pose(17.37, 25.09, -1.19);
-
-    private final Pose priseballe1 = new Pose(1.37, 42, -2.11);
-    private final Pose replace = new Pose(4, 30, -2.17);
-
-    private final Pose replace2 = new Pose(19, 19,-2.17);
-
-    private final Pose priseballe2 = new Pose(30.91, 42,-2.11);
-    private final Pose poseFinal = new Pose(55.38, 30, 2.78);
-
-    boolean shotLocked = false;
-
-    /*
-     *creation des nom pour les chemins du robot
-     */
-    private PathChain tire, gotopose1, takepose1, lance2, gotopose2, takepose2, lance3, replacepose, fin;
+    VisionTest vision = new VisionTest();
 
 
     @Override
-    public void init() {
-        // ---- HARDWARE ----
-        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
-        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
-        chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
+    public void runOpMode() {
+
+        /*
+         *associe les nom données a ce qui est brancher sur le control hub
+         *Bien pensé a mettre les moteur, servo etc... dans le driver hub (... --> configure Robot --> edit .....)
+         */
+
+        LeftFront = hardwareMap.get(DcMotorEx.class, "LeftFront");
+        LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
+        RightFront = hardwareMap.get(DcMotorEx.class, "RightFront");
+        RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
+        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
+        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
-        //dis a shooter manager les element utilisé
-        shooter = new ShooterManager(
-                roueLanceur,
-                roueLanceur1,
-                pousseballe,
-                attrapeballe,
-                roue_a_balle
-        );
 
-        // ---- FOLLOWER / PATHS ----
+        //creation des variables utilisé dans le code
+
+        double yaw = 0;
+        double range = 0;
+        double bearing = 0;
+
+
+        double tgtpowerRota = 0;
+        double varY = 0;
+        double varX = 0;
+
+
+        double varYpos = 0;
+        double varXpos = 0;
+
+        vision.init(hardwareMap, telemetry);
+
+
+
+
+
+        boolean PrecisionMode = false; //precision mis en faux quand initialisé
+
+
+        Gamepad manette1 = this.gamepad1; //donne le nom "manette1 "
+        Gamepad manette2 = this.gamepad2;
+
+
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startPose);
-
-        buildPaths();
-        pathTimer = new Timer();
-    }
-
-    /*
-     *creation des chemins du robot
-     * bien pensé a mettre un nom dans le pathChain avant de crée un chemin
-     *
-     * methode :  mettre un .addPath et dire le type de chemin, Bezier Line ou Curve.
-     * Line (2 position a rensègner): fait un chemin en ligne d'une position a une autre
-     * curve (3 position a rensègner): fait une courbe d'une position a une autre en passant par un point
-     * 1ere pos : position de départ, 2eme pos : position de passage de la courbe, 3eme pos : position de fin
-     *
-     * ensuite mettre le .setLinearHeadingInterpolation
-     * sert a mettre l'orientation de debut et de fin du robot
-     */
-    public void buildPaths() {
-        /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
-
-
-    /* Here is an example for Constant Interpolation
-    scorePreload.setConstantInterpolation(tirePose.getHeading()); */
-        /* This is our grabPickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        tire = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, tirePose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), tirePose.getHeading())
-                .build();
-
-        gotopose1 = follower.pathBuilder()
-                .addPath(new BezierLine(tirePose, rotatest))
-                .setLinearHeadingInterpolation(tirePose.getHeading(), rotatest.getHeading())
-                .build();
-
-        takepose1 = follower.pathBuilder()
-                .addPath(new BezierCurve(rotatest, correct, priseballe1))
-                .setLinearHeadingInterpolation(correct.getHeading(), priseballe1.getHeading())
-                .build();
-        /*replacepose = follower.pathBuilder()
-                .addPath(new BezierLine(priseballe1, replace))
-                .setLinearHeadingInterpolation(priseballe1.getHeading(), replace.getHeading())
-                .build();*/
-
-        lance2 = follower.pathBuilder()
-                .addPath(new BezierCurve(priseballe1, replace, tirePose))
-                .setLinearHeadingInterpolation(priseballe1.getHeading(), tirePose.getHeading())
-                .build();
-
-        /*gotopose2 = follower.pathBuilder()
-                .addPath(new BezierLine(tirePose, pose2))
-                .setLinearHeadingInterpolation(tirePose.getHeading(), pose2.getHeading())
-                .build();*/
-
-        takepose2 = follower.pathBuilder()
-                .addPath(new BezierCurve(tirePose, replace2, priseballe2))
-                .setLinearHeadingInterpolation(replace2.getHeading(), priseballe2.getHeading())
-                .build();
-        /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
-        lance3 =    follower.pathBuilder()
-                .addPath(new BezierLine(priseballe2, tirePose))
-                .setLinearHeadingInterpolation(priseballe2.getHeading(), tirePose.getHeading())
-                .build();
-        fin =    follower.pathBuilder()
-                .addPath(new BezierLine(tirePose, poseFinal))
-                .setLinearHeadingInterpolation(tirePose.getHeading(), poseFinal.getHeading())
-                .build();
-
-    }
-
-    //initialise les timer
-    @Override
-    public void start() {
-        pathState = 0;
-        startTime = System.currentTimeMillis();
-        pathTimer.resetTimer();
-    }
-
-
-    //met des debug et update les etapes en boucle
-    @Override
-    public void loop() {
-        // Update shooter et follower
-        shooter.update();
+        follower.setStartingPose(SharedPose.finalPose);   // position de fin de l'auto
         follower.update();
 
-        // Mise à jour des paths
-        autonomousPathUpdate();
-
-        // Debug
-        telemetry.addData("State", pathState);
-        telemetry.addData("Shooter RPM", roueLanceur.getVelocity());
-        telemetry.update();
-
-        Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour acceder au panel)
-    }
 
 
-    /*
-     * Debut des chemin
-     */
-    private void autonomousPathUpdate() {
-        switch (pathState) {
+        waitForStart();
 
-            case 0:
-                if(!follower.isBusy()) {
-                    //shooter.startShooter(1615);
-                    roueLanceur.setVelocity(1610);
-                    roueLanceur1.setVelocity(1610);// lance les roues de tire a un Tick/s ciblé
-                    //follower.followPath(tire, true);//vas a la position de tire
-                    startTime = System.currentTimeMillis();//lance un timer
-                    setPathState(1);//passe a la prochaine étape
+
+        while (opModeIsActive()) {
+            vision.update();
+            AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
+
+            /* *******************************************
+             **********************************************
+             * MANETTE 1 : PILOTE DEPLACEMENT
+             **********************************************
+             ********************************************** */
+
+            varY = manette1.left_stick_y;
+            varX = manette1.left_stick_x;
+
+
+
+            // utilisé sur un ancien code pour les mettre en valeur absolue, inutile ici
+            //varYpos = varY;
+            //varXpos = varX;
+
+
+            double Power = varY;
+            double strafe = varX;
+
+
+
+
+            if (manette1.left_trigger > 0 && manette1.right_trigger > 0) { //rotation avec les trigger
+                tgtpowerRota=0;
+            }
+            else if (manette1.left_trigger > 0) {
+                tgtpowerRota=1;
+            } else if (manette1.right_trigger > 0) {
+                tgtpowerRota=-1;
+            }
+            else {
+                tgtpowerRota=0;
+            }
+
+            //active le mode precision quand b est appuyé et le desactive quand b est re appuyé
+            if (gamepad1.b) {
+                PrecisionMode = !PrecisionMode;
+                sleep(250);
+            }
+
+            double divisor = PrecisionMode ? 3.5 : 1.0; //quand precision activé, change le chiffre a 3, puis le repasse a 1 quand desactivé
+
+
+            if (tag != null) {
+                vision.update();
+
+                yaw = tag.ftcPose.yaw;
+                range = tag.ftcPose.range;
+                bearing = tag.ftcPose.bearing;
+
+                /*if (range <= 100){
+                    Power = 0.5;
+                }else if (range >= 200){
+                    Power = -0.5;
+                }else {
+                    Power = 0;
+                }*/
+
+                if(manette1.x) {
+
+                    vision.update();
+
+                        yaw = tag.ftcPose.yaw;
+                        range = tag.ftcPose.range;
+                        bearing = tag.ftcPose.bearing;
+
+                        vision.update();
+                        if (bearing >= 2) {
+                            tgtpowerRota = -0.5;
+                        } else if (bearing <= -2) {
+                            tgtpowerRota = 0.5;
+                        } else {
+                            tgtpowerRota = 0;
+                        }
+                        vision.updateTelemetry();
+
+                        //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
+
+
+
+                    //bearing = lateral
+                    //yaw = angle
+                    //range = distance
+
+                    //tire proche = 240cm --> 1340 tick/s
+                    //tire loin == 400cm --> 1675 tick/s
+
+
                 }
-                break;
-
-            case 1 :
-                if(!follower.isBusy()){
-                    if( System.currentTimeMillis() - startTime >= 1500) {
-                        follower.followPath(tire, true);
-                        setPathState(2);
-                    }
+                double f = 2.09375*tag.ftcPose.range+837.5;
+                if (manette2.right_bumper){
+                    roueLanceur1.setVelocity(-f);
                 }
+                telemetry.addData("vitesse de F = ", -f); //arrive pas a monté car monte petit a petit
 
-            case 2:
-                shooter.update();
-                if (follower.isBusy()) break;
+            }
 
-                double velocity = roueLanceur.getVelocity();
-                telemetry.addData("Shooter velocity", velocity);
-                telemetry.addData("Shots", shotCount);
-
-
-                attrapeballe.setPower(-0.1);
-                roue_a_balle.setPower(-0.1);
-                pousseballe.setPosition(0.28);
-
-                /*
-                 * gestion de la plaque tournante avec vitesse moteur
-                 */
-
-                if (velocity >= SHOOTER_READY && !shotLocked/* && velocity < SHOOTER_HIGH*/) {
-                    chargement_manuel.setPower(0.4);//si les moteur sont pareil que shooter ready, fait tourné la plaque
-                } else {
-                    chargement_manuel.setPower(0);
-                }
+            //gestion des moteur pour deplacement
+            RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
+            LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
+            RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
+            LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor+0.2));
 
 
+            /* ************************************
+             ***************************************
+             * MANETTE 2 : PILOTE TIRE
+             ***************************************
+             * **************************************/
 
-                if (velocity <= SHOOTER_LOW && !shotLocked) {
-                    shotCount++;
-                    shotLocked = true;
-                    /*
-                     *quand la premiere balle est tiré, moteur baisse en vitesse
-                     * ajout 1 au compte de balle tiré
-                     */
-                }
+            if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
+                roueLanceur.setVelocity(-1675);
+                roueLanceur1.setVelocity(-1675);
+            } else if (manette2.left_trigger > 0) {
+                roueLanceur.setVelocity(-1360);
+                roueLanceur1.setVelocity(-1360);
+            } //PROBLEME AVEC CETTE METHODE :
+            //le moteur dois allé a la vitesse max (1800 tick/s) avant de redescendre a la vitesse demandé
 
+            else if (manette2.dpad_left) {
+                roueLanceur.setVelocity(1275);
+                roueLanceur1.setVelocity(1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
+            } else {
+                roueLanceur.setPower(0);
+                roueLanceur1.setPower(0);
+            }
 
-                if (velocity >= (SHOOTER_READY)/* && velocity < SHOOTER_HIGH*/) {
-                    shotLocked = false;
-                }
-
-
-                if (shotCount >= 4 || System.currentTimeMillis() - startTime >= 10000) {
-                    // quant toute les balles sont tiré ou 10s sont passé, arrete tout
-                    chargement_manuel.setPower(0);
-                    shotCount = 0;
-                    shotLocked = false;
-                    setPathState(3);//passe a la prochaine étape
-                }
-
-                break;
-
-
-
-            case 3:
-                shooter.stopShooter();
+            //faire tourné les elastique pour recup les balles
+            if (manette2.x) {
+                attrapeballe.setPower(1);
+                roue_a_balle.setPower(-1);
+            } else if (manette2.dpad_down) {
+                attrapeballe.setPower(-1);
+                roue_a_balle.setPower(1);
+            } else if (manette2.a) {
+                attrapeballe.setPower(-1);
+                roue_a_balle.setPower(1);
+            } else if (manette2.b) {
+                attrapeballe.setPower(1);
+                roue_a_balle.setPower(-1);
+            } else {
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
-                chargement_manuel.setPower(0);
+            }
+
+            if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
+                pousseballe.setPosition(0.29);
+            } else {
                 pousseballe.setPosition(0.41);
-                // Lancer le path suivant
-                follower.followPath(gotopose1, true); //se pose devant les balles au sol (a probablement enlevé)
-                setPathState(4);
-                break;
+            }
 
-            case 4:
-
-                if (!follower.isBusy()) {
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);//fait touné les elastique
-                    follower.setMaxPower(0.6);
-
-                    follower.followPath(takepose1, true); //rammasse les balle
-                    setPathState(5);
-                }
-                break;
-            case 5:
-
-                if (!follower.isBusy()) {
-                    attrapeballe.setPower(0);
-                    roue_a_balle.setPower(0);
-                    follower.setMaxPower(1);
-                    roueLanceur.setVelocity(1610);
-                    roueLanceur1.setVelocity(1610);//prepare le tire (a changé pour utilisé le start shooter)
-
-                    //follower.followPath(replacepose, true);
-                    setPathState(6);
-                }
-                break;
-
-            case 6:
-
-                if (!follower.isBusy()) {
-
-                    follower.followPath(lance2, true);//vas a la pos de tire
-                    startTime = 0;
-                    startTime = System.currentTimeMillis();
-                    setPathState(7);
+            chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
 
 
-                }
-                break;
-            case 7:
-                if (!follower.isBusy()) {
-                    while (roueLanceur.getVelocity() < 1500) {
-                    } // attente
 
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
-                    pousseballe.setPosition(0.28); //commence a tiré
-                    if (System.currentTimeMillis() - startTime >= 5000) {
-                        roueLanceur.setVelocity(900);
-                        roueLanceur1.setVelocity(900);
-                        attrapeballe.setPower(0);
-                        pousseballe.setPosition(0.41);
-                        // Lancer le path suivant
-                        //follower.followPath(gotopose2, true);
-                        setPathState(8); //apres 5s passé au total, passe a la prochaine etape
-                    }
-                }
-                break;
-            case 8:
 
-                if (!follower.isBusy()) {
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
-
-                    follower.setMaxPower(0.7);
-                    follower.followPath(takepose2, true); // rammasse les balles
-                    setPathState(9);
-                }
-                break;
-            case 9:
-
-                if (!follower.isBusy()) {
-                    attrapeballe.setPower(0);
-                    roue_a_balle.setPower(0);
-                    roueLanceur.setVelocity(1610);
-                    roueLanceur1.setVelocity(1610); //prepare le tire (a changé pour utilisé le start shooter)
-                    follower.setMaxPower(1);
-
-                    follower.followPath(lance3, true);//vas a la position de tire
-                    startTime = 0;
-                    startTime = System.currentTimeMillis();
-                    setPathState(10);
-
-                }
-                break;
-            case 10:
-                // Attendre 2 secondes sans bloquer
-                if (!follower.isBusy()) {
-                    while (roueLanceur.getVelocity() < 1500) {
-                    } // attente
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
-                    pousseballe.setPosition(0.28); // tire les balles
-                    if (System.currentTimeMillis() - startTime >= 4000) {
-                        attrapeballe.setPower(0);
-                        roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.41);
-                        setPathState(11); // apres 4s au total passe a la prochaine etape
-                    }
-                }
-                break;
-
-            case 11:
-                // Attendre 2 secondes sans bloquer
-                if (!follower.isBusy()) {
-                    follower.followPath(fin, true);
-                    setPathState(12); // sort de la zone de tire
-                }
-                break;
-            case 12:
-                shooter.stopShooter();
-                setPathState(13);
-                break; // fin
+            /*
+             * TELEMETRY (affichage de données sur la tablette pour débug)
+             */
+            telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
+            telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
+            telemetry.addData("vitesse roue avant droite", RightFront.getVelocity());
+            telemetry.addData("vitesse roue avant gauche", LeftFront.getVelocity());
+            telemetry.addData("vitesse roue arriere droite", RightBack.getVelocity());
+            telemetry.addData("vitesse roue arriere gauche", LeftBack.getVelocity());
+            telemetry.addData("vitesse chargement manuelle", chargement_manuel.getPower());
+            telemetry.update();
         }
-    }
-
-    /*
-     * a l'arret du code, enregistre la derniere position pour le teleop
-     */
-    @Override
-    public void stop() {
-
-        SharedPose.finalPose = new Pose(
-                follower.getPose().getX(),
-                follower.getPose().getY(),
-                follower.getPose().getHeading());
-    }
-
-    private void setPathState(int s) {
-        pathState = s;
-        pathTimer.resetTimer();
     }
 }

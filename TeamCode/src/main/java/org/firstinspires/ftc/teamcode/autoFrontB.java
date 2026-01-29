@@ -58,7 +58,7 @@ public class autoFrontB extends OpMode {
     private final Pose tirePose = new Pose(-22.12, -13.29, -2.30);
 
     private final Pose correct1 = new Pose(-13.15, -23.25, 1.54);
-    private final Pose priseballe1 = new Pose(-15.42, -45.22, 1.57);
+    private final Pose priseballe1 = new Pose(-15.42, -42.22, 1.57);
     private final Pose faceOuverture = new Pose(-4.25,-40.13, 3.13);
     //private final Pose Ouverture = new Pose(-4.25, 56.58, -3.13);
     private final Pose replace = new Pose(-3.25, -52.58, -2.61);

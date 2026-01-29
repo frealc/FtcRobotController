@@ -82,7 +82,6 @@ public class DECODEmanette extends LinearOpMode {
 
 
         while (opModeIsActive()) {
-            follower.update();
 
             /* *******************************************
             **********************************************
@@ -102,7 +101,6 @@ public class DECODEmanette extends LinearOpMode {
 
             double Power = varY;
             double strafe = varX;
-            double Rotate = tgtpowerRota;
 
 
 
@@ -132,7 +130,7 @@ public class DECODEmanette extends LinearOpMode {
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
             LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
             RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
-            LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor));
+            LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor+0.2));
 
 
             /* ************************************
@@ -142,17 +140,17 @@ public class DECODEmanette extends LinearOpMode {
             * **************************************/
 
             if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
-                roueLanceur.setVelocity(1675);
-                roueLanceur1.setVelocity(1675);
+                roueLanceur.setVelocity(-1675);
+                roueLanceur1.setVelocity(-1675);
             } else if (manette2.left_trigger > 0) {
-                roueLanceur.setVelocity(1360);
-                roueLanceur1.setVelocity(1360);
+                roueLanceur.setVelocity(-1360);
+                roueLanceur1.setVelocity(-1360);
             } //PROBLEME AVEC CETTE METHODE :
             //le moteur dois allé a la vitesse max (1800 tick/s) avant de redescendre a la vitesse demandé
 
             else if (manette2.dpad_left) {
-                roueLanceur.setVelocity(-1275);
-                roueLanceur1.setVelocity(-1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
+                roueLanceur.setVelocity(1275);
+                roueLanceur1.setVelocity(1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
             } else {
                 roueLanceur.setPower(0);
                 roueLanceur1.setPower(0);
@@ -161,16 +159,16 @@ public class DECODEmanette extends LinearOpMode {
             //faire tourné les elastique pour recup les balles
             if (manette2.x) {
                 attrapeballe.setPower(1);
-                roue_a_balle.setPower(1);
+                roue_a_balle.setPower(-1);
             } else if (manette2.dpad_down) {
                 attrapeballe.setPower(-1);
-                roue_a_balle.setPower(-1);
+                roue_a_balle.setPower(1);
             } else if (manette2.a) {
                 attrapeballe.setPower(-1);
-                roue_a_balle.setPower(-1);
+                roue_a_balle.setPower(1);
             } else if (manette2.b) {
                 attrapeballe.setPower(1);
-                roue_a_balle.setPower(1);
+                roue_a_balle.setPower(-1);
             } else {
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
@@ -185,7 +183,7 @@ public class DECODEmanette extends LinearOpMode {
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
 
 
-            Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour acceder au panel)
+
 
             /*
             * TELEMETRY (affichage de données sur la tablette pour débug)

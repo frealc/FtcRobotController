@@ -63,15 +63,15 @@ public class autoBackR extends OpMode {
     private final Pose startPose = new Pose(58.91, 15.28, 3.17);
 
 
-    private final Pose rotatest = new Pose(-1.7, 13.73, -1.84);
+    private final Pose rotatest = new Pose(11, 13.73, -1.57);
     private final Pose correct = new Pose(17.37, 25.09, -1.19);
 
-    private final Pose priseballe1 = new Pose(1.37, 42, -2.11);
+    private final Pose priseballe1 = new Pose(11, 56, -1.57);
     private final Pose replace = new Pose(4, 30, -2.17);
 
-    private final Pose replace2 = new Pose(19, 19,-2.17);
+    private final Pose replace2 = new Pose(19, 19,-1.57);
 
-    private final Pose priseballe2 = new Pose(30.91, 42,-2.11);
+    private final Pose priseballe2 = new Pose(29, 56,-1.57);
     private final Pose poseFinal = new Pose(55.38, 30, 2.78);
 
     boolean shotLocked = false;
@@ -139,17 +139,17 @@ public class autoBackR extends OpMode {
                 .build();
 
         takepose1 = follower.pathBuilder()
-                .addPath(new BezierCurve(rotatest, correct, priseballe1))
-                .setLinearHeadingInterpolation(correct.getHeading(), priseballe1.getHeading())
+                .addPath(new BezierLine(rotatest, priseballe1))
+                .setLinearHeadingInterpolation(rotatest.getHeading(), priseballe1.getHeading())
                 .build();
-        /*replacepose = follower.pathBuilder()
+        replacepose = follower.pathBuilder()
                 .addPath(new BezierLine(priseballe1, replace))
                 .setLinearHeadingInterpolation(priseballe1.getHeading(), replace.getHeading())
-                .build();*/
+                .build();
 
         lance2 = follower.pathBuilder()
-                .addPath(new BezierCurve(priseballe1, replace, tirePose))
-                .setLinearHeadingInterpolation(priseballe1.getHeading(), tirePose.getHeading())
+                .addPath(new BezierLine(replace, tirePose))
+                .setLinearHeadingInterpolation(replace.getHeading(), tirePose.getHeading())
                 .build();
 
         /*gotopose2 = follower.pathBuilder()
@@ -210,8 +210,8 @@ public class autoBackR extends OpMode {
             case 0:
                 if(!follower.isBusy()) {
                     //shooter.startShooter(1615);
-                    roueLanceur.setVelocity(1610);
-                    roueLanceur1.setVelocity(1610);// lance les roues de tire a un Tick/s ciblé
+
+                    roueLanceur1.setVelocity(-1610);// lance les roues de tire a un Tick/s ciblé
                     //follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape
@@ -230,7 +230,7 @@ public class autoBackR extends OpMode {
                 shooter.update();
                 if (follower.isBusy()) break;
 
-                double velocity = roueLanceur.getVelocity();
+                double velocity = -roueLanceur1.getVelocity();
                 telemetry.addData("Shooter velocity", velocity);
                 telemetry.addData("Shots", shotCount);
 
@@ -293,7 +293,7 @@ public class autoBackR extends OpMode {
 
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);//fait touné les elastique
+                    roue_a_balle.setPower(-1);//fait touné les elastique
                     follower.setMaxPower(0.6);
 
                     follower.followPath(takepose1, true); //rammasse les balle
@@ -303,13 +303,10 @@ public class autoBackR extends OpMode {
             case 5:
 
                 if (!follower.isBusy()) {
-                    attrapeballe.setPower(0);
-                    roue_a_balle.setPower(0);
                     follower.setMaxPower(1);
-                    roueLanceur.setVelocity(1620);
-                    roueLanceur1.setVelocity(1620);//prepare le tire (a changé pour utilisé le start shooter)
-
-                    //follower.followPath(replacepose, true);
+                    attrapeballe.setPower(0.5);
+                    roue_a_balle.setPower(-0.5);
+                    follower.followPath(replacepose, true);
                     setPathState(6);
                 }
                 break;
@@ -317,10 +314,13 @@ public class autoBackR extends OpMode {
             case 6:
 
                 if (!follower.isBusy()) {
+                    attrapeballe.setPower(0);
+                    roue_a_balle.setPower(0);
 
                     follower.followPath(lance2, true);//vas a la pos de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();
+                    roueLanceur1.setVelocity(-1620);
                     setPathState(7);
 
 
@@ -328,15 +328,13 @@ public class autoBackR extends OpMode {
                 break;
             case 7:
                 if (!follower.isBusy()) {
-                    while (roueLanceur.getVelocity() < 1500) {
-                    } // attente
+
 
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
+                    roue_a_balle.setPower(-1);
                     pousseballe.setPosition(0.28); //commence a tiré
                     if (System.currentTimeMillis() - startTime >= 5000) {
-                        roueLanceur.setVelocity(900);
-                        roueLanceur1.setVelocity(900);
+                        roueLanceur1.setVelocity(-900);
                         attrapeballe.setPower(0);
                         pousseballe.setPosition(0.41);
                         // Lancer le path suivant
@@ -349,7 +347,7 @@ public class autoBackR extends OpMode {
 
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
+                    roue_a_balle.setPower(-1);
 
                     follower.setMaxPower(0.7);
                     follower.followPath(takepose2, true); // rammasse les balles
@@ -361,9 +359,8 @@ public class autoBackR extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    roueLanceur.setVelocity(1620);
-                    roueLanceur1.setVelocity(1620); //prepare le tire (a changé pour utilisé le start shooter)
-                    follower.setMaxPower(1);
+                    roueLanceur1.setVelocity(-1620); //prepare le tire (a changé pour utilisé le start shooter)
+                    follower.setMaxPower(0.85);
 
                     follower.followPath(lance3, true);//vas a la position de tire
                     startTime = 0;
@@ -375,10 +372,9 @@ public class autoBackR extends OpMode {
             case 10:
                 // Attendre 2 secondes sans bloquer
                 if (!follower.isBusy()) {
-                    while (roueLanceur.getVelocity() < 1500) {
-                    } // attente
+
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
+                    roue_a_balle.setPower(-1);
                     pousseballe.setPosition(0.28); // tire les balles
                     if (System.currentTimeMillis() - startTime >= 4000) {
                         attrapeballe.setPower(0);
