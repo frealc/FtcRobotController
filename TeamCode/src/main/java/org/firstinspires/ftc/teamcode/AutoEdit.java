@@ -193,7 +193,7 @@ public class AutoEdit extends LinearOpMode {
                 if (manette2.right_bumper){
                     roueLanceur1.setVelocity(-f);
                 }
-                telemetry.addData("vitesse de F = ", -f); //arrive pas a monté car monte petit a petit
+                telemetry.addData("vitesse de F = ", -f); //arrive pas a monté
 
             }
 

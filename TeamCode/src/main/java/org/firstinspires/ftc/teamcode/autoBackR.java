@@ -236,7 +236,7 @@ public class autoBackR extends OpMode {
 
 
                 attrapeballe.setPower(-0.1);
-                roue_a_balle.setPower(-0.1);
+                roue_a_balle.setPower(0.1);
                 pousseballe.setPosition(0.28);
 
                 /*
