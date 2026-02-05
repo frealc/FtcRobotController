@@ -69,9 +69,10 @@ public class autoBackR extends OpMode {
     private final Pose priseballe1 = new Pose(11, 56, -1.57);
     private final Pose replace = new Pose(4, 30, -2.17);
 
-    private final Pose replace2 = new Pose(19, 19,-1.57);
+    private final Pose replace2 = new Pose(36, 19,-1.57);
 
-    private final Pose priseballe2 = new Pose(29, 56,-1.57);
+    private final Pose priseballe2 = new Pose(36
+            , 56,-1.57);
     private final Pose poseFinal = new Pose(55.38, 30, 2.78);
 
     boolean shotLocked = false;
@@ -152,15 +153,16 @@ public class autoBackR extends OpMode {
                 .setLinearHeadingInterpolation(replace.getHeading(), tirePose.getHeading())
                 .build();
 
-        /*gotopose2 = follower.pathBuilder()
-                .addPath(new BezierLine(tirePose, pose2))
-                .setLinearHeadingInterpolation(tirePose.getHeading(), pose2.getHeading())
-                .build();*/
+        gotopose2 = follower.pathBuilder()
+                .addPath(new BezierLine(tirePose, replace2))
+                .setLinearHeadingInterpolation(tirePose.getHeading(), replace2.getHeading())
+                .build();
 
         takepose2 = follower.pathBuilder()
-                .addPath(new BezierCurve(tirePose, replace2, priseballe2))
+                .addPath(new BezierLine(replace2,priseballe2))
                 .setLinearHeadingInterpolation(replace2.getHeading(), priseballe2.getHeading())
                 .build();
+
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         lance3 =    follower.pathBuilder()
                 .addPath(new BezierLine(priseballe2, tirePose))
@@ -237,7 +239,7 @@ public class autoBackR extends OpMode {
 
                 attrapeballe.setPower(-0.1);
                 roue_a_balle.setPower(0.1);
-                pousseballe.setPosition(0.28);
+                pousseballe.setPosition(0.27);
 
                 /*
                 * gestion de la plaque tournante avec vitesse moteur
@@ -316,11 +318,10 @@ public class autoBackR extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-
+                    roueLanceur1.setVelocity(-1610);
                     follower.followPath(lance2, true);//vas a la pos de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();
-                    roueLanceur1.setVelocity(-1620);
                     setPathState(7);
 
 
@@ -329,16 +330,16 @@ public class autoBackR extends OpMode {
             case 7:
                 if (!follower.isBusy()) {
 
-
+                    roueLanceur1.setVelocity(-1610);
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(-1);
-                    pousseballe.setPosition(0.28); //commence a tiré
-                    if (System.currentTimeMillis() - startTime >= 5000) {
+                    pousseballe.setPosition(0.27); //commence a tiré
+                    if (System.currentTimeMillis() - startTime >= 8000) {
                         roueLanceur1.setVelocity(-900);
                         attrapeballe.setPower(0);
                         pousseballe.setPosition(0.41);
                         // Lancer le path suivant
-                        //follower.followPath(gotopose2, true);
+                        follower.followPath(gotopose2, true);
                         setPathState(8); //apres 5s passé au total, passe a la prochaine etape
                     }
                 }
@@ -375,7 +376,7 @@ public class autoBackR extends OpMode {
 
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(-1);
-                    pousseballe.setPosition(0.28); // tire les balles
+                    pousseballe.setPosition(0.27); // tire les balles
                     if (System.currentTimeMillis() - startTime >= 4000) {
                         attrapeballe.setPower(0);
                         roue_a_balle.setPower(0);

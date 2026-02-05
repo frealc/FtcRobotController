@@ -15,6 +15,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 
 @TeleOp
+@Disabled
 public class VisionUse extends LinearOpMode {
     VisionTest vision = new VisionTest();
 

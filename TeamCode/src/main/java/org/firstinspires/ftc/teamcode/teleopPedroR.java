@@ -5,6 +5,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.Supplier;
  * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
  */
 @TeleOp(name = "DECODEpedro rouge", group = "DecodePedro")
+@Disabled
 public class teleopPedroR extends LinearOpMode {
 
 

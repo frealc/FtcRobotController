@@ -16,7 +16,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
  * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
  *
  */
-@TeleOp
+@TeleOp(name = "DECODEmanette bleu")
 public class AutoEdit extends LinearOpMode {
 
     /**/
@@ -64,6 +64,7 @@ public class AutoEdit extends LinearOpMode {
         double yaw = 0;
         double range = 0;
         double bearing = 0;
+        double f = 0;
 
 
         double tgtpowerRota = 0;
@@ -98,7 +99,7 @@ public class AutoEdit extends LinearOpMode {
 
         while (opModeIsActive()) {
             vision.update();
-            AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
+            AprilTagDetection tag = VisionTest.getTagBySpecificId(30);
 
             /* *******************************************
              **********************************************
@@ -150,33 +151,25 @@ public class AutoEdit extends LinearOpMode {
                 range = tag.ftcPose.range;
                 bearing = tag.ftcPose.bearing;
 
-                /*if (range <= 100){
-                    Power = 0.5;
-                }else if (range >= 200){
-                    Power = -0.5;
-                }else {
-                    Power = 0;
-                }*/
-
                 if(manette1.x) {
 
                     vision.update();
 
-                        yaw = tag.ftcPose.yaw;
-                        range = tag.ftcPose.range;
-                        bearing = tag.ftcPose.bearing;
+                    vision.update();
+                    if (bearing >= 2 && divisor == 1) {
+                        tgtpowerRota = -0.5/3.5;
+                    } else if (bearing <= -2 && divisor == 1) {
+                        tgtpowerRota = 0.5/3.5;
+                    } else if (bearing >= 2 && divisor == 3.5){
+                        tgtpowerRota = -0.5;
+                    } else if (bearing <= -2 && divisor == 3.5){
+                        tgtpowerRota = 0.5;
+                    } else {
+                        tgtpowerRota = 0;
+                    }
+                    vision.updateTelemetry();
 
-                        vision.update();
-                        if (bearing >= 2) {
-                            tgtpowerRota = -0.5;
-                        } else if (bearing <= -2) {
-                            tgtpowerRota = 0.5;
-                        } else {
-                            tgtpowerRota = 0;
-                        }
-                        vision.updateTelemetry();
-
-                        //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
+                    //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
 
 
 
@@ -189,13 +182,15 @@ public class AutoEdit extends LinearOpMode {
 
 
                 }
-                double f = 2.09375*tag.ftcPose.range+837.5;
-                if (manette2.right_bumper){
-                    roueLanceur1.setVelocity(-f);
-                }
-                telemetry.addData("vitesse de F = ", -f); //arrive pas a monté
+                //f = 2.09375*tag.ftcPose.range+837.5;
+
 
             }
+
+            /*if (manette2.right_bumper){
+                roueLanceur1.setVelocity(-f);
+            }
+            telemetry.addData("vitesse de F = ", -f); *///arrive pas a monté
 
             //gestion des moteur pour deplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
@@ -211,16 +206,16 @@ public class AutoEdit extends LinearOpMode {
              * **************************************/
 
             if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
-                roueLanceur.setVelocity(-1675);
+                roueLanceur.setVelocity(1675);
                 roueLanceur1.setVelocity(-1675);
             } else if (manette2.left_trigger > 0) {
-                roueLanceur.setVelocity(-1360);
+                roueLanceur.setVelocity(1360);
                 roueLanceur1.setVelocity(-1360);
             } //PROBLEME AVEC CETTE METHODE :
             //le moteur dois allé a la vitesse max (1800 tick/s) avant de redescendre a la vitesse demandé
 
             else if (manette2.dpad_left) {
-                roueLanceur.setVelocity(1275);
+                roueLanceur.setVelocity(-1275);
                 roueLanceur1.setVelocity(1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
             } else {
                 roueLanceur.setPower(0);

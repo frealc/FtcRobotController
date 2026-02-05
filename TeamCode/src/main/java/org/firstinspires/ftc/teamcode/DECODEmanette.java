@@ -8,13 +8,15 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
 
 /*
-*
-* CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
-*
-*/
-@TeleOp
+ *
+ * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
+ *
+ */
+@TeleOp(name = "DECODEmanette Rouge")
 public class DECODEmanette extends LinearOpMode {
 
     /**/
@@ -34,14 +36,16 @@ public class DECODEmanette extends LinearOpMode {
 
 
     private Follower follower;
+    VisionTest vision = new VisionTest();
+
 
     @Override
     public void runOpMode() {
 
         /*
-        *associe les nom données a ce qui est brancher sur le control hub
-        *Bien pensé a mettre les moteur, servo etc... dans le driver hub (... --> configure Robot --> edit .....)
-        */
+         *associe les nom données a ce qui est brancher sur le control hub
+         *Bien pensé a mettre les moteur, servo etc... dans le driver hub (... --> configure Robot --> edit .....)
+         */
 
         LeftFront = hardwareMap.get(DcMotorEx.class, "LeftFront");
         LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
@@ -57,6 +61,12 @@ public class DECODEmanette extends LinearOpMode {
 
         //creation des variables utilisé dans le code
 
+        double yaw = 0;
+        double range = 0;
+        double bearing = 0;
+        double f = 0;
+
+
         double tgtpowerRota = 0;
         double varY = 0;
         double varX = 0;
@@ -64,6 +74,10 @@ public class DECODEmanette extends LinearOpMode {
 
         double varYpos = 0;
         double varXpos = 0;
+
+        vision.init(hardwareMap, telemetry);
+
+
 
 
 
@@ -78,16 +92,20 @@ public class DECODEmanette extends LinearOpMode {
         follower.setStartingPose(SharedPose.finalPose);   // position de fin de l'auto
         follower.update();
 
+
+
         waitForStart();
 
 
         while (opModeIsActive()) {
+            vision.update();
+            AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
 
             /* *******************************************
-            **********************************************
-            * MANETTE 1 : PILOTE DEPLACEMENT
-            **********************************************
-            ********************************************** */
+             **********************************************
+             * MANETTE 1 : PILOTE DEPLACEMENT
+             **********************************************
+             ********************************************** */
 
             varY = manette1.left_stick_y;
             varX = manette1.left_stick_x;
@@ -126,6 +144,54 @@ public class DECODEmanette extends LinearOpMode {
             double divisor = PrecisionMode ? 3.5 : 1.0; //quand precision activé, change le chiffre a 3, puis le repasse a 1 quand desactivé
 
 
+            if (tag != null) {
+                vision.update();
+
+                yaw = tag.ftcPose.yaw;
+                range = tag.ftcPose.range;
+                bearing = tag.ftcPose.bearing;
+
+                if(manette1.x) {
+
+                    vision.update();
+
+                    vision.update();
+                    if (bearing >= 2 && divisor == 1) {
+                        tgtpowerRota = -0.5/3.5;
+                    } else if (bearing <= -2 && divisor == 1) {
+                        tgtpowerRota = 0.5/3.5;
+                    } else if (bearing >= 2 && divisor == 3.5){
+                        tgtpowerRota = -0.5;
+                    } else if (bearing <= -2 && divisor == 3.5){
+                        tgtpowerRota = 0.5;
+                    } else {
+                        tgtpowerRota = 0;
+                    }
+                    vision.updateTelemetry();
+
+                    //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
+
+
+
+                    //bearing = lateral
+                    //yaw = angle
+                    //range = distance
+
+                    //tire proche = 240cm --> 1340 tick/s
+                    //tire loin == 400cm --> 1675 tick/s
+
+
+                }
+                //f = 2.09375*tag.ftcPose.range+837.5;
+
+
+            }
+
+            /*if (manette2.right_bumper){
+                roueLanceur1.setVelocity(-f);
+            }
+            telemetry.addData("vitesse de F = ", -f); *///arrive pas a monté
+
             //gestion des moteur pour deplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
             LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
@@ -134,22 +200,22 @@ public class DECODEmanette extends LinearOpMode {
 
 
             /* ************************************
-            ***************************************
-            * MANETTE 2 : PILOTE TIRE
-            ***************************************
-            * **************************************/
+             ***************************************
+             * MANETTE 2 : PILOTE TIRE
+             ***************************************
+             * **************************************/
 
             if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
-                roueLanceur.setVelocity(-1675);
+                roueLanceur.setVelocity(1675);
                 roueLanceur1.setVelocity(-1675);
             } else if (manette2.left_trigger > 0) {
-                roueLanceur.setVelocity(-1360);
+                roueLanceur.setVelocity(1360);
                 roueLanceur1.setVelocity(-1360);
             } //PROBLEME AVEC CETTE METHODE :
             //le moteur dois allé a la vitesse max (1800 tick/s) avant de redescendre a la vitesse demandé
 
             else if (manette2.dpad_left) {
-                roueLanceur.setVelocity(1275);
+                roueLanceur.setVelocity(-1275);
                 roueLanceur1.setVelocity(1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
             } else {
                 roueLanceur.setPower(0);
@@ -186,7 +252,7 @@ public class DECODEmanette extends LinearOpMode {
 
 
             /*
-            * TELEMETRY (affichage de données sur la tablette pour débug)
+             * TELEMETRY (affichage de données sur la tablette pour débug)
              */
             telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
             telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
