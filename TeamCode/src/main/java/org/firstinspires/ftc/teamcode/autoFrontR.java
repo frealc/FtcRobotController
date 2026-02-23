@@ -58,15 +58,15 @@ public class autoFrontR extends OpMode {
     private final Pose tirePose = new Pose(-22.12, 13.29, 2.30); // Shoot pose of our robot
 
     private final Pose correct1 = new Pose(-15.15, 17.25, -1.57);
-    private final Pose priseballe1 = new Pose(-15.42, 47, -1.57);
+    private final Pose priseballe1 = new Pose(-15.42, 48, -1.57);
     private final Pose faceOuverture = new Pose(-4.25,40.13, -3.13);
     //private final Pose Ouverture = new Pose(-4.25, 56.58, -3.13);
     private final Pose replace = new Pose(-3.25, 52.58, 2.61);
 
     //private final Pose pose2 = new Pose(22.21, 29.51,-2.17);
-    private final Pose replace2 = new Pose(10, 4.19,-1.57);
+    private final Pose replace2 = new Pose(10, 17.19,-1.57);
 
-    private final Pose priseballe2 = new Pose(10, 52.26,-1.57);
+    private final Pose priseballe2 = new Pose(10, 53,-1.57);
     
     private Path scorePreload;
     /*
@@ -145,8 +145,8 @@ public class autoFrontR extends OpMode {
 
             case 0:
                 if(!follower.isBusy()) {
-                    roueLanceur.setVelocity(1260);
-                    roueLanceur1.setVelocity(-1260);// lance les roues de tire a un Tick/s ciblé
+                    roueLanceur.setVelocity(1240);
+                    roueLanceur1.setVelocity(-1240);// lance les roues de tire a un Tick/s ciblé
                     follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape
@@ -165,8 +165,8 @@ public class autoFrontR extends OpMode {
                 telemetry.addData("Shots", shotCount);
 
 
-                attrapeballe.setPower(-0.1);
-                roue_a_balle.setPower(0.1);
+                attrapeballe.setPower(0.5);
+                roue_a_balle.setPower(-0.5);
                 pousseballe.setPosition(0.28);
 
                 /*
@@ -176,9 +176,29 @@ public class autoFrontR extends OpMode {
 
 
 
-                    chargement_manuel.setPower(0.35);//si les moteur sont pareil que shooter ready, fait tourné la plaque
+                if (velocity >= SHOOTER_READY && !shotLocked/* && velocity < SHOOTER_HIGH*/) {
+                    chargement_manuel.setPower(0.4);//si les moteur sont pareil que shooter ready, fait tourné la plaque
+                } else {
+                    chargement_manuel.setPower(0);
+                }
 
-                if (System.currentTimeMillis() - startTime >= 7000) {
+
+
+                if (velocity <= SHOOTER_LOW && !shotLocked) {
+                    shotCount++;
+                    shotLocked = true;
+                    /*
+                     *quand la premiere balle est tiré, moteur baisse en vitesse
+                     * ajout 1 au compte de balle tiré
+                     */
+                }
+
+
+                if (velocity >= (SHOOTER_READY)/* && velocity < SHOOTER_HIGH*/) {
+                    shotLocked = false;
+                }
+
+                if (System.currentTimeMillis() - startTime >= 9000) {
                     chargement_manuel.setPower(0);// quant toute les balles sont tiré ou 10s sont passé, arrete tout
                     shotCount = 0;
                     shotLocked = false;
@@ -208,7 +228,7 @@ public class autoFrontR extends OpMode {
                     roue_a_balle.setPower(-1);
                     chargement_manuel.setPower(0);
 
-                    follower.setMaxPower(0.5);
+                    follower.setMaxPower(0.3);
                     
                     follower.followPath(takepose1, true);//rammasse les balle
                     setPathState(4);
@@ -271,7 +291,7 @@ public class autoFrontR extends OpMode {
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(-1);
                     
-                    follower.setMaxPower(0.6);
+                    follower.setMaxPower(0.4);
                     follower.followPath(takepose2, true);// rammasse les balles
                     setPathState(8);
                 }

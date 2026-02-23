@@ -169,7 +169,7 @@ public class AutoEdit extends LinearOpMode {
                     }
                     vision.updateTelemetry();
 
-                    //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
+                    //f(x) = 0,0023x^2 + 0,35x + 1121 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
 
 
 
@@ -177,20 +177,18 @@ public class AutoEdit extends LinearOpMode {
                     //yaw = angle
                     //range = distance
 
-                    //tire proche = 240cm --> 1340 tick/s
-                    //tire loin == 400cm --> 1675 tick/s
 
 
                 }
-                //f = 2.09375*tag.ftcPose.range+837.5;
+                f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
 
 
             }
 
-            /*if (manette2.right_bumper){
+            if (manette2.right_bumper){
                 roueLanceur1.setVelocity(-f);
             }
-            telemetry.addData("vitesse de F = ", -f); *///arrive pas a monté
+            telemetry.addData("vitesse de F = ", -f); //arrive pas a monté
 
             //gestion des moteur pour deplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
