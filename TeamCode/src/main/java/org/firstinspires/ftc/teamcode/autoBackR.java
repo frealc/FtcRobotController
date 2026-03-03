@@ -14,6 +14,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
 
 /*
 * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
@@ -58,7 +60,7 @@ public class autoBackR extends OpMode {
     *utilisé le code tuning (init puis right bumper 2 fois pour allé a Localization Test)
     * --> Localization --> Localization Test puis lancé le code
     */
-    private final Pose tirePose = new Pose(55.38, 12, 2.78);
+    private final Pose tirePose = new Pose(52.38, 12, 2.78);
 
     private final Pose startPose = new Pose(58.91, 15.28, 3.17);
 
@@ -66,16 +68,16 @@ public class autoBackR extends OpMode {
     private final Pose rotatest = new Pose(11, 13.73, -1.57);
     private final Pose correct = new Pose(17.37, 25.09, -1.19);
 
-    private final Pose priseballe1 = new Pose(11, 56, -1.57);
+    private final Pose priseballe1 = new Pose(11, 54, -1.57);
     private final Pose replace = new Pose(4, 30, -2.17);
 
     private final Pose replace2 = new Pose(36, 19,-1.57);
 
-    private final Pose priseballe2 = new Pose(36
-            , 56,-1.57);
+    private final Pose priseballe2 = new Pose(36, 54,-1.57);
     private final Pose poseFinal = new Pose(55.38, 30, 2.78);
 
     boolean shotLocked = false;
+    VisionTest vision = new VisionTest();
     
     /*
     *creation des nom pour les chemins du robot
@@ -101,6 +103,9 @@ public class autoBackR extends OpMode {
                 attrapeballe,
                 roue_a_balle
         );
+
+
+        vision.init(hardwareMap, telemetry);
 
         // ---- FOLLOWER / PATHS ----
         follower = Constants.createFollower(hardwareMap);
@@ -191,6 +196,19 @@ public class autoBackR extends OpMode {
         shooter.update();
         follower.update();
 
+        vision.update();
+        AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
+        if (tag != null) {
+            vision.update();
+
+
+            double range = tag.ftcPose.range;
+
+
+            double f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
+            telemetry.addData("vitesse de F = ", f);
+        }
+
         // Mise à jour des paths
         autonomousPathUpdate();
 
@@ -212,8 +230,8 @@ public class autoBackR extends OpMode {
             case 0:
                 if(!follower.isBusy()) {
                     //shooter.startShooter(1615);
-
-                    roueLanceur1.setVelocity(-1610);// lance les roues de tire a un Tick/s ciblé
+                    roueLanceur1.setVelocity(-1600);
+                    roueLanceur.setVelocity(1600);// lance les roues de tire a un Tick/s ciblé
                     //follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape
@@ -221,14 +239,34 @@ public class autoBackR extends OpMode {
                 break;
 
             case 1 :
+
                 if(!follower.isBusy()){
-                    if( System.currentTimeMillis() - startTime >= 1500) {
+
+                    //if( System.currentTimeMillis() - startTime >= 1500) {
                         follower.followPath(tire, true);
                         setPathState(2);
-                    }
+                    //}
                 }
 
             case 2:
+                double f = 0;
+            if (!follower.isBusy()) {
+                vision.update();
+                AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
+                if (tag != null) {
+                vision.update();
+
+
+                double range = tag.ftcPose.range;
+
+
+                f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
+                roueLanceur1.setVelocity(-f);
+                roueLanceur.setVelocity(f);
+                }
+
+
+                vision.update();
                 shooter.update();
                 if (follower.isBusy()) break;
 
@@ -275,7 +313,7 @@ public class autoBackR extends OpMode {
                     shotLocked = false;
                     setPathState(3);//passe a la prochaine étape
                 }
-
+        }
                 break;
 
 
@@ -319,6 +357,7 @@ public class autoBackR extends OpMode {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
                     roueLanceur1.setVelocity(-1610);
+                    roueLanceur.setVelocity(1610);
                     follower.followPath(lance2, true);//vas a la pos de tire
                     startTime = 0;
                     startTime = System.currentTimeMillis();
@@ -360,7 +399,8 @@ public class autoBackR extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    roueLanceur1.setVelocity(-1620); //prepare le tire (a changé pour utilisé le start shooter)
+                    roueLanceur1.setVelocity(-1620);
+                    roueLanceur.setVelocity(1620);//prepare le tire (a changé pour utilisé le start shooter)
                     follower.setMaxPower(0.85);
 
                     follower.followPath(lance3, true);//vas a la position de tire

@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
+
 /*
  *
  * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
@@ -33,6 +34,7 @@ public class AutoEdit extends LinearOpMode {
 
     private CRServo roue_a_balle;
     private CRServo chargement_manuel;
+    private DcMotorEx Motsoulever;
 
 
     private Follower follower;
@@ -57,6 +59,7 @@ public class AutoEdit extends LinearOpMode {
         attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
         roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
+        Motsoulever = hardwareMap.get(DcMotorEx.class, "Motsoulever");
 
 
         //creation des variables utilisé dans le code
@@ -99,7 +102,7 @@ public class AutoEdit extends LinearOpMode {
 
         while (opModeIsActive()) {
             vision.update();
-            AprilTagDetection tag = VisionTest.getTagBySpecificId(30);
+            AprilTagDetection tag = VisionTest.getTagBySpecificId(20);
 
             /* *******************************************
              **********************************************
@@ -136,7 +139,7 @@ public class AutoEdit extends LinearOpMode {
             }
 
             //active le mode precision quand b est appuyé et le desactive quand b est re appuyé
-            if (gamepad1.b) {
+            if (gamepad1.a) {
                 PrecisionMode = !PrecisionMode;
                 sleep(250);
             }
@@ -178,23 +181,49 @@ public class AutoEdit extends LinearOpMode {
                     //range = distance
 
 
-
+                    f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
                 }
-                f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
+
 
 
             }
 
-            if (manette2.right_bumper){
-                roueLanceur1.setVelocity(-f);
-            }
-            telemetry.addData("vitesse de F = ", -f); //arrive pas a monté
+
 
             //gestion des moteur pour deplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
             LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
             RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
             LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor+0.2));
+
+            /*if (manette1.dpad_down){
+                while(Motsoulever.getCurrentPosition() <= 100) {
+                    Motsoulever.setPower(1);
+                    telemetry.addData("pos moteur soulever : ", Motsoulever.getCurrentPosition());
+                    telemetry.update();
+                    if (Motsoulever.getCurrentPosition() >= 105) {
+                        Motsoulever.setPower(-0.1);
+                    } else if (Motsoulever.getCurrentPosition() <= 90){
+                        Motsoulever.setPower(1);
+                    } else {
+                        Motsoulever.setPower(0);
+                        break;
+                    }
+                    if (manette1.dpad_up){
+                        break;
+                    }
+                }
+
+                Motsoulever.setPower(0);
+            }*/
+            if(manette1.dpad_up){
+                while(Motsoulever.getCurrentPosition() >= 0){
+                    Motsoulever.setPower(-0.5);
+                    telemetry.addData("pos moteur soulever : ", Motsoulever.getCurrentPosition());
+                    telemetry.update();
+                }
+                Motsoulever.setPower(0);
+            }
 
 
             /* ************************************
@@ -206,7 +235,7 @@ public class AutoEdit extends LinearOpMode {
             if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
                 roueLanceur.setVelocity(1675);
                 roueLanceur1.setVelocity(-1675);
-            } else if (manette2.left_trigger > 0) {
+            } else if (manette2.left_bumper) {
                 roueLanceur.setVelocity(1360);
                 roueLanceur1.setVelocity(-1360);
             } //PROBLEME AVEC CETTE METHODE :
@@ -215,10 +244,15 @@ public class AutoEdit extends LinearOpMode {
             else if (manette2.dpad_left) {
                 roueLanceur.setVelocity(-1275);
                 roueLanceur1.setVelocity(1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
-            } else {
+            }else if (manette2.left_trigger > 0){
+                roueLanceur1.setVelocity(-f);
+                roueLanceur .setVelocity(f);
+            }
+            else {
                 roueLanceur.setPower(0);
                 roueLanceur1.setPower(0);
             }
+            telemetry.addData("vitesse de F = ", -f);
 
             //faire tourné les elastique pour recup les balles
             if (manette2.x) {

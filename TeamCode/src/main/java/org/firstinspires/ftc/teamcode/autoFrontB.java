@@ -57,16 +57,16 @@ public class autoFrontB extends OpMode {
     private final Pose startPose = new Pose(-63.77, -44.81, -2.21);// Start Pose of our robot.
     private final Pose tirePose = new Pose(-22.12, -13.29, -2.30);
 
-    private final Pose correct1 = new Pose(-13.15, -23.25, 1.54);
-    private final Pose priseballe1 = new Pose(-15.42, -42.22, 1.57);
+    private final Pose correct1 = new Pose(-13.15, -17.25, 1.54);
+    private final Pose priseballe1 = new Pose(-15.42, -40.22, 1.57);
     private final Pose faceOuverture = new Pose(-4.25,-40.13, 3.13);
     //private final Pose Ouverture = new Pose(-4.25, 56.58, -3.13);
     private final Pose replace = new Pose(-3.25, -52.58, -2.61);
 
     //private final Pose pose2 = new Pose(22.21, 29.51,-2.17);
-    private final Pose replace2 = new Pose(11.19, -4.19,1.57);
+    private final Pose replace2 = new Pose(12, -17,1.57);
 
-    private final Pose priseballe2 = new Pose(10.21, -47.26,2.19);
+    private final Pose priseballe2 = new Pose(12, -47.26,1.57);
     
     private Path scorePreload;
     /*
@@ -90,13 +90,13 @@ public class autoFrontB extends OpMode {
                 .setLinearHeadingInterpolation(startPose.getHeading(), tirePose.getHeading())
                 .build();
 
-        /*gotopose1 = follower.pathBuilder()
-                .addPath(new BezierLine(tirePose, rotatest))
-                .setLinearHeadingInterpolation(tirePose.getHeading(), rotatest.getHeading())
-                .build();*/
+        gotopose1 = follower.pathBuilder()
+                .addPath(new BezierLine(tirePose, correct1))
+                .setLinearHeadingInterpolation(tirePose.getHeading(), correct1.getHeading())
+                .build();
 
         takepose1 = follower.pathBuilder()
-                .addPath(new BezierCurve(tirePose, correct1, priseballe1))
+                .addPath(new BezierLine(correct1, priseballe1))
                 .setLinearHeadingInterpolation(correct1.getHeading(), priseballe1.getHeading())
                 .build();
 
@@ -111,7 +111,7 @@ public class autoFrontB extends OpMode {
                 .build();
 
         takepose2 = follower.pathBuilder()
-                .addPath(new BezierCurve(tirePose, replace2, priseballe2))
+                .addPath(new BezierLine(replace2, priseballe2))
                 .setLinearHeadingInterpolation(replace2.getHeading(), priseballe2.getHeading())
                 .build();
 
@@ -120,10 +120,10 @@ public class autoFrontB extends OpMode {
                 .setLinearHeadingInterpolation(faceOuverture.getHeading(), Ouverture.getHeading())
                 .build();*/
 
-        /*gotopose2 = follower.pathBuilder()
-                .addPath(new BezierLine(tirePose, pose2))
-                .setLinearHeadingInterpolation(tirePose.getHeading(), pose2.getHeading())
-                .build();*/
+        gotopose2 = follower.pathBuilder()
+                .addPath(new BezierLine(tirePose, replace2))
+                .setLinearHeadingInterpolation(tirePose.getHeading(), replace2.getHeading())
+                .build();
 
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
@@ -145,9 +145,9 @@ public class autoFrontB extends OpMode {
 
             case 0:
                 if(!follower.isBusy()) {
-                    //shooter.startShooter(1220);
-                    roueLanceur.setVelocity(1220);
-                    roueLanceur1.setVelocity(1220);// lance les roues de tire a un Tick/s ciblé
+                    follower.setMaxPower(0.7);
+                    roueLanceur.setVelocity(1240);
+                    roueLanceur1.setVelocity(-1240);// lance les roues de tire a un Tick/s ciblé
                     follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape
@@ -166,15 +166,13 @@ public class autoFrontB extends OpMode {
                 telemetry.addData("Shots", shotCount);
 
 
-                attrapeballe.setPower(-0.1);
-                roue_a_balle.setPower(-0.1);
+                attrapeballe.setPower(0.5);
+                roue_a_balle.setPower(-0.5);
                 pousseballe.setPosition(0.28);
 
                 /*
                  * gestion de la plaque tournante avec vitesse moteur
                  */
-
-
                 if (velocity >= SHOOTER_READY && !shotLocked) {
                     chargement_manuel.setPower(0.35);//si les moteur sont pareil que shooter ready, fait tourné la plaque
                 } else {
@@ -209,25 +207,27 @@ public class autoFrontB extends OpMode {
 
 
             case 2:
+                follower.setMaxPower(1);
                 // Attendre 2 secondes sans bloquer
                 shooter.stopShooter();
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
                 pousseballe.setPosition(0.40);
                 // Lancer le path suivant
-                //follower.followPath(gotopose1, true);
+                follower.followPath(gotopose1, true);
                 setPathState(3);
 
                 break;
 
             case 3:
-                shooter.update();
 
                 if (!follower.isBusy()) {
 
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
-                    follower.setMaxPower(0.6);//fait touné les elastique
+                    roue_a_balle.setPower(-1);
+                    chargement_manuel.setPower(0);
+
+                    follower.setMaxPower(0.6);
 
                     follower.followPath(takepose1, true);//rammasse les balle
                     setPathState(4);
@@ -238,10 +238,10 @@ public class autoFrontB extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roue_a_balle.setPower(0);
-                    follower.setMaxPower(0.9);
+                    follower.setMaxPower(1);
                     //shooter.startShooter(1260);//prepare le tire
                     roueLanceur.setVelocity(1220);
-                    roueLanceur1.setVelocity(1220);
+                    roueLanceur1.setVelocity(-1220);
 
                     //follower.followPath(replacepose, true);
                     setPathState(5);
@@ -264,19 +264,21 @@ public class autoFrontB extends OpMode {
                     while (roueLanceur.getVelocity() < 1200) {
                     }// attente
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
+                    roue_a_balle.setPower(-1);
                     pousseballe.setPosition(0.28);
+                    chargement_manuel.setPower(0.30);
 
-                    if (System.currentTimeMillis() - startTime >= 5000) {
+                    if (System.currentTimeMillis() - startTime >= 4500) {
                         roueLanceur.setVelocity(900);
-                        roueLanceur1.setVelocity(900);
+                        roueLanceur1.setVelocity(-900);
                         shooter.stopShooter();
                         roueLanceur.setPower(0);
                         roueLanceur1.setPower(0);
                         attrapeballe.setPower(0);
+                        chargement_manuel.setPower(0);
                         pousseballe.setPosition(0.40);
                         // Lancer le path suivant
-                        //follower.followPath(gotopose2, true);
+                        follower.followPath(gotopose2, true);
                         setPathState(7);//apres 5s passé au total, passe a la prochaine etape
                     }
                 }
@@ -288,9 +290,9 @@ public class autoFrontB extends OpMode {
                 if (!follower.isBusy()) {
                     follower.setMaxPower(0.7);
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
+                    roue_a_balle.setPower(-1);
 
-                    follower.setMaxPower(0.8);
+                    follower.setMaxPower(0.5);
                     follower.followPath(takepose2, true);// rammasse les balles
                     setPathState(8);
                 }
@@ -313,8 +315,7 @@ public class autoFrontB extends OpMode {
                     roue_a_balle.setPower(0);
                     //shooter.startShooter(1260);//prepare le tire
                     roueLanceur.setVelocity(1220);
-                    roueLanceur1.setVelocity(1220);
-                    follower.setMaxPower(0.9);
+                    roueLanceur1.setVelocity(-1220);
 
                     follower.followPath(lance3, true);//vas a la position de tire
                     startTime = 0;
@@ -326,10 +327,9 @@ public class autoFrontB extends OpMode {
             case 10:
                 // Attendre 2 secondes sans bloquer
                 if (!follower.isBusy()) {
-                    while (roueLanceur.getVelocity() < 1200) {
-                    }
+                    chargement_manuel.setPower(0.30);
                     attrapeballe.setPower(1);
-                    roue_a_balle.setPower(1);
+                    roue_a_balle.setPower(-1);
                     pousseballe.setPosition(0.28);// tire les balles
                     follower.setMaxPower(1);
                     setPathState(11);
@@ -341,6 +341,7 @@ public class autoFrontB extends OpMode {
                     if (System.currentTimeMillis() - startTime >= 5000) {
                         follower.followPath(fin, true);
                         shooter.stopShooter();
+                        chargement_manuel.setPower(0);
                         attrapeballe.setPower(0);
                         roue_a_balle.setPower(0);
                         pousseballe.setPosition(0.40);
