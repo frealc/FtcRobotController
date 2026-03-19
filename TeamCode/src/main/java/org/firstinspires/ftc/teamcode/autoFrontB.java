@@ -212,7 +212,7 @@ public class autoFrontB extends OpMode {
                 shooter.stopShooter();
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
-                pousseballe.setPosition(0.40);
+                pousseballe.setPosition(0.52);
                 // Lancer le path suivant
                 follower.followPath(gotopose1, true);
                 setPathState(3);
@@ -276,7 +276,7 @@ public class autoFrontB extends OpMode {
                         roueLanceur1.setPower(0);
                         attrapeballe.setPower(0);
                         chargement_manuel.setPower(0);
-                        pousseballe.setPosition(0.40);
+                        pousseballe.setPosition(0.52);
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
                         setPathState(7);//apres 5s passé au total, passe a la prochaine etape
@@ -344,7 +344,7 @@ public class autoFrontB extends OpMode {
                         chargement_manuel.setPower(0);
                         attrapeballe.setPower(0);
                         roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.40);
+                        pousseballe.setPosition(0.52);
                         setPathState(12);// apres 5s au total, arrete le tire et vas deavant la gate
                     }
                 }
@@ -414,7 +414,7 @@ public class autoFrontB extends OpMode {
                 roue_a_balle
         );
 
-        pousseballe.setPosition(0.40);
+        pousseballe.setPosition(0.52);
 
     }
 

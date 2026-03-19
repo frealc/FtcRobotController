@@ -32,16 +32,16 @@ public class testporg extends LinearOpMode {
     private DcMotorEx roueLanceur1;
     private Servo pousseballe;
 
-    private CRServo attrapeballe;
+    private DcMotorEx attrapeballe;
 
-    private CRServo roue_a_balle;
+    //private CRServo roue_a_balle;
     private CRServo chargement_manuel;
 
     private DcMotorEx Motsoulever;
 
-    public static double Kp = 0;
-    public static double Ki = 0;
-    public static double Kd = 0;
+    public static double Kp = 0.059;
+    public static double Ki = 0.000001;
+    public static double Kd = 0.000005;
 
     private Follower follower;
     VisionTest vision = new VisionTest();
@@ -62,8 +62,8 @@ public class testporg extends LinearOpMode {
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
-        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
-        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        attrapeballe = hardwareMap.get(DcMotorEx.class, "attrapeballe");
+        //roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
         Motsoulever = hardwareMap.get(DcMotorEx.class, "Motsoulever");
 
@@ -242,7 +242,7 @@ public class testporg extends LinearOpMode {
                 Motsoulever.setPower(0);
             }
 
-            Targetval = 1360;
+            Targetval = f;
             Currentval = roueLanceur.getVelocity();
 
 
@@ -270,19 +270,19 @@ public class testporg extends LinearOpMode {
             }
 
             else if (manette2.right_bumper){
-                while (Currentval < Targetval){
-                    Currentval = roueLanceur.getVelocity();
-                    erreur = Targetval - Currentval;
-                    double D = (erreur - LastError)/timer.seconds();
-                    IntegralSum = IntegralSum + (erreur * timer.seconds());
-                    double Sortie = (Kp * erreur) + (Ki * IntegralSum) + (Kd * D);
+                double Sortie =0;
+                Currentval = roueLanceur.getVelocity();
+                erreur = Targetval - Currentval;
+                double D = (erreur - LastError)/timer.seconds();
+                IntegralSum = IntegralSum + (erreur * timer.seconds());
+                Sortie = (Kp * erreur) + (Ki * IntegralSum) + (Kd * D);
 
-                    roueLanceur.setPower(Sortie);
-                    roueLanceur1.setPower(-Sortie);
-                }
+
+
                 LastError = erreur;
-                roueLanceur.setPower(0);
-                roueLanceur1.setPower(0);
+                timer.reset();
+                roueLanceur.setPower(Sortie);
+                roueLanceur1.setPower(-Sortie);
             }
 
 
@@ -294,26 +294,26 @@ public class testporg extends LinearOpMode {
 
             //faire tourné les elastique pour recup les balles
             if (manette2.x) {
-                attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
+                attrapeballe.setPower(-1);
+                //roue_a_balle.setPower(-1);
             } else if (manette2.dpad_down) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
-            } else if (manette2.a) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
-            } else if (manette2.b) {
                 attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
+                //roue_a_balle.setPower(1);
+            } else if (manette2.a) {
+                attrapeballe.setPower(1);
+                //roue_a_balle.setPower(1);
+            } else if (manette2.b) {
+                attrapeballe.setPower(-1);
+                //roue_a_balle.setPower(-1);
             } else {
                 attrapeballe.setPower(0);
-                roue_a_balle.setPower(0);
+                //roue_a_balle.setPower(0);
             }
 
             if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
                 pousseballe.setPosition(0.29);
             } else {
-                pousseballe.setPosition(0.41);
+                pousseballe.setPosition(0.42);
             }
 
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles

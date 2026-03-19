@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -29,12 +30,15 @@ public class DECODEmanette extends LinearOpMode {
     private DcMotorEx roueLanceur1;
     private Servo pousseballe;
 
-    private CRServo attrapeballe;
+    private DcMotorEx attrapeballe;
 
-    private CRServo roue_a_balle;
+    //private CRServo roue_a_balle;
     private CRServo chargement_manuel;
 
     private DcMotorEx Motsoulever;
+
+    private DigitalChannel ledR;
+    private DigitalChannel ledG;
 
 
     private Follower follower;
@@ -56,10 +60,13 @@ public class DECODEmanette extends LinearOpMode {
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
-        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
-        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        attrapeballe = hardwareMap.get(DcMotorEx.class, "attrapeballe");
+        //roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
         Motsoulever = hardwareMap.get(DcMotorEx.class, "Motsoulever");
+
+        ledR = hardwareMap.get(DigitalChannel.class, "ledR");
+        ledG = hardwareMap.get(DigitalChannel.class, "ledG");
 
 
         //creation des variables utilisé dans le code
@@ -99,8 +106,12 @@ public class DECODEmanette extends LinearOpMode {
 
         waitForStart();
 
+        ledR.setMode(DigitalChannel.Mode.OUTPUT);
+        ledG.setMode(DigitalChannel.Mode.OUTPUT);
+
 
         while (opModeIsActive()) {
+
             vision.update();
             AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
 
@@ -183,7 +194,10 @@ public class DECODEmanette extends LinearOpMode {
                     //tire proche = 240cm --> 1340 tick/s
                     //tire loin == 400cm --> 1675 tick/s
 
+                    // Fonction 4 roues lanceurs
                     f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
+
+
                 }
 
 
@@ -205,7 +219,7 @@ public class DECODEmanette extends LinearOpMode {
                     telemetry.addData("pos moteur soulever : ", Motsoulever.getCurrentPosition());
                     telemetry.update();
                     if (Motsoulever.getCurrentPosition() >= 105) {
-                        Motsoulever.setPower(-0.1);
+                        Motsoulever.setPower(-0.4);
                     } else if (Motsoulever.getCurrentPosition() <= 99){
                         Motsoulever.setPower(1);
                     } else {
@@ -257,28 +271,36 @@ public class DECODEmanette extends LinearOpMode {
             }
             telemetry.addData("vitesse de F = ", -f);
 
+            if (roueLanceur.getVelocity() > f - 40 && roueLanceur.getVelocity() < f + 40){
+                ledR.setState(true);
+                ledG.setState(false);
+            } else {
+                ledR.setState(false);
+                ledG.setState(true);
+            }
+
             //faire tourné les elastique pour recup les balles
             if (manette2.x) {
-                attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
+                attrapeballe.setPower(-1);
+                //roue_a_balle.setPower(-1);
             } else if (manette2.dpad_down) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
-            } else if (manette2.a) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
-            } else if (manette2.b) {
                 attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
+                //roue_a_balle.setPower(1);
+            } else if (manette2.a) {
+                attrapeballe.setPower(1);
+                //roue_a_balle.setPower(1);
+            } else if (manette2.b) {
+                attrapeballe.setPower(-0.6);
+                //roue_a_balle.setPower(-1);
             } else {
                 attrapeballe.setPower(0);
-                roue_a_balle.setPower(0);
+                //roue_a_balle.setPower(0);
             }
 
             if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
                 pousseballe.setPosition(0.29);
             } else {
-                pousseballe.setPosition(0.41);
+                pousseballe.setPosition(0.5);
             }
 
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles

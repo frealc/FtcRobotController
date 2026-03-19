@@ -28,16 +28,16 @@ public class autoFrontR extends OpMode {
 
     int shotCount = 0;
     boolean wasShooterReady = false;
-    static final double SHOOTER_READY = 1210;
-    static final double SHOOTER_LOW   = 1170;
+    static final double SHOOTER_READY = 1220;
+    static final double SHOOTER_LOW   = 1150;
     boolean shotLocked = false;
     private DcMotorEx roueLanceur;
 
     private DcMotorEx roueLanceur1;
-    private CRServo attrapeballe;
+    private DcMotorEx attrapeballe;
 
     private Servo pousseballe;
-    private CRServo roue_a_balle;
+    //private CRServo roue_a_balle;
     private CRServo chargement_manuel;
 
     /*
@@ -56,23 +56,23 @@ public class autoFrontR extends OpMode {
      */
     private final Pose startPose = new Pose(-63.77, 44.81, 2.21);// Start Pose of our robot.
     private final Pose tirePose = new Pose(-22.12, 13.29, 2.30); // Shoot pose of our robot
-
-    private final Pose correct1 = new Pose(-15.15, 17.25, -1.57);
-    private final Pose priseballe1 = new Pose(-15.42, 40.22, -1.57);
-    private final Pose faceOuverture = new Pose(-4.25,40.13, -3.13);
+    private final Pose tirePose2 = new Pose(-22.12, 13.29, 2.35);
+    private final Pose correct1 = new Pose(-17.15, 17.25, -1.57);
+    private final Pose priseballe1 = new Pose(-13.42, 44, -1.57);
+    private final Pose faceOuverture = new Pose(-4.25,40.13,-3.13);
     //private final Pose Ouverture = new Pose(-4.25, 56.58, -3.13);
     private final Pose replace = new Pose(-3.25, 52.58, 2.61);
 
     //private final Pose pose2 = new Pose(22.21, 29.51,-2.17);
-    private final Pose replace2 = new Pose(10, 17.19,-1.57);
+    private final Pose replace2 = new Pose(7, 17.19,-1.57);
 
-    private final Pose priseballe2 = new Pose(10, 47,-1.57);
+    private final Pose priseballe2 = new Pose(7, 53,-1.57);
     
     private Path scorePreload;
     /*
      *creation des nom pour les chemins du robot
      */
-    private PathChain tire, gotopose1, takepose1, lance2, ouvreBalle, gotopose2, takepose2, lance3, replacepose, fin;
+    private PathChain tire, replace3, gotopose1, takepose1, lance2, ouvreBalle, gotopose2, takepose2, lance3, replacepose, fin;
 
     private int vitesse_lanceur = 0;
 
@@ -125,12 +125,18 @@ public class autoFrontR extends OpMode {
                 .setLinearHeadingInterpolation(tirePose.getHeading(), replace2.getHeading())
                 .build();
 
+        replace3 = follower.pathBuilder()
+                .addPath(new BezierLine(priseballe2, replace2))
+                .setLinearHeadingInterpolation(priseballe2.getHeading(), replace2.getHeading())
+                .build();
+
 
         /* This is our scorePickup1 PathChain. We are using a single path with a BezierLine, which is a straight line. */
         lance3 = follower.pathBuilder()
-                .addPath(new BezierLine(priseballe2, tirePose))
+                .addPath(new BezierLine(replace2, tirePose))
                 .setLinearHeadingInterpolation(priseballe2.getHeading(), tirePose.getHeading())
                 .build();
+
         fin =    follower.pathBuilder()
                 .addPath(new BezierLine(tirePose, faceOuverture))
                 .setLinearHeadingInterpolation(tirePose.getHeading(), faceOuverture.getHeading())
@@ -156,25 +162,27 @@ public class autoFrontR extends OpMode {
 
 
             case 1:
-                shooter.update();
+                
                 // On attend que le robot ait fini le path précédent
-                shooter.update();
+                
                 if (follower.isBusy()) break;
+                attrapeballe.setPower(-0.2);
+                follower.setMaxPower(1);
 
                 double velocity = roueLanceur.getVelocity();
                 telemetry.addData("Shooter velocity", velocity);
                 telemetry.addData("Shots", shotCount);
 
 
-                attrapeballe.setPower(0.5);
-                roue_a_balle.setPower(-0.5);
+                //attrapeballe.setPower(-0.5);
+                //roue_a_balle.setPower(-0.5);
                 pousseballe.setPosition(0.28);
 
                 /*
                  * gestion de la plaque tournante avec vitesse moteur
                  */
                 if (velocity >= SHOOTER_READY && !shotLocked) {
-                    chargement_manuel.setPower(0.35);//si les moteur sont pareil que shooter ready, fait tourné la plaque
+                    chargement_manuel.setPower(0.7);//si les moteur sont pareil que shooter ready, fait tourné la plaque
                 } else {
                     chargement_manuel.setPower(0);
                 }
@@ -207,12 +215,13 @@ public class autoFrontR extends OpMode {
 
 
             case 2:
-                follower.setMaxPower(1);
+
                 // Attendre 2 secondes sans bloquer
-                shooter.stopShooter();
+                roueLanceur.setPower(0);
+                roueLanceur1.setPower(0);
                 attrapeballe.setPower(0);
-                roue_a_balle.setPower(0);
-                pousseballe.setPosition(0.40);
+                //roue_a_balle.setPower(0);
+                pousseballe.setPosition(0.52);
                 // Lancer le path suivant
                 follower.followPath(gotopose1, true);
                 setPathState(3);
@@ -223,11 +232,11 @@ public class autoFrontR extends OpMode {
 
                 if (!follower.isBusy()) {
 
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(-1);
+                    attrapeballe.setPower(-1);
+                    //roue_a_balle.setPower(-1);
                     chargement_manuel.setPower(0);
 
-                    follower.setMaxPower(0.6);
+
 
                     follower.followPath(takepose1, true);//rammasse les balle
                     setPathState(4);
@@ -237,11 +246,11 @@ public class autoFrontR extends OpMode {
 
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
-                    roue_a_balle.setPower(0);
-                    follower.setMaxPower(1);
+                    //roue_a_balle.setPower(0);
+
                     //shooter.startShooter(1260);//prepare le tire
-                    roueLanceur.setVelocity(1220);
-                    roueLanceur1.setVelocity(-1220);
+                    roueLanceur.setVelocity(1240);
+                    roueLanceur1.setVelocity(-1240);
 
                     //follower.followPath(replacepose, true);
                     setPathState(5);
@@ -249,7 +258,7 @@ public class autoFrontR extends OpMode {
                 break;
 
             case 5:
-                shooter.update();
+
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if (!follower.isBusy()) {
 
@@ -261,22 +270,21 @@ public class autoFrontR extends OpMode {
                 break;
             case 6:
                 if (!follower.isBusy()) {
-                    while (roueLanceur.getVelocity() < 1200) {
-                    }// attente
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(-1);
+
+                    attrapeballe.setPower(-0.8);
+
                     pousseballe.setPosition(0.28);
                     chargement_manuel.setPower(0.30);
 
                     if (System.currentTimeMillis() - startTime >= 4500) {
                         roueLanceur.setVelocity(900);
                         roueLanceur1.setVelocity(-900);
-                        shooter.stopShooter();
+
                         roueLanceur.setPower(0);
                         roueLanceur1.setPower(0);
                         attrapeballe.setPower(0);
                         chargement_manuel.setPower(0);
-                        pousseballe.setPosition(0.40);
+                        pousseballe.setPosition(0.52);
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
                         setPathState(7);//apres 5s passé au total, passe a la prochaine etape
@@ -285,14 +293,14 @@ public class autoFrontR extends OpMode {
                 break;
 
             case 7:
-                shooter.update();
+
 
                 if (!follower.isBusy()) {
-                    follower.setMaxPower(0.7);
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(-1);
 
-                    follower.setMaxPower(0.5);
+                    attrapeballe.setPower(-1);
+                    //roue_a_balle.setPower(-1);
+
+
                     follower.followPath(takepose2, true);// rammasse les balles
                     setPathState(8);
                 }
@@ -301,8 +309,10 @@ public class autoFrontR extends OpMode {
 
             case 8:
                 if (!follower.isBusy()){
-                    follower.setMaxPower(1);
-                    //follower.followPath(ouvreBalle, true); // devait ouvrir la gate
+                    roueLanceur.setVelocity(1240);
+                    roueLanceur1.setVelocity(-1240);
+                    attrapeballe.setPower(0);
+                    follower.followPath(replace3, true); // devait ouvrir la gate
                     setPathState(9);
                 }
                 break;
@@ -311,11 +321,9 @@ public class autoFrontR extends OpMode {
             case 9:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if (!follower.isBusy()) {
-                    attrapeballe.setPower(0);
-                    roue_a_balle.setPower(0);
+
+                    //roue_a_balle.setPower(0);
                     //shooter.startShooter(1260);//prepare le tire
-                    roueLanceur.setVelocity(1220);
-                    roueLanceur1.setVelocity(-1220);
 
                     follower.followPath(lance3, true);//vas a la position de tire
                     startTime = 0;
@@ -328,10 +336,10 @@ public class autoFrontR extends OpMode {
                 // Attendre 2 secondes sans bloquer
                 if (!follower.isBusy()) {
                     chargement_manuel.setPower(0.30);
-                    attrapeballe.setPower(1);
-                    roue_a_balle.setPower(-1);
+                    attrapeballe.setPower(-0.7);
+                    //roue_a_balle.setPower(-1);
                     pousseballe.setPosition(0.28);// tire les balles
-                    follower.setMaxPower(1);
+
                     setPathState(11);
 
                 }
@@ -340,11 +348,12 @@ public class autoFrontR extends OpMode {
                 if(!follower.isBusy()){
                     if (System.currentTimeMillis() - startTime >= 5000) {
                         follower.followPath(fin, true);
-                        shooter.stopShooter();
+                        roueLanceur.setPower(0);
+                        roueLanceur1.setPower(0);
                         chargement_manuel.setPower(0);
                         attrapeballe.setPower(0);
-                        roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.40);
+                        //roue_a_balle.setPower(0);
+                        pousseballe.setPosition(0.52);
                         setPathState(12);// apres 5s au total, arrete le tire et vas deavant la gate
                     }
                 }
@@ -368,7 +377,7 @@ public class autoFrontR extends OpMode {
     //met des debug et update les etapes en boucle
     @Override
     public void loop() {
-        shooter.update();
+        
         // These loop the movements of the robot, these must be called continuously in order to work
         follower.update();
         autonomousPathUpdate();
@@ -400,22 +409,14 @@ public class autoFrontR extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
         follower.setStartingPose(startPose);
-        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
-        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
+        //roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        attrapeballe = hardwareMap.get(DcMotorEx.class, "attrapeballe");
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
-        shooter = new ShooterManager(
-                roueLanceur,
-                roueLanceur1,
-                pousseballe,
-                attrapeballe,
-                roue_a_balle
-        );
-
-        pousseballe.setPosition(0.40);
+        pousseballe.setPosition(0.50);
 
     }
 

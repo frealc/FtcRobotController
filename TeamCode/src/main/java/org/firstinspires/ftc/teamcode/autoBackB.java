@@ -7,6 +7,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 /*
  * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
  */
-
+@Disabled
 @Autonomous(name = "auto back Bleu ", group = "Bleu")
 public class autoBackB extends OpMode {
 
@@ -270,7 +271,7 @@ public class autoBackB extends OpMode {
                      */
 
                     if (velocity >= SHOOTER_READY && !shotLocked/* && velocity < SHOOTER_HIGH*/) {
-                        chargement_manuel.setPower(0.4);//si les moteur sont pareil que shooter ready, fait tourné la plaque
+                        chargement_manuel.setPower(0.5);//si les moteur sont pareil que shooter ready, fait tourné la plaque
                     } else {
                         chargement_manuel.setPower(0);
                     }
@@ -309,7 +310,7 @@ public class autoBackB extends OpMode {
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
                 chargement_manuel.setPower(0);
-                pousseballe.setPosition(0.41);
+                pousseballe.setPosition(0.52);
                 // Lancer le path suivant
                 follower.followPath(gotopose1, true); //se pose devant les balles au sol (a probablement enlevé)
                 setPathState(4);
@@ -362,7 +363,7 @@ public class autoBackB extends OpMode {
                     if (System.currentTimeMillis() - startTime >= 8000) {
                         roueLanceur1.setVelocity(-900);
                         attrapeballe.setPower(0);
-                        pousseballe.setPosition(0.41);
+                        pousseballe.setPosition(0.52);
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
                         setPathState(8); //apres 5s passé au total, passe a la prochaine etape
@@ -406,7 +407,7 @@ public class autoBackB extends OpMode {
                     if (System.currentTimeMillis() - startTime >= 4000) {
                         attrapeballe.setPower(0);
                         roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.41);
+                        pousseballe.setPosition(0.52);
                         setPathState(11); // apres 4s au total passe a la prochaine etape
                     }
                 }

@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.sun.tools.javac.tree.DCTree;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
@@ -21,6 +23,9 @@ public class motortest extends LinearOpMode {
 
     /**/
     private DcMotorEx LeftFront;
+
+    private DigitalChannel ledR;
+    private DigitalChannel ledG;
     private DcMotorEx LeftBack;
     private DcMotorEx RightFront;
     private DcMotorEx RightBack;
@@ -29,9 +34,9 @@ public class motortest extends LinearOpMode {
     private DcMotorEx roueLanceur1;
     private Servo pousseballe;
 
-    private CRServo attrapeballe;
+    private DcMotorEx attrapeballe;
 
-    private CRServo roue_a_balle;
+    //private CRServo roue_a_balle;
     private CRServo chargement_manuel;
 
     private DcMotorEx Motsoulever;
@@ -49,6 +54,8 @@ public class motortest extends LinearOpMode {
          *associe les nom données a ce qui est brancher sur le control hub
          *Bien pensé a mettre les moteur, servo etc... dans le driver hub (... --> configure Robot --> edit .....)
          */
+        ledR = hardwareMap.get(DigitalChannel.class, "ledR");
+        ledG = hardwareMap.get(DigitalChannel.class, "ledG");
 
         LeftFront = hardwareMap.get(DcMotorEx.class, "LeftFront");
         LeftBack = hardwareMap.get(DcMotorEx.class, "LeftBack");
@@ -56,9 +63,8 @@ public class motortest extends LinearOpMode {
         RightBack = hardwareMap.get(DcMotorEx.class, "RightBack");
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
-        pousseballe = hardwareMap.get(Servo.class, "pousseballe");
-        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
-        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        attrapeballe = hardwareMap.get(DcMotorEx.class, "attrapeballe");
+        //roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
         Motsoulever = hardwareMap.get(DcMotorEx.class, "Motsoulever");
 
@@ -101,8 +107,12 @@ public class motortest extends LinearOpMode {
 
         waitForStart();
 
+        ledR.setMode(DigitalChannel.Mode.OUTPUT);
+        ledG.setMode(DigitalChannel.Mode.OUTPUT);
 
         while (opModeIsActive()) {
+            ledR.setState(true);
+            ledG.setState(true);
             vision.update();
             AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
 
@@ -293,26 +303,26 @@ public class motortest extends LinearOpMode {
             //faire tourné les elastique pour recup les balles
             if (manette2.x) {
                 attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
+                //roue_a_balle.setPower(-1);
             } else if (manette2.dpad_down) {
                 attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
+                //roue_a_balle.setPower(1);
             } else if (manette2.a) {
                 attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
+                //roue_a_balle.setPower(1);
             } else if (manette2.b) {
                 attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
+                //roue_a_balle.setPower(-1);
             } else {
                 attrapeballe.setPower(0);
-                roue_a_balle.setPower(0);
+                //roue_a_balle.setPower(0);
             }
 
-            if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
+            /*if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
                 pousseballe.setPosition(0.29);
             } else {
                 pousseballe.setPosition(0.41);
-            }
+            } */
 
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
 

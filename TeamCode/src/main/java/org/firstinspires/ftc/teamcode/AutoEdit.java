@@ -196,13 +196,13 @@ public class AutoEdit extends LinearOpMode {
             RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
             LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor+0.2));
 
-            /*if (manette1.dpad_down){
+            if (manette1.dpad_down){
                 while(Motsoulever.getCurrentPosition() <= 100) {
                     Motsoulever.setPower(1);
                     telemetry.addData("pos moteur soulever : ", Motsoulever.getCurrentPosition());
                     telemetry.update();
                     if (Motsoulever.getCurrentPosition() >= 105) {
-                        Motsoulever.setPower(-0.1);
+                        Motsoulever.setPower(-0.4);
                     } else if (Motsoulever.getCurrentPosition() <= 90){
                         Motsoulever.setPower(1);
                     } else {
@@ -215,7 +215,7 @@ public class AutoEdit extends LinearOpMode {
                 }
 
                 Motsoulever.setPower(0);
-            }*/
+            }
             if(manette1.dpad_up){
                 while(Motsoulever.getCurrentPosition() >= 0){
                     Motsoulever.setPower(-0.5);
@@ -275,7 +275,7 @@ public class AutoEdit extends LinearOpMode {
             if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
                 pousseballe.setPosition(0.29);
             } else {
-                pousseballe.setPosition(0.41);
+                pousseballe.setPosition(0.5);
             }
 
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
