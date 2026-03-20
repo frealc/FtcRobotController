@@ -290,9 +290,12 @@ public class DECODEmanette extends LinearOpMode {
                 attrapeballe.setPower(1);
                 //roue_a_balle.setPower(1);
             } else if (manette2.b) {
-                attrapeballe.setPower(-0.6);
+                attrapeballe.setPower(-1);
                 //roue_a_balle.setPower(-1);
-            } else {
+            } else if (manette2.dpad_right){
+                attrapeballe.setPower(-0.5);
+            }
+            else {
                 attrapeballe.setPower(0);
                 //roue_a_balle.setPower(0);
             }

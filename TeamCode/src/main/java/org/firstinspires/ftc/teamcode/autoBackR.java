@@ -421,7 +421,7 @@ public class autoBackR extends OpMode {
                     if (System.currentTimeMillis() - startTime >= 4000) {
                         attrapeballe.setPower(0);
                         roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.5);
+                        pousseballe.setPosition(0.5) ;
                         setPathState(11); // apres 4s au total passe a la prochaine etape
                     }
                 }

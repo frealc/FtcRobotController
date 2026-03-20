@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
  * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
  *
  */
+@Disabled
 @TeleOp
 public class testregulateur extends LinearOpMode {
 

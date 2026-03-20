@@ -5,6 +5,7 @@ import static java.lang.String.*;
 import android.annotation.SuppressLint;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Disabled
 
 public class VisionTest {
     public AprilTagProcessor aprilTag;

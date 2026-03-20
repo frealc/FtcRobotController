@@ -1,16 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
+@Disabled
+@Configurable
 @TeleOp(name = "FonctionLanceur")
 public class DistanceSensorDebbugger extends LinearOpMode {
 
@@ -21,6 +28,12 @@ public class DistanceSensorDebbugger extends LinearOpMode {
     private DcMotorEx roueLanceur;
     private DcMotorEx roueLanceur1;
 
+
+    public static double Kp = 0.0001;
+    public static double Kd = 0.00001;
+    public static double Ki = 0.00000001;
+
+    public static double Kf = 0.00001;
     private Servo pousseballe;
 
     private DcMotorEx attrapeballe;
@@ -84,10 +97,25 @@ public class DistanceSensorDebbugger extends LinearOpMode {
 
         waitForStart();
 
+        PIDFCoefficients pidOrig = roueLanceur.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients pidOrig1 = roueLanceur1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        PIDFCoefficients pidNew = new PIDFCoefficients(Kp, Ki, Kd, Kf);
+
+        roueLanceur.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidNew);
+        roueLanceur1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidNew);
+
+        PIDFCoefficients pidModified = roueLanceur.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        PIDFCoefficients pidModified1 = roueLanceur1.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
         ledR.setMode(DigitalChannel.Mode.OUTPUT);
         ledG.setMode(DigitalChannel.Mode.OUTPUT);
 
         while (opModeIsActive()) {
+
+
 
             vision.update();
             AprilTagDetection tag = VisionTest.getTagBySpecificId(24);

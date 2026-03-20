@@ -4,6 +4,7 @@ import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -11,14 +12,13 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
-
 /*
  *
  * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
  *
  */
-@TeleOp(name = "DECODEmanette bleu")
-public class AutoEdit extends LinearOpMode {
+@TeleOp(name = "DECODEmanette Bleu")
+public class DECODEmanetteBleu extends LinearOpMode {
 
     /**/
     private DcMotorEx LeftFront;
@@ -30,11 +30,15 @@ public class AutoEdit extends LinearOpMode {
     private DcMotorEx roueLanceur1;
     private Servo pousseballe;
 
-    private CRServo attrapeballe;
+    private DcMotorEx attrapeballe;
 
-    private CRServo roue_a_balle;
+    //private CRServo roue_a_balle;
     private CRServo chargement_manuel;
+
     private DcMotorEx Motsoulever;
+
+    private DigitalChannel ledR;
+    private DigitalChannel ledG;
 
 
     private Follower follower;
@@ -56,10 +60,13 @@ public class AutoEdit extends LinearOpMode {
         roueLanceur = hardwareMap.get(DcMotorEx.class, "rouelanceur");
         roueLanceur1 = hardwareMap.get(DcMotorEx.class, "rouelanceur1");
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
-        attrapeballe = hardwareMap.get(CRServo.class, "attrapeballe");
-        roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
+        attrapeballe = hardwareMap.get(DcMotorEx.class, "attrapeballe");
+        //roue_a_balle = hardwareMap.get(CRServo.class, "roue_a_balle");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
         Motsoulever = hardwareMap.get(DcMotorEx.class, "Motsoulever");
+
+        ledR = hardwareMap.get(DigitalChannel.class, "ledR");
+        ledG = hardwareMap.get(DigitalChannel.class, "ledG");
 
 
         //creation des variables utilisé dans le code
@@ -99,8 +106,12 @@ public class AutoEdit extends LinearOpMode {
 
         waitForStart();
 
+        ledR.setMode(DigitalChannel.Mode.OUTPUT);
+        ledG.setMode(DigitalChannel.Mode.OUTPUT);
+
 
         while (opModeIsActive()) {
+
             vision.update();
             AprilTagDetection tag = VisionTest.getTagBySpecificId(20);
 
@@ -172,7 +183,7 @@ public class AutoEdit extends LinearOpMode {
                     }
                     vision.updateTelemetry();
 
-                    //f(x) = 0,0023x^2 + 0,35x + 1121 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
+                    //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
 
 
 
@@ -180,21 +191,27 @@ public class AutoEdit extends LinearOpMode {
                     //yaw = angle
                     //range = distance
 
+                    //tire proche = 240cm --> 1340 tick/s
+                    //tire loin == 400cm --> 1675 tick/s
 
+                    // Fonction 4 roues lanceurs
                     f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
+
+
                 }
 
 
 
             }
 
-
+            //arrive pas a monté
 
             //gestion des moteur pour deplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
             LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
             RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
             LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor+0.2));
+
 
             if (manette1.dpad_down){
                 while(Motsoulever.getCurrentPosition() <= 100) {
@@ -203,7 +220,7 @@ public class AutoEdit extends LinearOpMode {
                     telemetry.update();
                     if (Motsoulever.getCurrentPosition() >= 105) {
                         Motsoulever.setPower(-0.4);
-                    } else if (Motsoulever.getCurrentPosition() <= 90){
+                    } else if (Motsoulever.getCurrentPosition() <= 99){
                         Motsoulever.setPower(1);
                     } else {
                         Motsoulever.setPower(0);
@@ -254,22 +271,33 @@ public class AutoEdit extends LinearOpMode {
             }
             telemetry.addData("vitesse de F = ", -f);
 
+            if (roueLanceur.getVelocity() > f - 40 && roueLanceur.getVelocity() < f + 40){
+                ledR.setState(true);
+                ledG.setState(false);
+            } else {
+                ledR.setState(false);
+                ledG.setState(true);
+            }
+
             //faire tourné les elastique pour recup les balles
             if (manette2.x) {
-                attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
+                attrapeballe.setPower(-1);
+                //roue_a_balle.setPower(-1);
             } else if (manette2.dpad_down) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
-            } else if (manette2.a) {
-                attrapeballe.setPower(-1);
-                roue_a_balle.setPower(1);
-            } else if (manette2.b) {
                 attrapeballe.setPower(1);
-                roue_a_balle.setPower(-1);
-            } else {
+                //roue_a_balle.setPower(1);
+            } else if (manette2.a) {
+                attrapeballe.setPower(1);
+                //roue_a_balle.setPower(1);
+            } else if (manette2.b) {
+                attrapeballe.setPower(-1);
+                //roue_a_balle.setPower(-1);
+            } else if (manette2.dpad_right){
+                attrapeballe.setPower(-0.5);
+            }
+            else {
                 attrapeballe.setPower(0);
-                roue_a_balle.setPower(0);
+                //roue_a_balle.setPower(0);
             }
 
             if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
@@ -286,6 +314,11 @@ public class AutoEdit extends LinearOpMode {
             /*
              * TELEMETRY (affichage de données sur la tablette pour débug)
              */
+
+            if (roueLanceur1.getVelocity() > f -5 && roueLanceur1.getVelocity() < f + 5){
+                telemetry.addLine("LANCEUR PRET A TIRER!!!!!");
+                telemetry.update();
+            }
             telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
             telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
             telemetry.addData("vitesse roue avant droite", RightFront.getVelocity());
