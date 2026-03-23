@@ -5,6 +5,7 @@ import com.pedropathing.geometry.BezierCurve;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.alldatacode;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -57,16 +58,16 @@ public class autoFrontR extends OpMode {
     private final Pose startPose = new Pose(-63.77, 44.81, 2.21);// Start Pose of our robot.
     private final Pose tirePose = new Pose(-22.12, 13.29, 2.30); // Shoot pose of our robot
     private final Pose tirePose2 = new Pose(-22.12, 13.29, 2.35);
-    private final Pose correct1 = new Pose(-17.15, 17.25, -1.57);
+    private final Pose correct1 = new Pose(-13.42, 17.25, -1.57);
     private final Pose priseballe1 = new Pose(-13.42, 44, -1.57);
     private final Pose faceOuverture = new Pose(-4.25,40.13,-3.13);
     //private final Pose Ouverture = new Pose(-4.25, 56.58, -3.13);
     private final Pose replace = new Pose(-3.25, 52.58, 2.61);
 
     //private final Pose pose2 = new Pose(22.21, 29.51,-2.17);
-    private final Pose replace2 = new Pose(7, 17.19,-1.57);
+    private final Pose replace2 = new Pose(9, 17.19,-1.57);
 
-    private final Pose priseballe2 = new Pose(7, 53,-1.57);
+    private final Pose priseballe2 = new Pose(9, 50,-1.57);
     
     private Path scorePreload;
     /*
@@ -221,7 +222,7 @@ public class autoFrontR extends OpMode {
                 roueLanceur1.setPower(0);
                 attrapeballe.setPower(0);
                 //roue_a_balle.setPower(0);
-                pousseballe.setPosition(0.52);
+                pousseballe.setPosition(0.5);
                 // Lancer le path suivant
                 follower.followPath(gotopose1, true);
                 setPathState(3);
@@ -284,7 +285,7 @@ public class autoFrontR extends OpMode {
                         roueLanceur1.setPower(0);
                         attrapeballe.setPower(0);
                         chargement_manuel.setPower(0);
-                        pousseballe.setPosition(0.52);
+                        pousseballe.setPosition(0.5);
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
                         setPathState(7);//apres 5s passé au total, passe a la prochaine etape
@@ -353,7 +354,7 @@ public class autoFrontR extends OpMode {
                         chargement_manuel.setPower(0);
                         attrapeballe.setPower(0);
                         //roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.52);
+                        pousseballe.setPosition(0.5);
                         setPathState(12);// apres 5s au total, arrete le tire et vas deavant la gate
                     }
                 }
@@ -416,7 +417,7 @@ public class autoFrontR extends OpMode {
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
-        pousseballe.setPosition(0.50);
+        pousseballe.setPosition(0.5);
 
     }
 

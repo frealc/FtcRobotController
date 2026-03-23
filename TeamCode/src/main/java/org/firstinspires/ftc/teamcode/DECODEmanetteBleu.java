@@ -287,7 +287,7 @@ public class DECODEmanetteBleu extends LinearOpMode {
                 attrapeballe.setPower(1);
                 //roue_a_balle.setPower(1);
             } else if (manette2.a) {
-                attrapeballe.setPower(1);
+                attrapeballe.setPower(0.5);
                 //roue_a_balle.setPower(1);
             } else if (manette2.b) {
                 attrapeballe.setPower(-1);
