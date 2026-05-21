@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.ThermalEquilibrium.homeostasis.Controllers.Feedback.BasicPID;
+import com.ThermalEquilibrium.homeostasis.Parameters.PIDCoefficients;
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -17,7 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
  * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
  *
  */
-@Disabled
+@Configurable
 @TeleOp
 public class testregulateur extends LinearOpMode {
 
@@ -38,10 +41,25 @@ public class testregulateur extends LinearOpMode {
 
     private DcMotorEx Motsoulever;
 
+    private DigitalChannel ledR;
+    private DigitalChannel ledG;
+
 
     private Follower follower;
-    private double speed_pourcent=0;
     VisionTest vision = new VisionTest();
+
+
+
+    public static double Kp = 0.08;
+    public static double Ki = 0;
+    public static double Kd = 0.00005;
+
+    PIDCoefficients coefficients = new PIDCoefficients(Kp,Ki,Kd);
+
+    BasicPID controller = new BasicPID(coefficients);
+
+
+
 
 
     @Override
@@ -64,23 +82,26 @@ public class testregulateur extends LinearOpMode {
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
         Motsoulever = hardwareMap.get(DcMotorEx.class, "Motsoulever");
 
+        ledR = hardwareMap.get(DigitalChannel.class, "ledR");
+        ledG = hardwareMap.get(DigitalChannel.class, "ledG");
 
-        //creation des variables utilisé dans le code
+
+        //création des variables utilisées dans le code
 
         double yaw = 0;
         double range = 0;
         double bearing = 0;
         double f = 0;
-        double R = 0;
 
 
         double tgtpowerRota = 0;
         double varY = 0;
         double varX = 0;
-        double P = 1;
+
 
         double varYpos = 0;
         double varXpos = 0;
+
 
 
         vision.init(hardwareMap, telemetry);
@@ -89,7 +110,7 @@ public class testregulateur extends LinearOpMode {
 
 
 
-        boolean PrecisionMode = false; //precision mis en faux quand initialisé
+        boolean PrecisionMode = false; //précision mis en faux quand initialisé
 
 
         Gamepad manette1 = this.gamepad1; //donne le nom "manette1 "
@@ -104,8 +125,13 @@ public class testregulateur extends LinearOpMode {
 
         waitForStart();
 
+        ledR.setMode(DigitalChannel.Mode.OUTPUT);
+        ledG.setMode(DigitalChannel.Mode.OUTPUT);
+
 
         while (opModeIsActive()) {
+
+            double current_pos = roueLanceur.getVelocity();
             vision.update();
             AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
 
@@ -143,13 +169,13 @@ public class testregulateur extends LinearOpMode {
                 tgtpowerRota=0;
             }
 
-            //active le mode precision quand b est appuyé et le desactive quand b est re appuyé
+            //active le mode précision quand b est appuyé et le désactive quand b est re appuyé
             if (gamepad1.a) {
                 PrecisionMode = !PrecisionMode;
                 sleep(250);
             }
 
-            double divisor = PrecisionMode ? 3.5 : 1.0; //quand precision activé, change le chiffre a 3, puis le repasse a 1 quand desactivé
+            double divisor = PrecisionMode ? 3.5 : 1.0; //quand précision activé, change le chiffre à 3, puis le repasse a 1 quand desactivé
 
 
             if (tag != null) {
@@ -177,6 +203,9 @@ public class testregulateur extends LinearOpMode {
                     }
                     vision.updateTelemetry();
 
+                    telemetry.addData("distance (cm) : ", range);
+                    telemetry.update();
+
                     //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
 
 
@@ -188,30 +217,39 @@ public class testregulateur extends LinearOpMode {
                     //tire proche = 240cm --> 1340 tick/s
                     //tire loin == 400cm --> 1675 tick/s
 
-                    f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
+                    // Fonction 4 roues lanceurs
+                    f = (-1.736*Math.pow(10,-5))*Math.pow(range,3)+(0.01430229) * Math.pow(range, 2) + -1.814514 * range +1030.6704;
+
+
+
                 }
 
 
 
             }
 
-            //arrive pas a monté
 
-            //gestion des moteur pour deplacement
+
+            double P = controller.calculate(f, current_pos);
+
+
+
+            //arrive pas à monter
+            //gestion des moteurs pour déplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
             LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
             RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
             LeftBack.setPower(-(Power + strafe + tgtpowerRota) / (divisor+0.2));
 
 
-            /*if (manette1.dpad_down){
+            if (manette1.dpad_down){
                 while(Motsoulever.getCurrentPosition() <= 100) {
                     Motsoulever.setPower(1);
                     telemetry.addData("pos moteur soulever : ", Motsoulever.getCurrentPosition());
                     telemetry.update();
                     if (Motsoulever.getCurrentPosition() >= 105) {
-                        Motsoulever.setPower(-0.1);
-                    } else if (Motsoulever.getCurrentPosition() <= 90){
+                        Motsoulever.setPower(-0.4);
+                    } else if (Motsoulever.getCurrentPosition() <= 99){
                         Motsoulever.setPower(1);
                     } else {
                         Motsoulever.setPower(0);
@@ -223,7 +261,7 @@ public class testregulateur extends LinearOpMode {
                 }
 
                 Motsoulever.setPower(0);
-            }*/
+            }
             if(manette1.dpad_up){
                 while(Motsoulever.getCurrentPosition() >= 0){
                     Motsoulever.setPower(-0.5);
@@ -240,15 +278,12 @@ public class testregulateur extends LinearOpMode {
              ***************************************
              * **************************************/
 
-            double targetVel = f;
-            double currentVel = roueLanceur.getVelocity();
-
             if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
                 roueLanceur.setVelocity(1675);
                 roueLanceur1.setVelocity(-1675);
             } else if (manette2.left_bumper) {
-                roueLanceur.setVelocity(1360);
-                roueLanceur1.setVelocity(-1360);
+                roueLanceur.setVelocity(P);
+                roueLanceur1.setVelocity(-P);
             } //PROBLEME AVEC CETTE METHODE :
             //le moteur dois allé a la vitesse max (1800 tick/s) avant de redescendre a la vitesse demandé
 
@@ -258,76 +293,49 @@ public class testregulateur extends LinearOpMode {
             }else if (manette2.left_trigger > 0){
                 roueLanceur1.setVelocity(-f);
                 roueLanceur .setVelocity(f);
-
-            }else  if (gamepad2.right_bumper) {
-                currentVel = roueLanceur.getVelocity();
-
-                    if (f >= 900 && f < 1300) {
-                        R = 0.00015;
-                    } else if (f >= 1300 && f < 1500) {
-                        R = 0.00005;
-                    } else if (f >= 1500 && f <= 2000) {
-                        R = 0.00018;
-                    }
-
-                telemetry.addData("r:", R);
-                if(currentVel<targetVel) {
-                    speed_pourcent = ((currentVel / targetVel) * 100);
-
-
-                    telemetry.addData("P:", P);
-                    roueLanceur.setPower(P);
-                    roueLanceur1.setPower(-P);
-                    if (P<1 && P>0){
-                        P = P+ R; //val de base 0.00005 , val proche 0.00015, val loin 0.00018
-                    }
-                }else {
-                    roueLanceur.setPower(0);
-                    roueLanceur1.setPower(0);
-                    P = P- 0.0018; //val de base 0.001
-                }
-                /*if (speed_pourcent < 0.5) {
-                    roueLanceur.setPower(1);
-                    roueLanceur1.setPower(-1);
-                } else if (speed_pourcent < 0.8) {
-                    roueLanceur.setPower(0.7);
-                    roueLanceur1.setPower(-0.7);
-                } else if (speed_pourcent < 1) {
-                    roueLanceur.setPower(0.5);
-                    roueLanceur1.setPower(-0.5);
-                }*/
-
-
-            } else {
+            }
+            else {
                 roueLanceur.setPower(0);
                 roueLanceur1.setPower(0);
             }
             telemetry.addData("vitesse de F = ", -f);
 
+            if (roueLanceur.getVelocity() > f - 40 && roueLanceur.getVelocity() < f + 40){
+                ledR.setState(true);
+                ledG.setState(false);
+            } else {
+                ledR.setState(false);
+                ledG.setState(true);
+            }
 
+            if (manette2.dpad_down) {
+                P =P - 10;
+            }else if(manette2.dpad_up){
+                P = P + 10;
+            }
 
             //faire tourné les elastique pour recup les balles
             if (manette2.x) {
                 attrapeballe.setPower(-1);
                 //roue_a_balle.setPower(-1);
-            } else if (manette2.dpad_down) {
-                attrapeballe.setPower(1);
-                //roue_a_balle.setPower(1);
             } else if (manette2.a) {
-                attrapeballe.setPower(1);
+                attrapeballe.setPower(0.5);
                 //roue_a_balle.setPower(1);
             } else if (manette2.b) {
                 attrapeballe.setPower(-1);
                 //roue_a_balle.setPower(-1);
-            } else {
+            } else if (manette2.dpad_right){
+                attrapeballe.setPower(-0.5);
+            }
+            else {
                 attrapeballe.setPower(0);
                 //roue_a_balle.setPower(0);
             }
 
             if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
-                pousseballe.setPosition(0.29);
+                pousseballe.setPosition(0.28);
             } else {
-                pousseballe.setPosition(0.42);
+                pousseballe.setPosition(0.5);
             }
 
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
@@ -339,14 +347,19 @@ public class testregulateur extends LinearOpMode {
              * TELEMETRY (affichage de données sur la tablette pour débug)
              */
 
-            telemetry.addData("facteur :", speed_pourcent);
+            if (roueLanceur1.getVelocity() > f -5 && roueLanceur1.getVelocity() < f + 5){
+                telemetry.addLine("LANCEUR PRET A TIRER!!!!!");
+                telemetry.update();
+            }
             telemetry.addData("vitesse moteur 1 du lanceur : ", roueLanceur.getVelocity());
             telemetry.addData("vitesse moteur 2 du lanceur : ", roueLanceur1.getVelocity());
+            telemetry.addData("vitesse roue avant droite", RightFront.getVelocity());
+            telemetry.addData("vitesse roue avant gauche", LeftFront.getVelocity());
+            telemetry.addData("vitesse roue arriere droite", RightBack.getVelocity());
+            telemetry.addData("vitesse roue arriere gauche", LeftBack.getVelocity());
             telemetry.addData("vitesse chargement manuelle", chargement_manuel.getPower());
+            telemetry.addData("P : ", P);
             telemetry.update();
         }
     }
 }
-
-
-

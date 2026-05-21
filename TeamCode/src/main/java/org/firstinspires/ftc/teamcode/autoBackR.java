@@ -79,6 +79,7 @@ public class autoBackR extends OpMode {
 
     boolean shotLocked = false;
     VisionTest vision = new VisionTest();
+    alldatacode data = new alldatacode();
     
     /*
     *creation des nom pour les chemins du robot
@@ -97,13 +98,7 @@ public class autoBackR extends OpMode {
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
 
         //dis a shooter manager les element utilisé
-        shooter = new ShooterManager(
-                roueLanceur,
-                roueLanceur1,
-                pousseballe,
-                attrapeballe,
-                roue_a_balle
-        );
+
 
 
         vision.init(hardwareMap, telemetry);
@@ -113,6 +108,7 @@ public class autoBackR extends OpMode {
         follower.setStartingPose(startPose);
 
         buildPaths();
+        pousseballe.setPosition(data.servo_moteur_angle_bas);
         pathTimer = new Timer();
     }
 
@@ -278,7 +274,7 @@ public class autoBackR extends OpMode {
 
                 attrapeballe.setPower(-0.1);
                 roue_a_balle.setPower(0.1);
-                pousseballe.setPosition(0.27);
+                pousseballe.setPosition(data.servo_moteur_angle_haut);
 
                 /*
                 * gestion de la plaque tournante avec vitesse moteur
@@ -324,7 +320,7 @@ public class autoBackR extends OpMode {
                 attrapeballe.setPower(0);
                 roue_a_balle.setPower(0);
                 chargement_manuel.setPower(0);
-                pousseballe.setPosition(0.5);
+                pousseballe.setPosition(data.servo_moteur_angle_bas);
                 // Lancer le path suivant
                 follower.followPath(gotopose1, true); //se pose devant les balles au sol (a probablement enlevé)
                 setPathState(4);
@@ -373,11 +369,11 @@ public class autoBackR extends OpMode {
                     roueLanceur1.setVelocity(-1610);
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(-1);
-                    pousseballe.setPosition(0.27); //commence a tiré
+                    pousseballe.setPosition(data.servo_moteur_angle_haut); //commence a tiré
                     if (System.currentTimeMillis() - startTime >= 8000) {
                         roueLanceur1.setVelocity(-900);
                         attrapeballe.setPower(0);
-                        pousseballe.setPosition(0.5);
+                        pousseballe.setPosition(data.servo_moteur_angle_bas);
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
                         setPathState(8); //apres 5s passé au total, passe a la prochaine etape
@@ -417,11 +413,11 @@ public class autoBackR extends OpMode {
 
                     attrapeballe.setPower(1);
                     roue_a_balle.setPower(-1);
-                    pousseballe.setPosition(0.27); // tire les balles
+                    pousseballe.setPosition(data.servo_moteur_angle_haut); // tire les balles
                     if (System.currentTimeMillis() - startTime >= 4000) {
                         attrapeballe.setPower(0);
                         roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.5) ;
+                        pousseballe.setPosition(data.servo_moteur_angle_bas) ;
                         setPathState(11); // apres 4s au total passe a la prochaine etape
                     }
                 }

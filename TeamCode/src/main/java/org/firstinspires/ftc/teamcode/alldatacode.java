@@ -2,15 +2,25 @@ package org.firstinspires.ftc.teamcode;
 
 public class alldatacode {
 
-    ///  /////////////////////////////////////////////////////////
+    /// //////////////////////////////////////////////////////////
     ///
     ///  élement maléable
     ///
     /// //////////////////////////////////////////////////////////
+
+    // servo pousse balle
     public double servo_moteur_angle_haut = 0.28;
     public double servo_moteur_angle_bas = 0.5;
 
-    ///  /////////////////////////////////////////////////////////
+    // vitesse de tire
+
+    public double vitesse_de_tir_derriere = 1600;
+    public double vitesse_de_tir_devant= 1300;
+    public double vitesse_retire_balle=1200;
+
+    public double vitesse_tir_auto_av = 1240;
+
+    /// ///////////////////////////////////////////////////////////
     ///
     ///  auto pose arrière
     ///
@@ -29,7 +39,7 @@ public class alldatacode {
     // rotatest
 
 
-    ///  /////////////////////////////////////////////////////////
+    /// //////////////////////////////////////////////////////////
     ///
     ///  auto pose avant
     ///

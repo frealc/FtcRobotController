@@ -18,7 +18,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
 /*
- * CE CODE UTILISE PEDRO PATHING. la methode est donc différente des autre mode auto
+ * CE CODE UTILISE PEDRO PATHING. la méthode est donc différente des autres modes autos
  */
 
 @Autonomous(name = "auto back rouge JH", group = "rouge")
@@ -56,8 +56,8 @@ public class autobackRtest extends OpMode {
     private int pathState;
 
     /*
-     *creation des positions utilisé sur le terrain
-     *utilisé le code tuning (init puis right bumper 2 fois pour allé a Localization Test)
+     *création des positions utilisées sur le terrain
+     *utiliser le code tuning (init puis right bumper 2 fois pour aller à Localization Test)
      * --> Localization --> Localization Test puis lancé le code
      */
 
@@ -77,7 +77,7 @@ public class autobackRtest extends OpMode {
     VisionTest vision = new VisionTest();
 
     /*
-     *creation des nom pour les chemins du robot
+     *création des noms pour les chemins du robot
      */
     private PathChain tire, gotopose1, takepose1, lance2, gotopose2, takepose2, lance3, fin;
 
@@ -106,16 +106,16 @@ public class autobackRtest extends OpMode {
     }
 
     /*
-     *creation des chemins du robot
-     * bien pensé a mettre un nom dans le pathChain avant de crée un chemin
+     *création des chemins du robot
+     * bien penser à mettre un nom dans le pathChain avant de créer un chemin
      *
-     * methode :  mettre un .addPath et dire le type de chemin, Bezier Line ou Curve.
-     * Line (2 position a rensègner): fait un chemin en ligne d'une position a une autre
-     * curve (3 position a rensègner): fait une courbe d'une position a une autre en passant par un point
-     * 1ere pos : position de départ, 2eme pos : position de passage de la courbe, 3eme pos : position de fin
+     * méthode :  mettre un .addPath et dire le type de chemin, Bezier Line ou Curve.
+     * Line (2 position a renseigner): fait un chemin en ligne d'une position à une autre
+     * curve (3 position a renseigner): fait une courbe d'une position a une autre en passant par un point
+     * 1ère pos : position de départ, 2eme pos : position de passage de la courbe, 3eme pos : position de fin
      *
      * ensuite mettre le .setLinearHeadingInterpolation
-     * sert a mettre l'orientation de debut et de fin du robot
+     * sert à mettre l'orientation de début et de fin du robot
      */
     public void buildPaths() {
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
@@ -176,7 +176,7 @@ public class autobackRtest extends OpMode {
     }
 
 
-    //met des debug et update les etapes en boucle
+    //met des debug et update les étapes en boucle
     @Override
     public void loop() {
         // Update shooter et follower
@@ -204,12 +204,12 @@ public class autobackRtest extends OpMode {
         telemetry.addData("Shooter RPM", roueLanceur.getVelocity());
         telemetry.update();
 
-        Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour acceder au panel)
+        Drawing.drawDebug(follower); //visualisation sur le panel pedro (192.168.43.1:8001 pour accéder au panel)
     }
 
 
     /*
-     * Debut des chemin
+     * Début des chemins
      */
     private void autonomousPathUpdate() {
         switch (pathState) {
@@ -218,10 +218,10 @@ public class autobackRtest extends OpMode {
                 if(!follower.isBusy()) {
                     //shooter.startShooter(1615);
                     roueLanceur1.setVelocity(-1600);
-                    roueLanceur.setVelocity(1600);// lance les roues de tire a un Tick/s ciblé
-                    //follower.followPath(tire, true);//vas a la position de tire
+                    roueLanceur.setVelocity(1600);// lance les roues de tir à un Tick/s ciblé
+                    //follower.followPath(tire, true);//va à la position de tir
                     startTime = System.currentTimeMillis();//lance un timer
-                    setPathState(1);//passe a la prochaine étape
+                    setPathState(1);//passe à la prochaine étape
                 }
                 break;
 
@@ -255,7 +255,7 @@ public class autobackRtest extends OpMode {
                          * gestion de la plaque tournante avec vitesse moteur
                          */
                         if (velocity >= SHOOTER_READY && !shotLocked) {
-                            chargement_manuel.setPower(0.25);//si les moteur sont pareil que shooter ready, fait tourné la plaque
+                            chargement_manuel.setPower(0.25);//si les moteurs sont pareils que shooter ready, fait tourner la plaque
                         } else {
                             chargement_manuel.setPower(0);
                         }
@@ -265,8 +265,8 @@ public class autobackRtest extends OpMode {
                             shotCount++;
                             shotLocked = true;
                             /*
-                             *quand la premiere balle est tiré, moteur baisse en vitesse
-                             * ajout 1 au compte de balle tiré
+                             *quand la premiere balle est tirée, moteur baisse en vitesse
+                             * ajoute 1 au compte de balles tirées
                              */
                         }
 
@@ -277,9 +277,9 @@ public class autobackRtest extends OpMode {
 
 
                         if (shotCount >= 4 || System.currentTimeMillis() - startTime >= 10000) {
-                            chargement_manuel.setPower(0);// quant toute les balles sont tiré ou 10s sont passé, arrete tout
+                            chargement_manuel.setPower(0);// quand toutes les balles sont tirées ou 10s sont passées, arrête tout
                             shotLocked = false;
-                            setPathState(3);//passe a la prochaine étape
+                            setPathState(3);//passe à la prochaine étape
                         }
                     }
                 }
@@ -294,7 +294,7 @@ public class autobackRtest extends OpMode {
                 chargement_manuel.setPower(0);
                 pousseballe.setPosition(0.5);
                 // Lancer le path suivant
-                follower.followPath(gotopose1, true); //se pose devant les balles au sol (a probablement enlevé)
+                follower.followPath(gotopose1, true); //se pose devant les balles au sol (probablement à enlever)
                 setPathState(4);
                 break;
 
@@ -303,7 +303,7 @@ public class autobackRtest extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(-1);
 
-                    follower.followPath(takepose1, true); //rammasse les balle
+                    follower.followPath(takepose1, true); //ramasse les balles
                     setPathState(5);
                 }
                 break;
@@ -321,7 +321,7 @@ public class autobackRtest extends OpMode {
                     attrapeballe.setPower(0);
                     roueLanceur1.setVelocity(-1560);
                     roueLanceur.setVelocity(1560);
-                    follower.followPath(lance2, true);//vas a la pos de tire
+                    follower.followPath(lance2, true);//va à la pose de tir
                     startTime = 0;
                     startTime = System.currentTimeMillis();
                     setPathState(7);
@@ -335,7 +335,7 @@ public class autobackRtest extends OpMode {
                     roueLanceur1.setVelocity(-1560);
                     roueLanceur.setVelocity(1560);
                     attrapeballe.setPower(-1);
-                    pousseballe.setPosition(0.28); //commence a tiré
+                    pousseballe.setPosition(0.28); //commence à tirer
                     if (System.currentTimeMillis() - startTime >= 6000) {
                         roueLanceur1.setVelocity(-900);
                         roueLanceur.setVelocity(900);
@@ -344,7 +344,7 @@ public class autobackRtest extends OpMode {
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
                         startTime = System.currentTimeMillis();
-                        setPathState(8); //apres 5s passé au total, passe a la prochaine etape
+                        setPathState(8); //après 5s passées au total, passe à la prochaine étape
                     }
                 }
                 break;
@@ -352,7 +352,7 @@ public class autobackRtest extends OpMode {
 
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(-1);
-                    follower.followPath(takepose2, true); // rammasse les balles
+                    follower.followPath(takepose2, true); // ramasse les balles
                     if (System.currentTimeMillis() - startTime >= 3000) {
                         setPathState(9);
                     }
@@ -364,9 +364,9 @@ public class autobackRtest extends OpMode {
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
                     roueLanceur1.setVelocity(-1580);
-                    roueLanceur.setVelocity(1580);//prepare le tire (a changé pour utilisé le start shooter)
+                    roueLanceur.setVelocity(1580);//prépare le tir (à changer pour utiliser le start shooter)
 
-                    follower.followPath(lance3, true);//vas a la position de tire
+                    follower.followPath(lance3, true);//va à la position de tir
                     startTime = 0;
                     startTime = System.currentTimeMillis();
                     setPathState(10);
@@ -374,7 +374,7 @@ public class autobackRtest extends OpMode {
                 }
                 break;
             case 10:
-                // Attendre 2 secondes sans bloquer
+                // Attendre 2s sans bloquer
                 if (!follower.isBusy()) {
 
                     attrapeballe.setPower(-1);
@@ -382,16 +382,16 @@ public class autobackRtest extends OpMode {
                     if (System.currentTimeMillis() - startTime >= 6000) {
                         attrapeballe.setPower(0);
                         pousseballe.setPosition(0.5);
-                        setPathState(11); // apres 4s au total passe a la prochaine etape
+                        setPathState(11); // après 4s au total passe à la prochaine étape
                     }
                 }
                 break;
 
             case 11:
-                // Attendre 2 secondes sans bloquer
+                // Attendre 2s sans bloquer
                 if (!follower.isBusy()) {
                     follower.followPath(fin, true);
-                    setPathState(12); // sort de la zone de tire
+                    setPathState(12); // sort de la zone de tir
                 }
                 break;
             case 12:
@@ -403,7 +403,7 @@ public class autobackRtest extends OpMode {
     }
 
     /*
-     * a l'arret du code, enregistre la derniere position pour le teleop
+     * à l'arrêt du code, enregistre la dernière position pour le teleop
      */
     @Override
     public void stop() {

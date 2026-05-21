@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 
-import com.pedropathing.geometry.BezierCurve;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.alldatacode;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
@@ -239,7 +237,7 @@ public class autoFrontR extends OpMode {
 
 
 
-                    follower.followPath(takepose1, true);//rammasse les balle
+                    follower.followPath(takepose1, true);//ramasse les balle
                     setPathState(4);
                 }
                 break;
@@ -249,7 +247,7 @@ public class autoFrontR extends OpMode {
                     attrapeballe.setPower(0);
                     //roue_a_balle.setPower(0);
 
-                    //shooter.startShooter(1260);//prepare le tire
+                    //shooter.startShooter(1260);//prépare le tir
                     roueLanceur.setVelocity(1240);
                     roueLanceur1.setVelocity(-1240);
 
@@ -263,7 +261,7 @@ public class autoFrontR extends OpMode {
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if (!follower.isBusy()) {
 
-                    follower.followPath(lance2, true);//vas a la pos de tire
+                    follower.followPath(lance2, true);//va à la pose de tir
                     startTime = 0;
                     startTime = System.currentTimeMillis();
                     setPathState(6);
@@ -288,7 +286,7 @@ public class autoFrontR extends OpMode {
                         pousseballe.setPosition(0.5);
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
-                        setPathState(7);//apres 5s passé au total, passe a la prochaine etape
+                        setPathState(7);//après 5s passées au total, passe à la prochaine etape
                     }
                 }
                 break;
@@ -324,9 +322,9 @@ public class autoFrontR extends OpMode {
                 if (!follower.isBusy()) {
 
                     //roue_a_balle.setPower(0);
-                    //shooter.startShooter(1260);//prepare le tire
+                    //shooter.startShooter(1260);//prépare le tir
 
-                    follower.followPath(lance3, true);//vas a la position de tire
+                    follower.followPath(lance3, true);//va à la position de tir
                     startTime = 0;
                     startTime = System.currentTimeMillis();
                     setPathState(10);
@@ -334,7 +332,7 @@ public class autoFrontR extends OpMode {
                 }
                 break;
             case 10:
-                // Attendre 2 secondes sans bloquer
+                // Attendre 2s sans bloquer
                 if (!follower.isBusy()) {
                     chargement_manuel.setPower(0.30);
                     attrapeballe.setPower(-0.7);
@@ -355,7 +353,7 @@ public class autoFrontR extends OpMode {
                         attrapeballe.setPower(0);
                         //roue_a_balle.setPower(0);
                         pousseballe.setPosition(0.5);
-                        setPathState(12);// apres 5s au total, arrete le tire et vas deavant la gate
+                        setPathState(12);// après 5s au total, arrête le tir et va devant la gate
                     }
                 }
                 break;
@@ -375,7 +373,7 @@ public class autoFrontR extends OpMode {
     /**
      * This is the main loop of the OpMode, it will run repeatedly after clicking "Play".
      **/
-    //met des debug et update les etapes en boucle
+    //met des debug et update les étapes en boucle
     @Override
     public void loop() {
         
@@ -437,7 +435,7 @@ public class autoFrontR extends OpMode {
     }
 
     /*
-     * a l'arret du code, enregistre la derniere position pour le teleop
+     * à l'arrêt du code, enregistre la dernière position pour le teleop
      */
     @Override
     public void stop() {

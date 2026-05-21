@@ -76,6 +76,8 @@ public class autoFrontB extends OpMode {
 
     private int vitesse_lanceur = 0;
 
+    alldatacode data = new alldatacode();
+
 
 
     public void buildPaths() {
@@ -176,7 +178,7 @@ public class autoFrontB extends OpMode {
 
                 //attrapeballe.setPower(-0.5);
                 //roue_a_balle.setPower(-0.5);
-                pousseballe.setPosition(0.28);
+                pousseballe.setPosition(data.servo_moteur_angle_haut);
 
                 /*
                  * gestion de la plaque tournante avec vitesse moteur
@@ -221,7 +223,7 @@ public class autoFrontB extends OpMode {
                 roueLanceur1.setPower(0);
                 attrapeballe.setPower(0);
                 //roue_a_balle.setPower(0);
-                pousseballe.setPosition(0.52);
+                pousseballe.setPosition(data.servo_moteur_angle_bas);
                 // Lancer le path suivant
                 follower.followPath(gotopose1, true);
                 setPathState(3);
@@ -249,8 +251,8 @@ public class autoFrontB extends OpMode {
                     //roue_a_balle.setPower(0);
 
                     //shooter.startShooter(1260);//prepare le tire
-                    roueLanceur.setVelocity(1240);
-                    roueLanceur1.setVelocity(-1240);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_av);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_av);
 
                     //follower.followPath(replacepose, true);
                     setPathState(5);
@@ -273,7 +275,7 @@ public class autoFrontB extends OpMode {
 
                     attrapeballe.setPower(-0.8);
 
-                    pousseballe.setPosition(0.28);
+                    pousseballe.setPosition(data.servo_moteur_angle_haut);
                     chargement_manuel.setPower(0.30);
 
                     if (System.currentTimeMillis() - startTime >= 4500) {
@@ -284,7 +286,7 @@ public class autoFrontB extends OpMode {
                         roueLanceur1.setPower(0);
                         attrapeballe.setPower(0);
                         chargement_manuel.setPower(0);
-                        pousseballe.setPosition(0.52);
+                        pousseballe.setPosition(data.servo_moteur_angle_bas);
                         // Lancer le path suivant
                         follower.followPath(gotopose2, true);
                         setPathState(7);//apres 5s passé au total, passe a la prochaine etape
@@ -309,8 +311,8 @@ public class autoFrontB extends OpMode {
 
             case 8:
                 if (!follower.isBusy()){
-                    roueLanceur.setVelocity(1240);
-                    roueLanceur1.setVelocity(-1240);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_av);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_av);
                     attrapeballe.setPower(0);
                     follower.followPath(replace3, true); // devait ouvrir la gate
                     setPathState(9);
@@ -338,7 +340,7 @@ public class autoFrontB extends OpMode {
                     chargement_manuel.setPower(0.30);
                     attrapeballe.setPower(-0.7);
                     //roue_a_balle.setPower(-1);
-                    pousseballe.setPosition(0.28);// tire les balles
+                    pousseballe.setPosition(data.servo_moteur_angle_haut);// tire les balles
 
                     setPathState(11);
 
@@ -353,7 +355,7 @@ public class autoFrontB extends OpMode {
                         chargement_manuel.setPower(0);
                         attrapeballe.setPower(0);
                         //roue_a_balle.setPower(0);
-                        pousseballe.setPosition(0.52);
+                        pousseballe.setPosition(data.servo_moteur_angle_bas);
                         setPathState(12);// apres 5s au total, arrete le tire et vas deavant la gate
                     }
                 }
@@ -416,7 +418,7 @@ public class autoFrontB extends OpMode {
         pousseballe = hardwareMap.get(Servo.class, "pousseballe");
         chargement_manuel = hardwareMap.get(CRServo.class, "chargement_manuel");
 
-        pousseballe.setPosition(0.50);
+        pousseballe.setPosition(data.servo_moteur_angle_bas);
 
     }
 

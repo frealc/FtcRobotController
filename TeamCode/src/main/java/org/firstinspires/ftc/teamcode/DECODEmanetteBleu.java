@@ -43,6 +43,7 @@ public class DECODEmanetteBleu extends LinearOpMode {
 
     private Follower follower;
     VisionTest vision = new VisionTest();
+    alldatacode data = new alldatacode();
 
 
     @Override
@@ -69,7 +70,7 @@ public class DECODEmanetteBleu extends LinearOpMode {
         ledG = hardwareMap.get(DigitalChannel.class, "ledG");
 
 
-        //creation des variables utilisé dans le code
+        //création des variables utilisées dans le code
 
         double yaw = 0;
         double range = 0;
@@ -91,7 +92,7 @@ public class DECODEmanetteBleu extends LinearOpMode {
 
 
 
-        boolean PrecisionMode = false; //precision mis en faux quand initialisé
+        boolean PrecisionMode = false; //précision mis en faux quand initialisé
 
 
         Gamepad manette1 = this.gamepad1; //donne le nom "manette1 "
@@ -149,13 +150,13 @@ public class DECODEmanetteBleu extends LinearOpMode {
                 tgtpowerRota=0;
             }
 
-            //active le mode precision quand b est appuyé et le desactive quand b est re appuyé
+            //active le mode précision quand b est appuyé et le désactive quand b est re appuyé
             if (gamepad1.a) {
                 PrecisionMode = !PrecisionMode;
                 sleep(250);
             }
 
-            double divisor = PrecisionMode ? 3.5 : 1.0; //quand precision activé, change le chiffre a 3, puis le repasse a 1 quand desactivé
+            double divisor = PrecisionMode ? 3.5 : 1.0; //quand précision activé, change le chiffre à 3, puis le repasse a 1 quand desactivé
 
 
             if (tag != null) {
@@ -183,7 +184,7 @@ public class DECODEmanetteBleu extends LinearOpMode {
                     }
                     vision.updateTelemetry();
 
-                    //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
+                    //(fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
 
 
 
@@ -195,7 +196,7 @@ public class DECODEmanetteBleu extends LinearOpMode {
                     //tire loin == 400cm --> 1675 tick/s
 
                     // Fonction 4 roues lanceurs
-                    f = 0.0023 * Math.pow(range, 2) + 0.35 * range + 1121;
+                    f = (-1.736*Math.pow(10,-5))*Math.pow(range,3)+(0.01430229) * Math.pow(range, 2) + -1.814514 * range +1030.6704;
 
 
                 }
@@ -204,9 +205,8 @@ public class DECODEmanetteBleu extends LinearOpMode {
 
             }
 
-            //arrive pas a monté
-
-            //gestion des moteur pour deplacement
+            //arrive pas à monter
+            //gestion des moteurs pour déplacement
             RightFront.setPower(-(Power + strafe - tgtpowerRota) / (divisor));
             LeftFront.setPower(-(Power - strafe + tgtpowerRota) / (divisor));
             RightBack.setPower(-(Power - strafe - tgtpowerRota) / (divisor));
@@ -250,17 +250,17 @@ public class DECODEmanetteBleu extends LinearOpMode {
              * **************************************/
 
             if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
-                roueLanceur.setVelocity(1675);
-                roueLanceur1.setVelocity(-1675);
+                roueLanceur.setVelocity(data.vitesse_de_tir_derriere);
+                roueLanceur1.setVelocity(-data.vitesse_de_tir_derriere);
             } else if (manette2.left_bumper) {
-                roueLanceur.setVelocity(1360);
-                roueLanceur1.setVelocity(-1360);
+                roueLanceur.setVelocity(data.vitesse_de_tir_devant);
+                roueLanceur1.setVelocity(-data.vitesse_de_tir_devant);
             } //PROBLEME AVEC CETTE METHODE :
             //le moteur dois allé a la vitesse max (1800 tick/s) avant de redescendre a la vitesse demandé
 
             else if (manette2.dpad_left) {
-                roueLanceur.setVelocity(-1275);
-                roueLanceur1.setVelocity(1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
+                roueLanceur.setVelocity(-data.vitesse_retire_balle);
+                roueLanceur1.setVelocity(data.vitesse_retire_balle); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
             }else if (manette2.left_trigger > 0){
                 roueLanceur1.setVelocity(-f);
                 roueLanceur .setVelocity(f);
@@ -301,9 +301,9 @@ public class DECODEmanetteBleu extends LinearOpMode {
             }
 
             if (manette2.b || manette2.y) { //laisse passé les balles en montant la barre
-                pousseballe.setPosition(0.29);
+                pousseballe.setPosition(data.servo_moteur_angle_haut);
             } else {
-                pousseballe.setPosition(0.5);
+                pousseballe.setPosition(data.servo_moteur_angle_bas);
             }
 
             chargement_manuel.setPower(-manette2.left_stick_x); //control la plaque ronde en bois pour faire tombé les balles
