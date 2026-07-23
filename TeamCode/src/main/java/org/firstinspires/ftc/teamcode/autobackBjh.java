@@ -251,7 +251,7 @@ public class autobackBjh extends OpMode {
 
                         //attrapeballe.setPower(-0.5);
                         //roue_a_balle.setPower(-0.5);
-                        pousseballe.setPosition(0.28);
+                        pousseballe.setPosition(data.servo_moteur_angle_haut);
 
                         /*
                          * gestion de la plaque tournante avec vitesse moteur
