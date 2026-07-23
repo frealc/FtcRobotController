@@ -199,9 +199,10 @@ public class DECODEmanette extends LinearOpMode {
                     //tire loin == 400cm --> 1675 tick/s
 
                     // Fonction 4 roues lanceurs
-                    f = (-1.736*Math.pow(10,-5))*Math.pow(range,3)+(0.01430229) * Math.pow(range, 2) + -1.814514 * range +1030.6704;
+                    //f = (-1.736*Math.pow(10,-5))*Math.pow(range,3)+(0.01430229) * Math.pow(range, 2) + -1.814514 * range +1030.6704;
 
-
+                    //Fonction lanceur rouge
+                    f = 2.0765 * range + 870.63;
                 }
 
 

@@ -154,8 +154,8 @@ public class autoFrontB extends OpMode {
             case 0:
                 if(!follower.isBusy()) {
                     follower.setMaxPower(0.7);
-                    roueLanceur.setVelocity(1240);
-                    roueLanceur1.setVelocity(-1240);// lance les roues de tire a un Tick/s ciblé
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_av);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_av);// lance les roues de tire a un Tick/s ciblé
                     follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape

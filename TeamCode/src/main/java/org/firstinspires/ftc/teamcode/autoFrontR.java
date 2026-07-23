@@ -75,6 +75,8 @@ public class autoFrontR extends OpMode {
 
     private int vitesse_lanceur = 0;
 
+    alldatacode data = new alldatacode();
+
 
 
     public void buildPaths() {
@@ -151,8 +153,8 @@ public class autoFrontR extends OpMode {
             case 0:
                 if(!follower.isBusy()) {
                     follower.setMaxPower(0.7);
-                    roueLanceur.setVelocity(1240);
-                    roueLanceur1.setVelocity(-1240);// lance les roues de tire a un Tick/s ciblé
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_av);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_av);// lance les roues de tire a un Tick/s ciblé
                     follower.followPath(tire, true);//vas a la position de tire
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe a la prochaine étape
@@ -248,8 +250,8 @@ public class autoFrontR extends OpMode {
                     //roue_a_balle.setPower(0);
 
                     //shooter.startShooter(1260);//prépare le tir
-                    roueLanceur.setVelocity(1240);
-                    roueLanceur1.setVelocity(-1240);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_av);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_av);
 
                     //follower.followPath(replacepose, true);
                     setPathState(5);
@@ -270,9 +272,8 @@ public class autoFrontR extends OpMode {
             case 6:
                 if (!follower.isBusy()) {
 
-                    attrapeballe.setPower(-0.8);
-
                     pousseballe.setPosition(0.28);
+                    attrapeballe.setPower(-0.8);
                     chargement_manuel.setPower(0.30);
 
                     if (System.currentTimeMillis() - startTime >= 4500) {
@@ -308,8 +309,8 @@ public class autoFrontR extends OpMode {
 
             case 8:
                 if (!follower.isBusy()){
-                    roueLanceur.setVelocity(1240);
-                    roueLanceur1.setVelocity(-1240);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_av);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_av);
                     attrapeballe.setPower(0);
                     follower.followPath(replace3, true); // devait ouvrir la gate
                     setPathState(9);

@@ -76,6 +76,8 @@ public class autobackBjh extends OpMode {
     boolean shotLocked = false;
     VisionTest vision = new VisionTest();
 
+    alldatacode data = new alldatacode();
+
     /*
      *creation des nom pour les chemins du robot
      */

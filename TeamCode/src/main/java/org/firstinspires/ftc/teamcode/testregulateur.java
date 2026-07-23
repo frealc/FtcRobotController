@@ -58,6 +58,9 @@ public class testregulateur extends LinearOpMode {
 
     BasicPID controller = new BasicPID(coefficients);
 
+    double P = 0;
+
+
 
 
 
@@ -186,9 +189,6 @@ public class testregulateur extends LinearOpMode {
                 bearing = tag.ftcPose.bearing;
 
                 if(manette1.x) {
-
-                    vision.update();
-
                     vision.update();
                     if (bearing >= 2 && divisor == 1) {
                         tgtpowerRota = -0.5/3.5;
@@ -205,32 +205,17 @@ public class testregulateur extends LinearOpMode {
 
                     telemetry.addData("distance (cm) : ", range);
                     telemetry.update();
-
-                    //f(x) = 2.09375x + 837.5 (fonction de la vitesse (en tick/s) par rapport a la distance (en cm))
-
-
-
                     //bearing = lateral
                     //yaw = angle
                     //range = distance
-
-                    //tire proche = 240cm --> 1340 tick/s
-                    //tire loin == 400cm --> 1675 tick/s
-
                     // Fonction 4 roues lanceurs
-                    f = (-1.736*Math.pow(10,-5))*Math.pow(range,3)+(0.01430229) * Math.pow(range, 2) + -1.814514 * range +1030.6704;
-
-
-
                 }
-
+                f = (-1.736*Math.pow(10,-5))*Math.pow(range,3)+(0.01430229) * Math.pow(range, 2) + -1.814514 * range +1030.6704;
 
 
             }
 
 
-
-            double P = controller.calculate(f, current_pos);
 
 
 
@@ -279,24 +264,20 @@ public class testregulateur extends LinearOpMode {
              * **************************************/
 
             if (manette2.right_trigger > 0) { //fait tourné les roues de tire a un certains tick/s
-                roueLanceur.setVelocity(1675);
-                roueLanceur1.setVelocity(-1675);
+                roueLanceur.setVelocity(1475);
+                roueLanceur1.setVelocity(-1475);
             } else if (manette2.left_bumper) {
                 roueLanceur.setVelocity(P);
                 roueLanceur1.setVelocity(-P);
-            } //PROBLEME AVEC CETTE METHODE :
-            //le moteur dois allé a la vitesse max (1800 tick/s) avant de redescendre a la vitesse demandé
-
-            else if (manette2.dpad_left) {
-                roueLanceur.setVelocity(-1275);
-                roueLanceur1.setVelocity(1275); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
+            } else if (manette2.dpad_left) {
+                roueLanceur.setVelocity(-1155);
+                roueLanceur1.setVelocity(1155); // au cas ou une balle se block, fait tourné dans l'autre sens pour la sortir
             }else if (manette2.left_trigger > 0){
                 roueLanceur1.setVelocity(-f);
                 roueLanceur .setVelocity(f);
-            }
-            else {
-                roueLanceur.setPower(0);
-                roueLanceur1.setPower(0);
+            } else {
+                roueLanceur.setVelocity(700);
+                roueLanceur1.setVelocity(-700);
             }
             telemetry.addData("vitesse de F = ", -f);
 
@@ -363,3 +344,9 @@ public class testregulateur extends LinearOpMode {
         }
     }
 }
+
+
+
+
+
+

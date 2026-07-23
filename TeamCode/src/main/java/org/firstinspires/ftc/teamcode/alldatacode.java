@@ -18,7 +18,8 @@ public class alldatacode {
     public double vitesse_de_tir_devant= 1300;
     public double vitesse_retire_balle=1200;
 
-    public double vitesse_tir_auto_av = 1240;
+    public double vitesse_tir_auto_av = 1270;
+    public double vitesse_tir_auto_ar = 1655;
 
     /// ///////////////////////////////////////////////////////////
     ///

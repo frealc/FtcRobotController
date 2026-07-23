@@ -47,6 +47,7 @@ public class autobackRtest extends OpMode {
     boolean timerStarted = false;
     private Follower follower;
 
+    alldatacode data = new alldatacode();
 
     /*
      *PEDRO PATHING
@@ -217,8 +218,8 @@ public class autobackRtest extends OpMode {
             case 0:
                 if(!follower.isBusy()) {
                     //shooter.startShooter(1615);
-                    roueLanceur1.setVelocity(-1600);
-                    roueLanceur.setVelocity(1600);// lance les roues de tir à un Tick/s ciblé
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_ar);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_ar);// lance les roues de tir à un Tick/s ciblé
                     //follower.followPath(tire, true);//va à la position de tir
                     startTime = System.currentTimeMillis();//lance un timer
                     setPathState(1);//passe à la prochaine étape
@@ -319,8 +320,8 @@ public class autobackRtest extends OpMode {
 
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
-                    roueLanceur1.setVelocity(-1560);
-                    roueLanceur.setVelocity(1560);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_ar);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_ar);
                     follower.followPath(lance2, true);//va à la pose de tir
                     startTime = 0;
                     startTime = System.currentTimeMillis();
@@ -332,8 +333,8 @@ public class autobackRtest extends OpMode {
             case 7:
                 if (!follower.isBusy()) {
 
-                    roueLanceur1.setVelocity(-1560);
-                    roueLanceur.setVelocity(1560);
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_ar);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_ar);
                     attrapeballe.setPower(-1);
                     pousseballe.setPosition(0.28); //commence à tirer
                     if (System.currentTimeMillis() - startTime >= 6000) {
@@ -363,8 +364,8 @@ public class autobackRtest extends OpMode {
 
                 if (!follower.isBusy()) {
                     attrapeballe.setPower(0);
-                    roueLanceur1.setVelocity(-1580);
-                    roueLanceur.setVelocity(1580);//prépare le tir (à changer pour utiliser le start shooter)
+                    roueLanceur1.setVelocity(-data.vitesse_tir_auto_ar);
+                    roueLanceur.setVelocity(data.vitesse_tir_auto_ar);//prépare le tir (à changer pour utiliser le start shooter)
 
                     follower.followPath(lance3, true);//va à la position de tir
                     startTime = 0;
@@ -395,8 +396,8 @@ public class autobackRtest extends OpMode {
                 }
                 break;
             case 12:
-                roueLanceur1.setVelocity(-1540);
-                roueLanceur.setVelocity(1540);
+                roueLanceur1.setVelocity(0);
+                roueLanceur.setVelocity(0);
                 setPathState(13);
                 break; // fin
         }
