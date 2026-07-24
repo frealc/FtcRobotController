@@ -20,26 +20,20 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 /*
  * ============================================================================
- *  DECODEmanettePEDRO
+ *  DECODEmanettePEDROBleu2  (BLEU, robot 25017)
  * ============================================================================
  *
- *  Base = DECODEmanette (controle DIRECT des moteurs pour le pilotage manuel).
+ *  Variante BLEUE "2" de DECODEmanettePEDRO :
+ *   - COULEUR BLEUE  -> AprilTag id 20 + pose de tir AVANT bleue.
+ *   - mode de deplacement "2" -> ROTATION au JOYSTICK DROIT (right_stick_x)
+ *     (au lieu des triggers dans la version non-2).
  *
- *  AJOUT : un bouton (Y sur la manette 1) fait aller le robot a une position
- *  de tir PRECISE en utilisant PedroPathing.
- *   - le chemin est une DIAGONALE (BezierLine) => le robot avance, strafe et
- *     tourne EN MEME TEMPS (mecanum) pour prendre le chemin le plus rapide.
- *   - setLinearHeadingInterpolation => l'orientation se corrige pendant le trajet.
- *   - holdEnd (true) => une fois arrive, le robot se maintient parfaitement en place.
- *   - pendant tout le trajet le lanceur monte en vitesse, et DES QUE le robot
- *     est arrive ET que la vitesse du lanceur est bonne (meme logique que la LED
- *     verte), le robot TIRE automatiquement.
- *
- *  Sortie du mode automatique : RIGHT_BUMPER (manette 1) -> reprise du controle manuel.
+ *  Bouton Y (manette 1) = deplacement automatique PedroPathing vers la
+ *  position de tir AVANT, puis tir automatique. RIGHT_BUMPER pour annuler.
  * ============================================================================
  */
-@TeleOp(name = "DECODEmanette PEDRO Rouge - 25012", group = "Pedro")
-public class DECODEmanettePEDRO extends LinearOpMode {
+@TeleOp(name = "DECODEmanette PEDRO Bleu - 25017", group = "Pedro")
+public class DECODEmanettePEDROBleu2 extends LinearOpMode {
 
     /**/
     private DcMotorEx LeftFront;
@@ -129,9 +123,9 @@ public class DECODEmanettePEDRO extends LinearOpMode {
          *
          *  tirePose = la position ou le robot doit se placer pour tirer.
          *  (x, y en pouces, heading en RADIANS). A AJUSTER sur le terrain.
-         *  Valeur reprise de teleopPedroR (position de tir AVANT rouge = tirePoseFR).
+         *  Position de tir AVANT BLEUE (tirePoseFB de teleopPedroB).
          */
-        final Pose tirePose = new Pose(-4.54, 2.68, 2.28);
+        final Pose tirePose = new Pose(-4.54, -2.68, -2.28);
 
         // Chemin diagonal (le plus rapide) depuis la position ACTUELLE vers la pose de tir.
         // Le Supplier est evalue au moment de l'appui bouton -> part de la vraie position courante.
@@ -156,7 +150,7 @@ public class DECODEmanettePEDRO extends LinearOpMode {
 
             follower.update();   // IMPORTANT : maintient la localisation Pedro (pinpoint) a jour
             vision.update();
-            AprilTagDetection tag = VisionTest.getTagBySpecificId(24);
+            AprilTagDetection tag = VisionTest.getTagBySpecificId(20);
 
             // Met a jour la vitesse de tir automatique en fonction de la distance mesuree (vision).
             // Si aucun tag n'est vu, on garde la valeur par defaut.
@@ -256,16 +250,11 @@ public class DECODEmanettePEDRO extends LinearOpMode {
 
 
 
-            if (manette1.left_trigger > 0 && manette1.right_trigger > 0) { //rotation avec les trigger
+            if (manette1.right_stick_x == 0) { //rotation avec le joystick droit
                 tgtpowerRota=0;
-            }
-            else if (manette1.left_trigger > 0) {
-                tgtpowerRota=manette1.left_trigger;
-            } else if (manette1.right_trigger > 0) {
-                tgtpowerRota=manette1.right_trigger;
             }
             else {
-                tgtpowerRota=0;
+                tgtpowerRota=manette1.right_stick_x;
             }
 
             //active le mode precision quand b est appuyé et le desactive quand b est re appuyé
