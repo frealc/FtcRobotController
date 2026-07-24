@@ -17,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
  * CODE SANS UTILISATION DE DEAD WHEELS OU PEDRO PATHING
  *
  */
-@TeleOp(name = "DECODEmanette Bleu")
+@TeleOp(name = "DECODEmanette Bleu - 25012", group = "Alone")
 public class DECODEmanetteBleu extends LinearOpMode {
 
     /**/
@@ -142,9 +142,9 @@ public class DECODEmanetteBleu extends LinearOpMode {
                 tgtpowerRota=0;
             }
             else if (manette1.left_trigger > 0) {
-                tgtpowerRota=1;
+                tgtpowerRota=manette1.left_trigger;
             } else if (manette1.right_trigger > 0) {
-                tgtpowerRota=-1;
+                tgtpowerRota=manette1.right_trigger;
             }
             else {
                 tgtpowerRota=0;
